@@ -7,7 +7,7 @@ calls to build infrastructure matching that configuration.
 Agrix is designed to be simple. It takes a YAML file and spins up
 infrastructure. That's it. It doesn't have additional complexities like loops,
 variables or conditionals. If any of those features are needed, it is
-recommended to either use a more robust tool like [terraform][1] or apply
+recommended to either use a more robust tool like [Terraform][1] or apply
 pre-processing before sending YAML to agrix (e.g. use [envsubst][2] to
 substitute variables inside the YAML config.)
 
