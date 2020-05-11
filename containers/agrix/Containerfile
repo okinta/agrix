@@ -1,0 +1,17 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:5.0-alpine
+
+COPY . /app
+RUN dotnet build -c Release /app/agrix.csproj
+
+FROM mcr.microsoft.com/dotnet/core/runtime:5.0-alpine
+
+# Install envsubst
+RUN wget -O /usr/local/bin/envsubst https://s3.okinta.ge/envsubst-Linux-x86_64-v1.1.0 \
+    && chmod o+x /usr/local/bin/envsubst
+
+COPY containers/agrix/files /
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["agrix", "/etc/agrix.yaml"]
+
+COPY --from=0 /app/bin/Release/net5.0 /opt/agrix
+RUN ln -s /opt/agrix/agrix /usr/local/bin/agrix

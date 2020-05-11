@@ -65,13 +65,23 @@ Building and testing can be conducted via the [dotnet][1] tool:
 
 Tests can be run via [Podman][1] or other similar container tools:
 
-    podman build -t agrix-tests -f tests.Containerfile .
+    podman build -t agrix-tests -f containers/tests/Containerfile .
     podman run agrix-tests
 
 For example, to run tests using [Docker][2]:
 
-    docker build -t agrix-tests -f tests.Containerfile .
+    docker build -t agrix-tests -f containers/tests/Containerfile .
     docker run agrix-tests
 
 [1]: https://podman.io/
 [2]: https://docs.docker.com/
+
+### Building the Container
+
+To build the agrix container, run:
+
+    podman build -t okinta/agrix -f containers/agrix/Containerfile .
+
+Or if using Docker:
+
+    docker build -t okinta/agrix -f containers/agrix/Containerfile .

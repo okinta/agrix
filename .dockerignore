@@ -1,0 +1,9 @@
+*.md
+*.sln
+.dockerignore
+.git
+.gitignore
+.vs
+bin
+containers/*/Containerfile
+obj
