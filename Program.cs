@@ -1,6 +1,9 @@
 ﻿using CommandLine;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System;
+
+[assembly: InternalsVisibleTo("tests")]
 
 namespace agrix
 {
@@ -10,6 +13,7 @@ namespace agrix
     internal enum ExitCode
     {
         Success = 0,
+        BadConfig = 1,
         InvalidArguments = 2
     }
 
@@ -34,11 +38,11 @@ namespace agrix
         /// <summary>
         /// Runs the application with the given CLI arguments.
         /// </summary>
-        /// <param name="opt">The CLI arguments to run the program with.</param>
-        private void Run(Options opt)
+        /// <param name="options">The CLI arguments to run the program with.</param>
+        private void Run(Options options)
         {
             string input;
-            if (string.IsNullOrEmpty(opt.Filename))
+            if (string.IsNullOrEmpty(options.Filename))
             {
                 input = StdInput.Read();
             }
@@ -46,7 +50,7 @@ namespace agrix
             {
                 try
                 {
-                    input = File.ReadAllText(opt.Filename);
+                    input = File.ReadAllText(options.Filename);
                 }
                 catch (Exception e)
                 {
@@ -63,7 +67,20 @@ namespace agrix
                 return;
             }
 
-            new Agrix(input).Process();
+            var agrix = new Agrix(input);
+
+            try
+            {
+                agrix.Validate();
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.Message);
+                ExitCode = ExitCode.BadConfig;
+                return;
+            }
+
+            if (!options.Validate) agrix.Process();
         }
     }
 }

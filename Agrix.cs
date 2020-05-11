@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using YamlDotNet.RepresentationModel;
 
 namespace agrix
 {
@@ -31,6 +33,9 @@ namespace agrix
         /// </summary>
         public void Validate()
         {
+            var input = new StringReader(Configuration);
+            var yaml = new YamlStream();
+            yaml.Load(input);
         }
 
         /// <summary>
