@@ -57,7 +57,8 @@ containers.
 Building and testing can be conducted via the [dotnet][1] tool:
 
     dotnet build agrix.csproj
-    dotnet test agrix.csproj
+    dotnet build tests/tests.csproj
+    dotnet test tests/tests.csproj
 
 [1]: https://dotnet.microsoft.com/download/dotnet/5.0
 
