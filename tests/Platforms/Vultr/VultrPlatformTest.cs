@@ -1,16 +1,17 @@
 ﻿using agrix.Configuration;
+using agrix.Platforms.Vultr;
 using Xunit;
 
-namespace tests.Platforms
+namespace tests.Platforms.Vultr
 {
-    public class VultrTest
+    public class VultrPlatformTest
     {
         [Theory]
         [InlineData(1, "New Jersey")]
         [InlineData(40, "Singapore")]
         public void TestGetRegionID(int id, string name)
         {
-            var vultr = new agrix.Platforms.Vultr(Settings.Default.VultrApiKey);
+            var vultr = new VultrPlatform(Settings.Default.VultrApiKey);
             Assert.Equal(id, vultr.GetRegionID(name));
         }
 
@@ -19,7 +20,7 @@ namespace tests.Platforms
         [InlineData(404, 4, 16384, "HIGHFREQUENCY")]
         public void TestGetPlanID(int id, int cpu, int ram, string type)
         {
-            var vultr = new agrix.Platforms.Vultr(Settings.Default.VultrApiKey);
+            var vultr = new VultrPlatform(Settings.Default.VultrApiKey);
             Assert.Equal(id, vultr.GetPlanID(new Plan(cpu, ram, type)));
         }
     }

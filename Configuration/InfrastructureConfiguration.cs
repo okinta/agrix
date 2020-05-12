@@ -1,4 +1,5 @@
 ﻿using agrix.Extensions;
+using agrix.Platforms.Vultr;
 using agrix.Platforms;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,7 +86,7 @@ namespace agrix.Configuration
 
             return platform switch
             {
-                "vultr" => new Platforms.Vultr(apiKey),
+                "vultr" => new VultrPlatform(apiKey),
                 _ => throw new ArgumentException(
                     string.Format("unknown platform: {0}", platform), "config"),
             };

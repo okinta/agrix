@@ -5,12 +5,12 @@ using System;
 using Vultr.API.Models.Responses;
 using Vultr.API;
 
-namespace agrix.Platforms
+namespace agrix.Platforms.Vultr
 {
     /// <summary>
     /// Describes methods to communicate with the Vultr platform.
     /// </summary>
-    internal class Vultr : IPlatform
+    internal class VultrPlatform : IPlatform
     {
         private string ApiKey { get; }
         private VultrClient Client { get; }
@@ -19,7 +19,7 @@ namespace agrix.Platforms
         /// Instantiates the instance.
         /// </summary>
         /// <param name="apiKey">The API key to use for communicating with Vultr.</param>
-        public Vultr(string apiKey)
+        public VultrPlatform(string apiKey)
         {
             ApiKey = apiKey;
             Client = new VultrClient(ApiKey);
