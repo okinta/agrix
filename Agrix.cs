@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using agrix.Configuration;
 using YamlDotNet.RepresentationModel;
 
 namespace agrix
@@ -36,6 +37,7 @@ namespace agrix
             var input = new StringReader(Configuration);
             var yaml = new YamlStream();
             yaml.Load(input);
+            InfrastructureConfiguration.LoadServers(yaml);
         }
 
         /// <summary>

@@ -1,0 +1,32 @@
+servers:
+  - firewall: "http"
+    label: server1
+    os:
+      name: Ubuntu 20.04 x64
+    plan:
+      cpu: 1
+      memory: 1024
+      type: compute
+    private-networking: true
+    region: New York
+    ssh-keys:
+      - mykey
+    startup-script: myscript
+    tag: test
+    userdata: custom userdata
+
+  - os:
+      app: Joomla
+    plan:
+      cpu: 2
+      memory: 4096
+      type: compute
+    region: Atlanta
+
+  - os:
+      iso: coreos.iso
+    plan:
+      cpu: 2
+      memory: 4096
+      type: compute
+    region: Chicago
