@@ -56,5 +56,16 @@ namespace agrix.Configuration
             Memory = memory;
             Type = type;
         }
+
+        /// <summary>
+        /// Returns the string representation of this Plan.
+        /// </summary>
+        /// <returns>The string representation of this Plan.</returns>
+        public override string ToString()
+        {
+            return string.Format(
+                "Plan: {0} CPU(s), {1}mb memory, {2}",
+                CPU, Memory, Type);
+        }
     }
 }
