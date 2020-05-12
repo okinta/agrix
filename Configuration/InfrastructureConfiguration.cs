@@ -1,4 +1,5 @@
 ﻿using agrix.Extensions;
+using agrix.Platforms;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -62,6 +63,30 @@ namespace agrix.Configuration
             }
 
             return servers;
+        }
+
+        /// <summary>
+        /// Loads the platform configuration from the given YAML.
+        /// </summary>
+        /// <param name="config">The YAML to load the platform configuration from.</param>
+        /// <returns>The platform configuration loaded from the given YAML.</returns>
+        public static IPlatform LoadPlatform(YamlStream config)
+        {
+            if (config.Documents.Count == 0)
+            {
+                throw new ArgumentException(
+                    "config", "YAML config must have a document root");
+            }
+
+            var mapping = (YamlMappingNode)config.Documents[0].RootNode;
+            var platform = mapping.GetKey("platform", required: true);
+
+            return platform switch
+            {
+                "vultr" => new Vultr(),
+                _ => throw new ArgumentException(
+                    string.Format("unknown platform: {0}", platform), "config"),
+            };
         }
     }
 }

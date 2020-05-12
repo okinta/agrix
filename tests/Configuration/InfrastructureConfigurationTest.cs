@@ -1,4 +1,5 @@
 ﻿using agrix.Configuration;
+using agrix.Platforms;
 using System.IO;
 using System.Text;
 using tests.Properties;
@@ -12,12 +13,23 @@ namespace tests.Configuration
         [Fact]
         public void TestLoadServers()
         {
+            var servers = InfrastructureConfiguration.LoadServers(LoadYaml());
+            Assert.Equal(3, servers.Count);
+        }
+
+        [Fact]
+        public void TestLoadPlatform()
+        {
+            var platform = InfrastructureConfiguration.LoadPlatform(LoadYaml());
+            Assert.Equal(typeof(Vultr), platform.GetType());
+        }
+
+        private YamlStream LoadYaml()
+        {
             var input = new StringReader(Encoding.Default.GetString(Resources.agrix));
             var yaml = new YamlStream();
             yaml.Load(input);
-            var servers = InfrastructureConfiguration.LoadServers(yaml);
-
-            Assert.Equal(3, servers.Count);
+            return yaml;
         }
     }
 }
