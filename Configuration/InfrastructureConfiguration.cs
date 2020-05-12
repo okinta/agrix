@@ -1,6 +1,6 @@
 ﻿using agrix.Extensions;
-using agrix.Platform;
 using System.Collections.Generic;
+using System.Linq;
 using System;
 using YamlDotNet.RepresentationModel;
 
@@ -19,20 +19,49 @@ namespace agrix.Configuration
         /// YAML.</returns>
         public static IList<Server> LoadServers(YamlStream config)
         {
-            var mapping = (YamlMappingNode)config.Documents[0].RootNode;
-            var platformName = mapping.GetKey("platform", required: true);
+            var servers = new List<Server>();
 
-            var platform = platformName switch
+            if (config.Documents.Count == 0)
             {
-                "vultr" => new Vultr(),
-                _ => throw new ArgumentException(
-                    string.Format("unknown platform: {0}", platformName), "config"
-                ),
-            };
+                throw new ArgumentException(
+                    "config", "YAML config must have a document root");
+            }
 
+            var mapping = (YamlMappingNode)config.Documents[0].RootNode;
             var serverItems = (YamlSequenceNode)mapping.Children[
                 new YamlScalarNode("servers")];
-            return platform.LoadServers(serverItems);
+            
+            foreach (YamlMappingNode serverItem in serverItems)
+            {
+                var osMapping = serverItem.GetMapping("os");
+                var os = new OperatingSystem(
+                    app: osMapping.GetKey("app"),
+                    iso: osMapping.GetKey("iso"),
+                    name: osMapping.GetKey("name")
+                );
+
+                var planMapping = serverItem.GetMapping("plan");
+                var plan = new Plan(
+                    cpu: planMapping.GetInt("cpu"),
+                    memory: planMapping.GetInt("memory"),
+                    type: planMapping.GetKey("type", required: true)
+                );
+
+                servers.Add(new Server(
+                    os: os,
+                    plan: plan,
+                    region: serverItem.GetKey("region", required: true),
+                    privateNetworking: serverItem.GetBool("private-networking", false),
+                    firewall: serverItem.GetKey("firewall"),
+                    label: serverItem.GetKey("label"),
+                    startupScript: serverItem.GetKey("startup-script"),
+                    tag: serverItem.GetKey("tag"),
+                    userData: serverItem.GetKey("userdata"),
+                    sshKeys: serverItem.GetList("ssh-keys").ToArray()
+                ));
+            }
+
+            return servers;
         }
     }
 }

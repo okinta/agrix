@@ -1,7 +1,5 @@
-platform: vultr
-
 servers:
-  - firewall: http
+  - firewall: "http"
     label: server1
     os:
       name: Ubuntu 20.04 x64
