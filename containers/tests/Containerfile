@@ -1,0 +1,7 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:5.0-alpine
+
+CMD ["dotnet", "test", "/app/tests/tests.csproj"]
+
+COPY . /app
+RUN dotnet build -c Debug /app/agrix.csproj
+RUN dotnet build -c Debug /app/tests/tests.csproj
