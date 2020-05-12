@@ -69,8 +69,10 @@ namespace agrix.Configuration
         /// Loads the platform configuration from the given YAML.
         /// </summary>
         /// <param name="config">The YAML to load the platform configuration from.</param>
+        /// <param name="apiKey">The API key to use for communicating with the
+        /// platform.</param>
         /// <returns>The platform configuration loaded from the given YAML.</returns>
-        public static IPlatform LoadPlatform(YamlStream config)
+        public static IPlatform LoadPlatform(YamlStream config, string apiKey)
         {
             if (config.Documents.Count == 0)
             {
@@ -83,7 +85,7 @@ namespace agrix.Configuration
 
             return platform switch
             {
-                "vultr" => new Vultr(),
+                "vultr" => new Platforms.Vultr(apiKey),
                 _ => throw new ArgumentException(
                     string.Format("unknown platform: {0}", platform), "config"),
             };

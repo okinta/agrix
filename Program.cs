@@ -67,11 +67,26 @@ namespace agrix
                 return;
             }
 
+            if (string.IsNullOrEmpty(options.ApiKey))
+            {
+                options.ApiKey = Environment.GetEnvironmentVariable(
+                    Constants.EnvPlatformApiKey);
+            }
+
+            if (string.IsNullOrEmpty(options.ApiKey))
+            {
+                Console.Error.WriteLine(
+                    "No platform API key provided. Either set {0} command line argument or the {1} environment variable",
+                    Constants.ApiKeyArgument, Constants.EnvPlatformApiKey);
+                ExitCode = ExitCode.InvalidArguments;
+                return;
+            }
+
             var agrix = new Agrix(input);
 
             try
             {
-                agrix.Validate();
+                agrix.Validate(options.ApiKey);
             }
             catch (Exception e)
             {
@@ -80,7 +95,7 @@ namespace agrix
                 return;
             }
 
-            if (!options.Validate) agrix.Process();
+            if (!options.Validate) agrix.Process(options.ApiKey);
         }
     }
 }

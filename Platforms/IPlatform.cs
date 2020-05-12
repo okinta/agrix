@@ -2,6 +2,9 @@
 
 namespace agrix.Platforms
 {
+    /// <summary>
+    /// Describes an interface for communicating with a platform.
+    /// </summary>
     internal interface IPlatform
     {
         /// <summary>

@@ -1,5 +1,4 @@
 ﻿using agrix.Configuration;
-using agrix.Platforms;
 using System.IO;
 using System.Text;
 using tests.Properties;
@@ -10,6 +9,8 @@ namespace tests.Configuration
 {
     public class InfrastructureConfigurationTest
     {
+        private const string ApiKey = "abc123";
+
         [Fact]
         public void TestLoadServers()
         {
@@ -20,8 +21,8 @@ namespace tests.Configuration
         [Fact]
         public void TestLoadPlatform()
         {
-            var platform = InfrastructureConfiguration.LoadPlatform(LoadYaml());
-            Assert.Equal(typeof(Vultr), platform.GetType());
+            var platform = InfrastructureConfiguration.LoadPlatform(LoadYaml(), ApiKey);
+            Assert.Equal(typeof(agrix.Platforms.Vultr), platform.GetType());
         }
 
         private YamlStream LoadYaml()

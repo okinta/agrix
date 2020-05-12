@@ -51,18 +51,22 @@ namespace agrix
         /// <summary>
         /// Validates the YAML configuration to ensure correctness.
         /// </summary>
-        public void Validate()
+        /// <param name="apiKey">The platform API key to use for communicating with
+        /// the platform.</param>
+        public void Validate(string apiKey)
         {
-            InfrastructureConfiguration.LoadPlatform(YAML);
+            InfrastructureConfiguration.LoadPlatform(YAML, apiKey);
             InfrastructureConfiguration.LoadServers(YAML);
         }
 
         /// <summary>
         /// Builds infrastructure from the configuration.
         /// </summary>
-        public void Process()
+        /// <param name="apiKey">The platform API key to use for communicating with
+        /// the platform.</param>
+        public void Process(string apiKey)
         {
-            var platform = InfrastructureConfiguration.LoadPlatform(YAML);
+            var platform = InfrastructureConfiguration.LoadPlatform(YAML, apiKey);
             var servers = InfrastructureConfiguration.LoadServers(YAML);
 
             foreach (var server in servers)
