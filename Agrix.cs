@@ -10,10 +10,29 @@ namespace agrix
     /// </summary>
     internal class Agrix
     {
+        private YamlStream yaml;
+
         /// <summary>
-        /// The YAML configuration to process.
+        /// The YAML configuration to process, as a string.
         /// </summary>
         public string Configuration { get; }
+
+        /// <summary>
+        /// The YAML configuration to process, as a YamlStream.
+        /// </summary>
+        public YamlStream YAML
+        {
+            get
+            {
+                if (yaml is null)
+                {
+                    yaml = new YamlStream();
+                    yaml.Load(new StringReader(Configuration));
+                }
+
+                return yaml;
+            }
+        }
 
         /// <summary>
         /// Instantiates a new instance.
@@ -34,10 +53,8 @@ namespace agrix
         /// </summary>
         public void Validate()
         {
-            var input = new StringReader(Configuration);
-            var yaml = new YamlStream();
-            yaml.Load(input);
-            InfrastructureConfiguration.LoadServers(yaml);
+            InfrastructureConfiguration.LoadPlatform(YAML);
+            InfrastructureConfiguration.LoadServers(YAML);
         }
 
         /// <summary>
@@ -45,7 +62,13 @@ namespace agrix
         /// </summary>
         public void Process()
         {
-            Validate();
+            var platform = InfrastructureConfiguration.LoadPlatform(YAML);
+            var servers = InfrastructureConfiguration.LoadServers(YAML);
+
+            foreach (var server in servers)
+            {
+                platform.Provision(server);
+            }
         }
     }
 }
