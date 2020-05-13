@@ -141,6 +141,8 @@ namespace agrix.Extensions
         /// <returns>The child node retrieved.</returns>
         /// <exception cref="KnownKeyNotFoundException">If the key is not
         /// found.</exception>
+        /// <exception cref="InvalidCastException">If the node is not a mapping
+        /// node.</exception>
         public static YamlMappingNode GetMapping(this YamlMappingNode node, string name)
         {
             try

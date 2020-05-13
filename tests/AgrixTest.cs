@@ -58,6 +58,21 @@ servers:
             agrix.Validate();
         }
 
+        [Fact]
+        public void TestValidateServer()
+        {
+            var agrix = new Agrix(@"platform: vultr
+servers:
+  - os:
+      name: Fedora 32 x64
+    plan:
+      cpu: 2
+      memory: 4096
+      type: SSD
+    region: Atlanta", Settings.Default.VultrApiKey);
+            agrix.Validate();
+        }
+
         private const string SimpleConfig = @"platform: vultr
 servers:";
     }
