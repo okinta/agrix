@@ -43,6 +43,15 @@ namespace tests
         }
 
         [Fact]
+        public void TestValidateInvalidServer()
+        {
+            var agrix = new Agrix(@"platform: vultr
+servers:
+  - label: test", Settings.Default.VultrApiKey);
+            Assert.Throws<AgrixValidationException>(() => agrix.Validate());
+        }
+
+        [Fact]
         public void TestValidate()
         {
             var agrix = new Agrix(SimpleConfig, Settings.Default.VultrApiKey);

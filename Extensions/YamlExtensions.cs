@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using agrix.Exceptions;
+using System.Collections.Generic;
 using System;
 using YamlDotNet.RepresentationModel;
 
@@ -19,8 +20,8 @@ namespace agrix.Extensions
         /// <param name="required">Whether or not the key is required. Defaults to
         /// false.</param>
         /// <returns>The key retrieved from the node.</returns>
-        /// <exception cref="KeyNotFoundException">If <paramref name="required"/> is true
-        /// and the key is not present.</exception>
+        /// <exception cref="KnownKeyNotFoundException">If <paramref name="required"/>
+        /// is true and the key is not present.</exception>
         public static string GetKey(this YamlMappingNode node, string name,
             string defaultValue = "", bool required = false)
         {
@@ -28,9 +29,9 @@ namespace agrix.Extensions
             {
                 return (string)node.Children[new YamlScalarNode(name)];
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException e)
             {
-                if (required) throw;
+                if (required) throw new KnownKeyNotFoundException<string>(name, e);
                 return defaultValue;
             }
         }
@@ -41,9 +42,21 @@ namespace agrix.Extensions
         /// <param name="node">The node to retrieve the key from.</param>
         /// <param name="name">The name of the key to retrieve.</param>
         /// <returns>The key retrieved from the node.</returns>
+        /// <exception cref="KnownKeyNotFoundException">If the key is not
+        /// found.</exception>
+        /// <exception cref="InvalidCastException">If the value is not an
+        /// integer.</exception>
         public static int GetInt(this YamlMappingNode node, string name)
         {
-            var value = (string)node.Children[new YamlScalarNode(name)];
+            string value;
+            try
+            {
+                value = (string)node.Children[new YamlScalarNode(name)];
+            }
+            catch (KeyNotFoundException e)
+            {
+                throw new KnownKeyNotFoundException<string>(name, e);
+            }
 
             if (!int.TryParse(value, out int result))
                 throw new InvalidCastException("{0} is not an integer");
@@ -126,9 +139,18 @@ namespace agrix.Extensions
         /// <param name="node">The node to retrieve from.</param>
         /// <param name="name">The name of the key to retrieve.</param>
         /// <returns>The child node retrieved.</returns>
+        /// <exception cref="KnownKeyNotFoundException">If the key is not
+        /// found.</exception>
         public static YamlMappingNode GetMapping(this YamlMappingNode node, string name)
         {
-            return (YamlMappingNode)node.Children[new YamlScalarNode(name)];
+            try
+            {
+                return (YamlMappingNode)node.Children[new YamlScalarNode(name)];
+            }
+            catch (KeyNotFoundException e)
+            {
+                throw new KnownKeyNotFoundException<string>(name, e.Message, e);
+            }
         }
 
         /// <summary>

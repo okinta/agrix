@@ -92,7 +92,17 @@ namespace agrix
                 throw new AgrixValidationException(e.Message, e);
             }
 
-            InfrastructureConfiguration.LoadServers(YAML);
+            try
+            {
+                InfrastructureConfiguration.LoadServers(YAML);
+            }
+            catch (KnownKeyNotFoundException<string> e)
+            {
+                throw new AgrixValidationException(
+                    string.Format("{0} key is missing inside servers", e.Key),
+                    e
+                );
+            }
         }
 
         /// <summary>
@@ -100,6 +110,8 @@ namespace agrix
         /// </summary>
         public void Process()
         {
+            Validate();
+
             var platform = InfrastructureConfiguration.LoadPlatform(YAML, ApiKey);
             var servers = InfrastructureConfiguration.LoadServers(YAML);
 
