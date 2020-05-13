@@ -153,6 +153,11 @@ namespace agrix.Extensions
             {
                 throw new KnownKeyNotFoundException<string>(name, e.Message, e);
             }
+            catch (InvalidCastException e)
+            {
+                throw new InvalidCastException(
+                    string.Format("{0} is not a mapping node", name), e);
+            }
         }
 
         /// <summary>
