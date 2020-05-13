@@ -45,7 +45,8 @@ namespace tests
         [Fact]
         public void TestValidateInvalidServer()
         {
-            var agrix = new Agrix(@"platform: vultr
+            var agrix = new Agrix(
+@"platform: vultr
 servers:
   - label: test", Settings.Default.VultrApiKey);
             Assert.Throws<AgrixValidationException>(() => agrix.Validate());
@@ -58,10 +59,9 @@ servers:
             agrix.Validate();
         }
 
-        [Fact]
-        public void TestValidateServer()
-        {
-            var agrix = new Agrix(@"platform: vultr
+        [Theory]
+        [InlineData(
+@"platform: vultr
 servers:
   - os:
       name: Fedora 32 x64
@@ -69,11 +69,29 @@ servers:
       cpu: 2
       memory: 4096
       type: SSD
-    region: Atlanta", Settings.Default.VultrApiKey);
+    region: Atlanta")]
+        [InlineData(
+@"platform: vultr
+servers:
+  - os:
+      iso: alpine.iso
+    plan:
+      cpu: 2
+      memory: 4096
+      type: SSD
+    region: Chicago
+    userdata:
+      my-array:
+        - 1
+        - 2")]
+        public void TestValidateServer(string config)
+        {
+            var agrix = new Agrix(config, Settings.Default.VultrApiKey);
             agrix.Validate();
         }
 
-        private const string SimpleConfig = @"platform: vultr
+        private const string SimpleConfig =
+@"platform: vultr
 servers:";
     }
 }

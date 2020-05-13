@@ -20,6 +20,43 @@ namespace tests.Configuration
         }
 
         [Fact]
+        public void TestLoadUserData()
+        {
+            var servers = InfrastructureConfiguration.LoadServers(LoadYaml(
+@"servers:
+  - os:
+      iso: alpine.iso
+    plan:
+      cpu: 2
+      memory: 4096
+      type: SSD
+    region: Chicago
+    userdata: test data"));
+            Assert.Equal(1, servers.Count);
+            Assert.Equal("test data", servers[0].UserData);
+        }
+
+        [Fact]
+        public void TestLoadJsonUserData()
+        {
+            var servers = InfrastructureConfiguration.LoadServers(LoadYaml(
+@"servers:
+  - os:
+      iso: alpine.iso
+    plan:
+      cpu: 2
+      memory: 4096
+      type: SSD
+    region: Chicago
+    userdata:
+      my-array:
+        - 1
+        - 2"));
+            Assert.Equal(1, servers.Count);
+            Assert.Equal("{\"my-array\": [\"1\", \"2\"]}", servers[0].UserData);
+        }
+
+        [Fact]
         public void TestLoadPlatform()
         {
             var platform = InfrastructureConfiguration.LoadPlatform(LoadYaml(), ApiKey);
@@ -29,6 +66,14 @@ namespace tests.Configuration
         private YamlStream LoadYaml()
         {
             var input = new StringReader(Encoding.Default.GetString(Resources.agrix));
+            var yaml = new YamlStream();
+            yaml.Load(input);
+            return yaml;
+        }
+
+        private YamlStream LoadYaml(string content)
+        {
+            var input = new StringReader(content);
             var yaml = new YamlStream();
             yaml.Load(input);
             return yaml;

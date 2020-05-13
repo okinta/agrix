@@ -68,7 +68,7 @@ namespace agrix.Configuration
                     label: serverItem.GetKey("label"),
                     startupScript: serverItem.GetKey("startup-script"),
                     tag: serverItem.GetKey("tag"),
-                    userData: serverItem.GetKey("userdata"),
+                    userData: serverItem.GetJSON("userdata"),
                     sshKeys: serverItem.GetList("ssh-keys").ToArray()
                 ));
             }

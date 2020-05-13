@@ -1,7 +1,9 @@
 ﻿using agrix.Exceptions;
 using System.Collections.Generic;
+using System.IO;
 using System;
 using YamlDotNet.RepresentationModel;
+using YamlDotNet.Serialization;
 
 namespace agrix.Extensions
 {
@@ -36,7 +38,7 @@ namespace agrix.Extensions
                 if (required) throw new KnownKeyNotFoundException<string>(name, e);
                 return defaultValue;
             }
-            catch (InvalidCastException e)
+            catch (ArgumentException e)
             {
                 throw new InvalidCastException(
                     string.Format("{0} is not a string", name), e);
@@ -64,7 +66,7 @@ namespace agrix.Extensions
             {
                 throw new KnownKeyNotFoundException<string>(name, e);
             }
-            catch (InvalidCastException e)
+            catch (ArgumentException e)
             {
                 throw new InvalidCastException(
                     string.Format("{0} is not an integer", name), e);
@@ -99,7 +101,7 @@ namespace agrix.Extensions
             {
                 return defaultValue;
             }
-            catch (InvalidCastException e)
+            catch (ArgumentException e)
             {
                 throw new InvalidCastException(
                     string.Format("{0} is not an integer", name), e);
@@ -134,7 +136,7 @@ namespace agrix.Extensions
             {
                 return defaultValue;
             }
-            catch (InvalidCastException e)
+            catch (ArgumentException e)
             {
                 throw new InvalidCastException(
                     string.Format("{0} is not a boolean", name), e);
@@ -158,6 +160,62 @@ namespace agrix.Extensions
                     throw new InvalidCastException(
                         string.Format("{0} is not a boolean", value));
             }
+        }
+
+        /// <summary>
+        /// Gets a JSON key from the node.
+        /// </summary>
+        /// <param name="node">The node to retrieve the key from.</param>
+        /// <param name="name">The name of the key to retrieve.</param>
+        /// <param name="defaultValue">The value to return if the key is not
+        /// present. Defaults to an empty string.</param>
+        /// <param name="required">Whether or not the key is required. Defaults to
+        /// false.</param>
+        /// <returns>The key retrieved from the node.</returns>
+        /// <exception cref="KnownKeyNotFoundException">If <paramref name="required"/>
+        /// is true and the key is not present.</exception>
+        public static string GetJSON(this YamlMappingNode node,
+            string name, string defaultValue = "", bool required = false)
+        {
+            YamlNode jsonNode;
+            try
+            {
+                jsonNode = node.Children[new YamlScalarNode(name)];
+            }
+            catch (KeyNotFoundException e)
+            {
+                if (required) throw new KnownKeyNotFoundException<string>(name, e);
+                return defaultValue;
+            }
+
+            if (jsonNode.NodeType == YamlNodeType.Scalar)
+            {
+                return (string)jsonNode;
+            }
+            else
+            {
+                return jsonNode.ToJSON();
+            }
+        }
+
+        /// <summary>
+        /// Converts a YamlNode to a JSON string.
+        /// </summary>
+        /// <param name="node">The YamlNode instance to convert.</param>
+        /// <returns>The converted JSON string.</returns>
+        public static string ToJSON(this YamlNode node)
+        {
+            var stream = new YamlStream { new YamlDocument(node) };
+            using var writer = new StringWriter();
+            stream.Save(writer);
+
+            using var reader = new StringReader(writer.ToString());
+            var deserializer = new Deserializer();
+            var yamlObject = deserializer.Deserialize(reader);
+            var serializer = new SerializerBuilder()
+                .JsonCompatible()
+                .Build();
+            return serializer.Serialize(yamlObject).Trim();
         }
 
         /// <summary>
