@@ -31,12 +31,21 @@ namespace agrix.Platforms.Vultr
         /// <param name="server">The server configuration to use for provisioning.</param>
         public void Provision(Server server)
         {
-            //client.Server.CreateServer(
-            //    DCID: GetRegionID(server.Region, client),
-            //    VPSPLANID: GetPlanID(server.Plan, client),
-            //    OSID: 
-            //);
-            throw new NotImplementedException();
+            var os = GetOS(server);
+            Client.Server.CreateServer(
+                DCID: GetRegionID(server.Region),
+                VPSPLANID: GetPlanID(server.Plan),
+                OSID: os.OSID,
+                ISOID: os.ISOID?.ToString(),
+                SCRIPTID: os.SCRIPTID,
+                SNAPSHOTID: os.SNAPSHOTID?.ToString(),
+                enable_private_network: server.PrivateNetworking,
+                label: server.Label,
+                APPID: os.APPID,
+                userdata: server.Label,
+                notify_activate: false,
+                tag: server.Tag
+            );
         }
 
         /// <summary>
