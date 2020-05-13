@@ -84,18 +84,23 @@ namespace agrix
 
             var agrix = new Agrix(input, options.ApiKey);
 
-            try
+            if (options.Validate)
             {
-                agrix.Validate();
-            }
-            catch (Exception e)
-            {
-                Console.Error.WriteLine(e.Message);
-                ExitCode = ExitCode.BadConfig;
-                return;
-            }
+                try
+                {
+                    agrix.Validate();
+                }
+                catch (Exception e)
+                {
+                    Console.Error.WriteLine(e.Message);
+                    ExitCode = ExitCode.BadConfig;
+                    return;
+                }
 
-            if (!options.Validate) agrix.Process();
+                Console.WriteLine("Configuration is valid");
+            }
+            else
+                agrix.Process();
         }
     }
 }
