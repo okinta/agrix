@@ -36,9 +36,16 @@ namespace tests
         }
 
         [Fact]
-        public void TestValidate()
+        public void TestValidateInvalidKey()
         {
             var agrix = new Agrix(SimpleConfig, "abc");
+            Assert.Throws<AgrixValidationException>(() => agrix.Validate());
+        }
+
+        [Fact]
+        public void TestValidate()
+        {
+            var agrix = new Agrix(SimpleConfig, Settings.Default.VultrApiKey);
             agrix.Validate();
         }
 

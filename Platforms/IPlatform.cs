@@ -12,5 +12,10 @@ namespace agrix.Platforms
         /// </summary>
         /// <param name="server">The server configuration to use for provisioning.</param>
         public void Provision(Server server);
+
+        /// <summary>
+        /// Tests the connection. Throws an exception if the connection is invalid.
+        /// </summary>
+        public void TestConnection();
     }
 }
