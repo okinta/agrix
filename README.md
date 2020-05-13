@@ -21,12 +21,15 @@ or oversight. It can be run from the command line or inside a container.
 
 Agrix takes a single YAML file as input:
 
-    agrix [file]
+    agrix validate [file]
 
 Alternatively, you can also pipe the file into agrix:
 
-    envsubst [file] | agrix
-    agrix < [file]
+    envsubst [file] | agrix validate
+    agrix validate < [file]
+
+When you're ready to provision the infrastructure, use the `agrix provision`
+command.
 
 ### Container Usage
 
