@@ -86,5 +86,71 @@ namespace agrix.Platforms.Vultr
             throw new ArgumentException(
                 string.Format("Cannot find plan {0}", plan), "plan");
         }
+
+        /// <summary>
+        /// Gets the Operating System configuration for the Server.
+        /// </summary>
+        /// <param name="server">The Server to extract the Operating System
+        /// configuration for.</param>
+        /// <returns>The Operating System configuration for the Server.</returns>
+        /// <exception cref="ArgumentException">If the Server Operating System is
+        /// misconfigured.</exception>
+        public OS GetOS(Server server)
+        {
+            if (!string.IsNullOrEmpty(server.OS.App))
+            {
+                if (!string.IsNullOrEmpty(server.OS.Name))
+                {
+                    throw new ArgumentException(
+                        "OS.Name must be empty if OS.App is set", "server");
+                }
+
+                if (!string.IsNullOrEmpty(server.OS.ISO))
+                {
+                    throw new ArgumentException(
+                        "OS.ISO must be empty if OS.App is set", "server");
+                }
+
+                if (!string.IsNullOrEmpty(server.StartupScript))
+                {
+                    throw new ArgumentException(
+                        "OS.StartupScript must be empty if OS.App is set", "server");
+                }
+
+                return OS.CreateApp(server.OS.App, Client);
+            }
+
+            if (!string.IsNullOrEmpty(server.OS.ISO))
+            {
+                if (!string.IsNullOrEmpty(server.OS.Name))
+                {
+                    throw new ArgumentException(
+                        "OS.Name must be empty if OS.ISO is set", "server");
+                }
+
+                if (!string.IsNullOrEmpty(server.StartupScript))
+                {
+                    throw new ArgumentException(
+                        "OS.StartupScript must be empty if OS.ISO is set", "server");
+                }
+
+                return OS.CreateISO(server.OS.ISO, Client);
+            }
+
+            if (string.IsNullOrEmpty(server.OS.Name))
+            {
+                throw new ArgumentException(
+                    "OS.App, OS.ISO or OS.Name must be set", "server");
+            }
+
+            if (!string.IsNullOrEmpty(server.StartupScript))
+            {
+                return OS.CreateScript(server.OS.Name, server.StartupScript, Client);
+            }
+            else
+            {
+                return OS.CreateOS(server.OS.Name, Client);
+            }
+        }
     }
 }
