@@ -82,11 +82,11 @@ namespace agrix
                 return;
             }
 
-            var agrix = new Agrix(input);
+            var agrix = new Agrix(input, options.ApiKey);
 
             try
             {
-                agrix.Validate(options.ApiKey);
+                agrix.Validate();
             }
             catch (Exception e)
             {
@@ -95,7 +95,7 @@ namespace agrix
                 return;
             }
 
-            if (!options.Validate) agrix.Process(options.ApiKey);
+            if (!options.Validate) agrix.Process();
         }
     }
 }

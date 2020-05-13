@@ -34,39 +34,46 @@ namespace agrix
             }
         }
 
+        private string ApiKey { get; }
+
         /// <summary>
         /// Instantiates a new instance.
         /// </summary>
         /// <param name="configuration">The YAML configuration to process.</param>
-        public Agrix(string configuration)
+        /// <param name="apiKey">The platform API key to use for communicating with
+        /// the platform.</param>
+        public Agrix(string configuration, string apiKey)
         {
             if (string.IsNullOrEmpty(configuration))
             {
-                throw new ArgumentNullException("configuration", "must not be empty");
+                throw new ArgumentNullException(
+                    "configuration", "Configuration must not be empty");
             }
 
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                throw new ArgumentNullException("apiKey", "API key must not be empty");
+            }
+
+            ApiKey = apiKey;
             Configuration = configuration;
         }
 
         /// <summary>
         /// Validates the YAML configuration to ensure correctness.
         /// </summary>
-        /// <param name="apiKey">The platform API key to use for communicating with
-        /// the platform.</param>
-        public void Validate(string apiKey)
+        public void Validate()
         {
-            InfrastructureConfiguration.LoadPlatform(YAML, apiKey);
+            InfrastructureConfiguration.LoadPlatform(YAML, ApiKey);
             InfrastructureConfiguration.LoadServers(YAML);
         }
 
         /// <summary>
         /// Builds infrastructure from the configuration.
         /// </summary>
-        /// <param name="apiKey">The platform API key to use for communicating with
-        /// the platform.</param>
-        public void Process(string apiKey)
+        public void Process()
         {
-            var platform = InfrastructureConfiguration.LoadPlatform(YAML, apiKey);
+            var platform = InfrastructureConfiguration.LoadPlatform(YAML, ApiKey);
             var servers = InfrastructureConfiguration.LoadServers(YAML);
 
             foreach (var server in servers)
