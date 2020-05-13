@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 
-namespace agrix
+namespace agrix.Program
 {
     /// <summary>
     /// Provides an interface to read from stdin.

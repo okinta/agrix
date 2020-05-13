@@ -1,6 +1,6 @@
 ﻿using CommandLine;
 
-namespace agrix
+namespace agrix.Program
 {
     /// <summary>
     /// The CLI options for the program.

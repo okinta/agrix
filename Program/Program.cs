@@ -5,7 +5,7 @@ using System;
 
 [assembly: InternalsVisibleTo("tests")]
 
-namespace agrix
+namespace agrix.Program
 {
     /// <summary>
     /// Represents a program exit code.
