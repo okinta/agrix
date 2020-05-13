@@ -73,6 +73,10 @@ namespace agrix.Configuration
         /// <param name="apiKey">The API key to use for communicating with the
         /// platform.</param>
         /// <returns>The platform configuration loaded from the given YAML.</returns>
+        /// <exception cref="KeyNotFoundException">If the platform key is not present
+        /// inside <paramref name="config"/>.</exception>
+        /// <exception cref="ArgumentException">If the platform is not
+        /// supported.</exception>
         public static IPlatform LoadPlatform(YamlStream config, string apiKey)
         {
             if (config.Documents.Count == 0)
@@ -88,7 +92,7 @@ namespace agrix.Configuration
             {
                 "vultr" => new VultrPlatform(apiKey),
                 _ => throw new ArgumentException(
-                    string.Format("unknown platform: {0}", platform), "config"),
+                    string.Format("Unknown platform: {0}", platform), "config"),
             };
         }
     }

@@ -1,4 +1,5 @@
 ﻿using agrix;
+using agrix.Exceptions;
 using System;
 using Xunit;
 
@@ -18,6 +19,20 @@ namespace tests
         {
             Assert.Throws<ArgumentNullException>(() => new Agrix("config", ""));
             Assert.Throws<ArgumentNullException>(() => new Agrix("config", null));
+        }
+
+        [Fact]
+        public void TestValidatePlatformIsRequired()
+        {
+            var agrix = new Agrix("servers:", "abc");
+            Assert.Throws<AgrixValidationException>(() => agrix.Validate());
+        }
+
+        [Fact]
+        public void TestValidateUnsupportedPlatform()
+        {
+            var agrix = new Agrix("platform:", "abc");
+            Assert.Throws<AgrixValidationException>(() => agrix.Validate());
         }
     }
 }

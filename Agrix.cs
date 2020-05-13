@@ -1,7 +1,9 @@
-﻿using System;
+﻿using agrix.Configuration;
 using System.IO;
-using agrix.Configuration;
+using System;
 using YamlDotNet.RepresentationModel;
+using System.Collections.Generic;
+using agrix.Exceptions;
 
 namespace agrix
 {
@@ -62,9 +64,23 @@ namespace agrix
         /// <summary>
         /// Validates the YAML configuration to ensure correctness.
         /// </summary>
+        /// <exception cref="AgrixValidationException">If there is a validation
+        /// error.</exception>
         public void Validate()
         {
-            InfrastructureConfiguration.LoadPlatform(YAML, ApiKey);
+            try
+            {
+                InfrastructureConfiguration.LoadPlatform(YAML, ApiKey);
+            }
+            catch (KeyNotFoundException e)
+            {
+                throw new AgrixValidationException("platform key is missing", e);
+            }
+            catch (ArgumentException e)
+            {
+                throw new AgrixValidationException(e.Message, e);
+            }
+
             InfrastructureConfiguration.LoadServers(YAML);
         }
 
