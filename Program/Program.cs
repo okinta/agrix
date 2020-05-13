@@ -31,15 +31,47 @@ namespace agrix.Program
         public static int Main(string[] args)
         {
             var program = new Program();
-            Parser.Default.ParseArguments<Options>(args).WithParsed(program.Run);
+            Parser.Default.ParseArguments<
+                ProvisionOptions,
+                ValidateOptions
+            >(args)
+                .WithParsed<ProvisionOptions>(program.Provision)
+                .WithParsed<ValidateOptions>(program.Validate);
             return (int)program.ExitCode;
         }
 
+        private void Provision(ProvisionOptions options)
+        {
+            LoadAgrix(options)?.Process();
+        }
+
+        private void Validate(ValidateOptions options)
+        {
+            var agrix = LoadAgrix(options);
+            if (agrix is null) return;
+
+            try
+            {
+                agrix.Validate();
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.Message);
+                ExitCode = ExitCode.BadConfig;
+                return;
+            }
+
+            Console.WriteLine("Configuration is valid");
+        }
+
         /// <summary>
-        /// Runs the application with the given CLI arguments.
+        /// Loads an Agrix instance with the user specified configuration. Configuration
+        /// is pulled from either CLI options or stdin.
         /// </summary>
-        /// <param name="options">The CLI arguments to run the program with.</param>
-        private void Run(Options options)
+        /// <param name="options">The CLI options.</param>
+        /// <returns>An Agrix with the loaded user configuration, or null if there was
+        /// an error with loading configuration.</returns>
+        private Agrix LoadAgrix(BaseOptions options)
         {
             string input;
             if (string.IsNullOrEmpty(options.Filename))
@@ -56,7 +88,7 @@ namespace agrix.Program
                 {
                     Console.Error.WriteLine(e.Message);
                     ExitCode = ExitCode.InvalidArguments;
-                    return;
+                    return null;
                 }
             }
 
@@ -64,7 +96,7 @@ namespace agrix.Program
             {
                 Console.Error.WriteLine("config is empty");
                 ExitCode = ExitCode.InvalidArguments;
-                return;
+                return null;
             }
 
             if (string.IsNullOrEmpty(options.ApiKey))
@@ -79,28 +111,10 @@ namespace agrix.Program
                     "No platform API key provided. Either set {0} command line argument or the {1} environment variable",
                     Constants.ApiKeyArgument, Constants.EnvPlatformApiKey);
                 ExitCode = ExitCode.InvalidArguments;
-                return;
+                return null;
             }
 
-            var agrix = new Agrix(input, options.ApiKey);
-
-            if (options.Validate)
-            {
-                try
-                {
-                    agrix.Validate();
-                }
-                catch (Exception e)
-                {
-                    Console.Error.WriteLine(e.Message);
-                    ExitCode = ExitCode.BadConfig;
-                    return;
-                }
-
-                Console.WriteLine("Configuration is valid");
-            }
-            else
-                agrix.Process();
+            return new Agrix(input, options.ApiKey);
         }
     }
 }
