@@ -29,23 +29,64 @@ namespace agrix.Platforms.Vultr
         /// Provisions a server using the given configuration.
         /// </summary>
         /// <param name="server">The server configuration to use for provisioning.</param>
-        public void Provision(Server server)
+        /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
+        /// provision commands will not be sent to the platform and instead messaging
+        /// will be outputted describing what would be done.</param>
+        public void Provision(Server server, bool dryrun = false)
         {
             var os = GetOS(server);
-            Client.Server.CreateServer(
-                DCID: GetRegionID(server.Region),
-                VPSPLANID: GetPlanID(server.Plan),
-                OSID: os.OSID,
-                ISOID: os.ISOID?.ToString(),
-                SCRIPTID: os.SCRIPTID,
-                SNAPSHOTID: os.SNAPSHOTID?.ToString(),
-                enable_private_network: server.PrivateNetworking,
-                label: server.Label,
-                APPID: os.APPID,
-                userdata: server.Label,
-                notify_activate: false,
-                tag: server.Tag
-            );
+            var DCID = GetRegionID(server.Region);
+            var VPSPLANID = GetPlanID(server.Plan);
+            var OSID = os.OSID;
+            var ISOID = os.ISOID?.ToString();
+            var SCRIPTID = os.SCRIPTID;
+            var SNAPSHOTID = os.SNAPSHOTID?.ToString();
+            var enable_private_network = server.PrivateNetworking;
+            var label = server.Label;
+            var APPID = os.APPID;
+            var userdata = server.UserData;
+            var notify_activate = false;
+            var tag = server.Tag;
+
+            Console.WriteLine("Provisioning server");
+            WriteServerLine("DCID", DCID);
+            WriteServerLine("VPSPLANID", VPSPLANID);
+            WriteServerLine("OSID", OSID);
+            WriteServerLine("ISOID", ISOID);
+            WriteServerLine("SCRIPTID", SCRIPTID);
+            WriteServerLine("SNAPSHOTID", SNAPSHOTID);
+            WriteServerLine("enable_private_network", enable_private_network);
+            WriteServerLine("label", label);
+            WriteServerLine("APPID", APPID);
+            WriteServerLine("userdata", userdata);
+            WriteServerLine("notify_activate", notify_activate);
+            WriteServerLine("tag", tag);
+
+            if (!dryrun)
+            {
+                var result = Client.Server.CreateServer(
+                    DCID: DCID,
+                    VPSPLANID: VPSPLANID,
+                    OSID: OSID,
+                    ISOID: ISOID,
+                    SCRIPTID: SCRIPTID,
+                    SNAPSHOTID: SNAPSHOTID,
+                    enable_private_network: enable_private_network,
+                    label: label,
+                    APPID: APPID,
+                    userdata: userdata,
+                    notify_activate: notify_activate,
+                    tag: tag
+                );
+
+                Console.WriteLine("Provisioned server with ID {0}", result.Server.SUBID);
+            }
+        }
+
+        private static void WriteServerLine(string name, object value)
+        {
+            if (value != null)
+                Console.WriteLine("{0}: {1}", name, value);
         }
 
         /// <summary>
