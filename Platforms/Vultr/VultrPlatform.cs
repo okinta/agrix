@@ -83,12 +83,6 @@ namespace agrix.Platforms.Vultr
             }
         }
 
-        private static void WriteServerLine(string name, object value)
-        {
-            if (value != null)
-                Console.WriteLine("{0}: {1}", name, value);
-        }
-
         /// <summary>
         /// Tests the connection. Throws an exception if the connection is invalid.
         /// </summary>
@@ -208,6 +202,27 @@ namespace agrix.Platforms.Vultr
             else
             {
                 return OS.CreateOS(server.OS.Name, Client);
+            }
+        }
+
+        private static void WriteServerLine(string name, object value)
+        {
+            if (value != null)
+                Console.WriteLine("{0}: {1}", name, value);
+        }
+
+        private static void WriteServerLine(string name, string value)
+        {
+            if (!string.IsNullOrEmpty(value))
+                Console.WriteLine("{0}: {1}", name, value);
+        }
+
+        private static void WriteServerLine(string name, bool? value)
+        {
+            if (value != null)
+            {
+                var outputValue = value == true ? "yes" : "no";
+                Console.WriteLine("{0}: {1}", name, outputValue);
             }
         }
     }
