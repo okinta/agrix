@@ -22,6 +22,8 @@ namespace agrix.Extensions
         /// <returns>The key retrieved from the node.</returns>
         /// <exception cref="KnownKeyNotFoundException">If <paramref name="required"/>
         /// is true and the key is not present.</exception>
+        /// <exception cref="InvalidCastException">If the value is not a
+        /// string.</exception>
         public static string GetKey(this YamlMappingNode node, string name,
             string defaultValue = "", bool required = false)
         {
@@ -33,6 +35,11 @@ namespace agrix.Extensions
             {
                 if (required) throw new KnownKeyNotFoundException<string>(name, e);
                 return defaultValue;
+            }
+            catch (InvalidCastException e)
+            {
+                throw new InvalidCastException(
+                    string.Format("{0} is not a string", name), e);
             }
         }
 
@@ -57,9 +64,15 @@ namespace agrix.Extensions
             {
                 throw new KnownKeyNotFoundException<string>(name, e);
             }
+            catch (InvalidCastException e)
+            {
+                throw new InvalidCastException(
+                    string.Format("{0} is not an integer", name), e);
+            }
 
             if (!int.TryParse(value, out int result))
-                throw new InvalidCastException("{0} is not an integer");
+                throw new InvalidCastException(
+                    string.Format("{0} is not an integer", name));
 
             return result;
         }
@@ -72,6 +85,8 @@ namespace agrix.Extensions
         /// <param name="defaultValue">The value to return if the key is not
         /// present.</param>
         /// <returns>The key retrieved from the node.</returns>
+        /// <exception cref="InvalidCastException">If the value is not an
+        /// integer.</exception>
         public static int GetInt(this YamlMappingNode node, string name, int defaultValue)
         {
             string value;
@@ -83,6 +98,11 @@ namespace agrix.Extensions
             catch (KeyNotFoundException)
             {
                 return defaultValue;
+            }
+            catch (InvalidCastException e)
+            {
+                throw new InvalidCastException(
+                    string.Format("{0} is not an integer", name), e);
             }
 
             if (!int.TryParse(value, out int result))
@@ -100,6 +120,8 @@ namespace agrix.Extensions
         /// <param name="defaultValue">The value to return if the key is not
         /// present. Defaults to false.</param>
         /// <returns>The key retrieved from the node.</returns>
+        /// <exception cref="InvalidCastException">If the value is not a
+        /// boolean.</exception>
         public static bool GetBool(this YamlMappingNode node, string name,
             bool defaultValue = false)
         {
@@ -111,6 +133,11 @@ namespace agrix.Extensions
             catch (KeyNotFoundException)
             {
                 return defaultValue;
+            }
+            catch (InvalidCastException e)
+            {
+                throw new InvalidCastException(
+                    string.Format("{0} is not a boolean", name), e);
             }
 
             switch (value.ToLower())
@@ -167,6 +194,8 @@ namespace agrix.Extensions
         /// <param name="name">The name of the key to retrieve.</param>
         /// <returns>The list retrieved from the node. An empty list if not
         /// present.</returns>
+        /// <exception cref="InvalidCastException">If the value is not a
+        /// list.</exception>
         public static IList<string> GetList(this YamlMappingNode node, string name)
         {
             var list = new List<string>();
@@ -179,6 +208,11 @@ namespace agrix.Extensions
             catch (KeyNotFoundException)
             {
                 return list;
+            }
+            catch (InvalidCastException e)
+            {
+                throw new InvalidCastException(
+                    string.Format("{0} is not a sequence node", name), e);
             }
 
             foreach (string value in sequence)
