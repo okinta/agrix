@@ -34,5 +34,15 @@ namespace tests
             var agrix = new Agrix("platform:", "abc");
             Assert.Throws<AgrixValidationException>(() => agrix.Validate());
         }
+
+        [Fact]
+        public void TestValidate()
+        {
+            var agrix = new Agrix(SimpleConfig, "abc");
+            agrix.Validate();
+        }
+
+        private const string SimpleConfig = @"platform: vultr
+servers:";
     }
 }

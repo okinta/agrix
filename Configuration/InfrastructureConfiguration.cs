@@ -19,6 +19,8 @@ namespace agrix.Configuration
         /// <param name="config">The YAML to load servers from.</param>
         /// <returns>The list of Server configurations loaded from the given
         /// YAML.</returns>
+        /// <exception cref="ArgumentException">If the configuration is
+        /// invalid.</exception>
         public static IList<Server> LoadServers(YamlStream config)
         {
             var servers = new List<Server>();
@@ -30,10 +32,18 @@ namespace agrix.Configuration
             }
 
             var mapping = (YamlMappingNode)config.Documents[0].RootNode;
-            var serverItems = (YamlSequenceNode)mapping.Children[
-                new YamlScalarNode("servers")];
+            var serverItems = mapping.Children[new YamlScalarNode("servers")];
+
+            // If servers are empty, return an empty list
+            if (serverItems.NodeType == YamlNodeType.Scalar &&
+                string.IsNullOrEmpty((string)serverItems)) return servers;
+
+            if (serverItems.NodeType != YamlNodeType.Sequence)
+            {
+                throw new ArgumentException("servers property must be a list", "config");
+            }
             
-            foreach (YamlMappingNode serverItem in serverItems)
+            foreach (YamlMappingNode serverItem in (YamlSequenceNode)serverItems)
             {
                 var osMapping = serverItem.GetMapping("os");
                 var os = new OperatingSystem(
