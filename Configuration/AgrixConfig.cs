@@ -93,10 +93,7 @@ namespace agrix.Configuration
             // If scripts are empty, return an empty list
             if (scriptItems is null) return scripts;
 
-            if (scriptItems.NodeType != YamlNodeType.Sequence)
-                throw new ArgumentException("scripts property must be a list", "config");
-
-            foreach (var scriptItemNode in (YamlSequenceNode)scriptItems)
+            foreach (var scriptItemNode in scriptItems)
             {
                 if (scriptItemNode.NodeType != YamlNodeType.Mapping)
                     throw new InvalidCastException(
@@ -104,9 +101,19 @@ namespace agrix.Configuration
                             scriptItemNode.Start.Line));
 
                 var scriptItem = (YamlMappingNode)scriptItemNode;
+                var typeName = scriptItem.GetKey("type", required: true);
+                var type = (typeName.ToLower()) switch
+                {
+                    "boot" => ScriptType.Boot,
+                    "pxe" => ScriptType.PXE,
+                    _ => throw new ArgumentException(string.Format(
+                        "{0} is not a known type (line {1})",
+                        typeName, scriptItemNode.Start.Line)),
+                };
+
                 scripts.Add(new Script(
                     name: scriptItem.GetKey("name", required: true),
-                    type: scriptItem.GetKey("type", required: true),
+                    type: type,
                     content: scriptItem.GetKey("content", required: true)
                 ));
             }

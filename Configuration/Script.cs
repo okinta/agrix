@@ -3,6 +3,15 @@
 namespace agrix.Configuration
 {
     /// <summary>
+    /// Represents a type of Script.
+    /// </summary>
+    internal enum ScriptType
+    {
+        Boot,
+        PXE
+    }
+
+    /// <summary>
     /// Represents a stored script.
     /// </summary>
     internal struct Script
@@ -15,7 +24,7 @@ namespace agrix.Configuration
         /// <summary>
         /// The type of script.
         /// </summary>
-        public string Type { get; }
+        public ScriptType Type { get; }
 
         /// <summary>
         /// The contents of the script.
@@ -30,15 +39,11 @@ namespace agrix.Configuration
         /// <param name="content">The script content.</param>
         /// <exception cref="ArgumentNullException">If any argument is null or
         /// empty.</exception>
-        public Script(string name, string type, string content)
+        public Script(string name, ScriptType type, string content)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentNullException(
                     "name", "Script name must not be empty");
-
-            if (string.IsNullOrEmpty(type))
-                throw new ArgumentNullException(
-                    "name", "Script type must not be empty");
 
             if (string.IsNullOrEmpty(content))
                 throw new ArgumentNullException(

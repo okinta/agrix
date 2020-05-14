@@ -2,6 +2,7 @@
 using agrix.Platforms.Vultr;
 using System.IO;
 using System.Text;
+using System;
 using tests.Properties;
 using Xunit;
 using YamlDotNet.RepresentationModel;
@@ -89,13 +90,24 @@ namespace tests.Configuration
       echo hello"), AgrixConfig);
             Assert.Equal(2, scripts.Count);
             Assert.Equal("test", scripts[0].Name);
-            Assert.Equal("boot", scripts[0].Type);
+            Assert.Equal(ScriptType.Boot, scripts[0].Type);
             Assert.Equal("this is a test script", scripts[0].Content);
             Assert.Equal("bash-script", scripts[1].Name);
-            Assert.Equal("boot", scripts[1].Type);
+            Assert.Equal(ScriptType.Boot, scripts[1].Type);
             Assert.Equal(string.Join('\n',
                 "#!/usr/bin/env bash",
                 "echo hello"), scripts[1].Content);
+        }
+
+        [Fact]
+        public void TestLoadInvalidTypeScript()
+        {
+            Assert.Throws<ArgumentException>(() =>
+                InfrastructureConfiguration.LoadScripts(LoadYaml(
+@"scripts:
+  - name: test
+    type: tony
+    content: this is a test script"), AgrixConfig));
         }
 
         [Fact]

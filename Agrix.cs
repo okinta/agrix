@@ -99,9 +99,17 @@ namespace agrix
             catch (KnownKeyNotFoundException<string> e)
             {
                 throw new AgrixValidationException(
-                    string.Format("{0} key is missing inside servers", e.Key),
-                    e
-                );
+                    string.Format("servers validation error: {0}", e.Message), e);
+            }
+
+            try
+            {
+                InfrastructureConfiguration.LoadScripts(YAML, platform.AgrixConfig);
+            }
+            catch (KnownKeyNotFoundException<string> e)
+            {
+                throw new AgrixValidationException(
+                    string.Format("scripts validation error: {0}", e.Message), e);
             }
         }
 
