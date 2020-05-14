@@ -55,18 +55,18 @@ namespace agrix.Platforms.Vultr
             var tag = server.Tag;
 
             Console.WriteLine("Provisioning server");
-            WriteServerLine("DCID", DCID);
-            WriteServerLine("VPSPLANID", VPSPLANID);
-            WriteServerLine("OSID", OSID);
-            WriteServerLine("ISOID", ISOID);
-            WriteServerLine("SCRIPTID", SCRIPTID);
-            WriteServerLine("SNAPSHOTID", SNAPSHOTID);
-            WriteServerLine("enable_private_network", enable_private_network);
-            WriteServerLine("label", label);
-            WriteServerLine("APPID", APPID);
-            WriteServerLine("userdata", userdata);
-            WriteServerLine("notify_activate", notify_activate);
-            WriteServerLine("tag", tag);
+            WriteLine("DCID", DCID);
+            WriteLine("VPSPLANID", VPSPLANID);
+            WriteLine("OSID", OSID);
+            WriteLine("ISOID", ISOID);
+            WriteLine("SCRIPTID", SCRIPTID);
+            WriteLine("SNAPSHOTID", SNAPSHOTID);
+            WriteLine("enable_private_network", enable_private_network);
+            WriteLine("label", label);
+            WriteLine("APPID", APPID);
+            WriteLine("userdata", userdata);
+            WriteLine("notify_activate", notify_activate);
+            WriteLine("tag", tag);
 
             if (!dryrun)
             {
@@ -98,7 +98,26 @@ namespace agrix.Platforms.Vultr
         /// will be outputted describing what would be done.</param>
         public void Provision(Script script, bool dryrun = false)
         {
-            throw new NotImplementedException();
+            var type = script.Type switch
+            {
+                Configuration.ScriptType.Boot => global::Vultr.API.Models.ScriptType.BOOT,
+                Configuration.ScriptType.PXE => global::Vultr.API.Models.ScriptType.PXE,
+                _ => throw new ArgumentException(
+                    string.Format("Unknown script type {0}", script.Type), "script"),
+            };
+
+            Console.WriteLine("Creating script");
+            WriteLine("name", script.Name);
+            WriteLine("type", type);
+            WriteLine("script", script.Content);
+
+            if (!dryrun)
+            {
+                var result = Client.StartupScript.CreateStartupScript(
+                script.Name, script.Content, type);
+                Console.WriteLine(
+                    "Created script with ID {0}", result.StartupScript.SCRIPTID);
+            }
         }
 
         /// <summary>
@@ -223,19 +242,19 @@ namespace agrix.Platforms.Vultr
             }
         }
 
-        private static void WriteServerLine(string name, object value)
+        private static void WriteLine(string name, object value)
         {
             if (value != null)
                 Console.WriteLine("{0}: {1}", name, value);
         }
 
-        private static void WriteServerLine(string name, string value)
+        private static void WriteLine(string name, string value)
         {
             if (!string.IsNullOrEmpty(value))
                 Console.WriteLine("{0}: {1}", name, value);
         }
 
-        private static void WriteServerLine(string name, bool? value)
+        private static void WriteLine(string name, bool? value)
         {
             if (value != null)
             {
