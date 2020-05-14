@@ -1,8 +1,8 @@
-﻿using OperatingSystem = Vultr.API.Models.Responses.OperatingSystem;
+﻿using OperatingSystem = Vultr.API.Models.OperatingSystem;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using Vultr.API.Models.Responses;
+using Vultr.API.Models;
 using Vultr.API;
 
 namespace agrix.Platforms.Vultr
