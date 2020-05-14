@@ -1,4 +1,5 @@
 ﻿using agrix.Configuration;
+using agrix.Extensions;
 using Server = agrix.Configuration.Server;
 using System.Collections.Generic;
 using System.Linq;
@@ -100,8 +101,8 @@ namespace agrix.Platforms.Vultr
         {
             var type = script.Type switch
             {
-                Configuration.ScriptType.Boot => global::Vultr.API.Models.ScriptType.BOOT,
-                Configuration.ScriptType.PXE => global::Vultr.API.Models.ScriptType.PXE,
+                Configuration.ScriptType.Boot => global::Vultr.API.Models.ScriptType.boot,
+                Configuration.ScriptType.PXE => global::Vultr.API.Models.ScriptType.pxe,
                 _ => throw new ArgumentException(
                     string.Format("Unknown script type {0}", script.Type), "script"),
             };
@@ -111,12 +112,65 @@ namespace agrix.Platforms.Vultr
             WriteLine("type", type);
             WriteLine("script", script.Content);
 
-            if (!dryrun)
+            var existingScripts = Client.StartupScript.GetStartupScripts();
+
+            bool predicate(KeyValuePair<string, StartupScript> existingScript) =>
+                existingScript.Value.name == script.Name;
+            if (existingScripts.StartupScripts.Exists(predicate))
             {
-                var result = Client.StartupScript.CreateStartupScript(
-                script.Name, script.Content, type);
-                Console.WriteLine(
-                    "Created script with ID {0}", result.StartupScript.SCRIPTID);
+                var existingScript = existingScripts.StartupScripts.Single(predicate);
+                Console.WriteLine("Script {0} with ID {1} already exists",
+                    script.Name, existingScript.Key);
+
+                if (existingScript.Value.type != script.Type.ToString())
+                {
+                    Console.WriteLine("Script {0} type is different", script.Name);
+                    Console.WriteLine("Deleting script {0}", script.Name);
+
+                    if (!dryrun)
+                    {
+                        Client.StartupScript.DeleteStartupScript(existingScript.Key);
+                        Console.WriteLine("Deleted script {0}", script.Name);
+                    }
+
+                    Console.WriteLine("Creating new script called {0}", script.Name);
+                    if (!dryrun)
+                    {
+                        if (!dryrun)
+                        {
+                            var result = Client.StartupScript.CreateStartupScript(
+                                script.Name, script.Content, type);
+                            Console.WriteLine("Created script with ID {0}",
+                                result.StartupScript.SCRIPTID);
+                        }
+                    }
+                }
+                else if (existingScript.Value.script != script.Content)
+                {
+                    Console.WriteLine("Script {0} content is different", script.Name);
+                    Console.WriteLine("Updating script {0} content", script.Name);
+
+                    if (!dryrun)
+                    {
+                        Client.StartupScript.UpdateStartupScript(
+                            existingScript.Key, script: script.Content);
+                        Console.WriteLine("Updated script {0} content", script.Name);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Script {0} is the same. Moving on.", script.Name);
+                }
+            }
+            else
+            {
+                if (!dryrun)
+                {
+                    var result = Client.StartupScript.CreateStartupScript(
+                    script.Name, script.Content, type);
+                    Console.WriteLine(
+                        "Created script with ID {0}", result.StartupScript.SCRIPTID);
+                }
             }
         }
 
