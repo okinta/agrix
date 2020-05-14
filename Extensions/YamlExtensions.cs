@@ -22,8 +22,8 @@ namespace agrix.Extensions
         /// <param name="required">Whether or not the key is required. Defaults to
         /// false.</param>
         /// <returns>The key retrieved from the node.</returns>
-        /// <exception cref="KnownKeyNotFoundException">If <paramref name="required"/>
-        /// is true and the key is not present.</exception>
+        /// <exception cref="KnownKeyNotFoundException{string}">If
+        /// <paramref name="required"/> is true and the key is not present.</exception>
         /// <exception cref="InvalidCastException">If the value is not a
         /// string.</exception>
         public static string GetKey(this YamlMappingNode node, string name,
@@ -51,7 +51,7 @@ namespace agrix.Extensions
         /// <param name="node">The node to retrieve the key from.</param>
         /// <param name="name">The name of the key to retrieve.</param>
         /// <returns>The key retrieved from the node.</returns>
-        /// <exception cref="KnownKeyNotFoundException">If the key is not
+        /// <exception cref="KnownKeyNotFoundException{string}">If the key is not
         /// found.</exception>
         /// <exception cref="InvalidCastException">If the value is not an
         /// integer.</exception>
@@ -172,8 +172,8 @@ namespace agrix.Extensions
         /// <param name="required">Whether or not the key is required. Defaults to
         /// false.</param>
         /// <returns>The key retrieved from the node.</returns>
-        /// <exception cref="KnownKeyNotFoundException">If <paramref name="required"/>
-        /// is true and the key is not present.</exception>
+        /// <exception cref="KnownKeyNotFoundException{string}">If
+        /// <paramref name="required"/> is true and the key is not present.</exception>
         public static string GetJSON(this YamlMappingNode node,
             string name, string defaultValue = "", bool required = false)
         {
@@ -224,7 +224,7 @@ namespace agrix.Extensions
         /// <param name="node">The node to retrieve from.</param>
         /// <param name="name">The name of the key to retrieve.</param>
         /// <returns>The child node retrieved.</returns>
-        /// <exception cref="KnownKeyNotFoundException">If the key is not
+        /// <exception cref="KnownKeyNotFoundException{string}">If the key is not
         /// found.</exception>
         /// <exception cref="InvalidCastException">If the node is not a mapping
         /// node.</exception>

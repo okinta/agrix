@@ -1,4 +1,5 @@
-﻿using Server = agrix.Configuration.Server;
+﻿using agrix.Configuration;
+using Server = agrix.Configuration.Server;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -12,6 +13,11 @@ namespace agrix.Platforms.Vultr
     /// </summary>
     internal class VultrPlatform : IPlatform
     {
+        /// <summary>
+        /// The IAgrixConfig to use to load configuration from YAML.
+        /// </summary>
+        public IAgrixConfig AgrixConfig { get; } = new VultrAgrixConfig();
+
         private string ApiKey { get; }
         private VultrClient Client { get; }
 

@@ -2,7 +2,6 @@
 using agrix.Platforms.Vultr;
 using agrix.Platforms;
 using System.Collections.Generic;
-using System.Linq;
 using System;
 using YamlDotNet.RepresentationModel;
 
@@ -13,69 +12,6 @@ namespace agrix.Configuration
     /// </summary>
     internal static class InfrastructureConfiguration
     {
-        /// <summary>
-        /// Loads all the server configurations from the given YAML.
-        /// </summary>
-        /// <param name="config">The YAML to load servers from.</param>
-        /// <returns>The list of Server configurations loaded from the given
-        /// YAML.</returns>
-        /// <exception cref="ArgumentException">If the configuration is
-        /// invalid.</exception>
-        public static IList<Server> LoadServers(YamlStream config)
-        {
-            var servers = new List<Server>();
-
-            if (config.Documents.Count == 0)
-            {
-                throw new ArgumentException(
-                    "config", "YAML config must have a document root");
-            }
-
-            var mapping = (YamlMappingNode)config.Documents[0].RootNode;
-            var serverItems = mapping.Children[new YamlScalarNode("servers")];
-
-            // If servers are empty, return an empty list
-            if (serverItems.NodeType == YamlNodeType.Scalar &&
-                string.IsNullOrEmpty((string)serverItems)) return servers;
-
-            if (serverItems.NodeType != YamlNodeType.Sequence)
-            {
-                throw new ArgumentException("servers property must be a list", "config");
-            }
-            
-            foreach (YamlMappingNode serverItem in (YamlSequenceNode)serverItems)
-            {
-                var osMapping = serverItem.GetMapping("os");
-                var os = new OperatingSystem(
-                    app: osMapping.GetKey("app"),
-                    iso: osMapping.GetKey("iso"),
-                    name: osMapping.GetKey("name")
-                );
-
-                var planMapping = serverItem.GetMapping("plan");
-                var plan = new Plan(
-                    cpu: planMapping.GetInt("cpu"),
-                    memory: planMapping.GetInt("memory"),
-                    type: planMapping.GetKey("type", required: true)
-                );
-
-                servers.Add(new Server(
-                    os: os,
-                    plan: plan,
-                    region: serverItem.GetKey("region", required: true),
-                    privateNetworking: serverItem.GetBool("private-networking", false),
-                    firewall: serverItem.GetKey("firewall"),
-                    label: serverItem.GetKey("label"),
-                    startupScript: serverItem.GetKey("startup-script"),
-                    tag: serverItem.GetKey("tag"),
-                    userData: serverItem.GetJSON("userdata"),
-                    sshKeys: serverItem.GetList("ssh-keys").ToArray()
-                ));
-            }
-
-            return servers;
-        }
-
         /// <summary>
         /// Loads the platform configuration from the given YAML.
         /// </summary>
@@ -90,10 +26,8 @@ namespace agrix.Configuration
         public static IPlatform LoadPlatform(YamlStream config, string apiKey)
         {
             if (config.Documents.Count == 0)
-            {
                 throw new ArgumentException(
                     "config", "YAML config must have a document root");
-            }
 
             var mapping = (YamlMappingNode)config.Documents[0].RootNode;
             var platform = mapping.GetKey("platform", required: true);
@@ -104,6 +38,35 @@ namespace agrix.Configuration
                 _ => throw new ArgumentException(
                     string.Format("Unknown platform: {0}", platform), "config"),
             };
+        }
+
+        /// <summary>
+        /// Loads all the server configurations from the given YAML.
+        /// </summary>
+        /// <param name="yamlConfig">The YAML to load servers from.</param>
+        /// <param name="agrixConfig">The IAgrixConfig instance to use to load the YAML
+        /// config.</param>
+        /// <returns>The list of Server configurations loaded from the given
+        /// YAML.</returns>
+        /// <exception cref="ArgumentException">If the configuration is
+        /// invalid.</exception>
+        /// <exception cref="ArgumentNullException">If <paramref name="yamlConfig"/> or
+        /// <paramref name="agrixConfig"/> are null</exception>
+        public static IList<Server> LoadServers(
+            YamlStream yamlConfig, IAgrixConfig agrixConfig)
+        {
+            if (yamlConfig is null)
+                throw new ArgumentNullException("yamlConfig", "must not be null");
+
+            if (agrixConfig is null)
+                throw new ArgumentNullException("agrixConfig", "must not be null");
+
+            if (yamlConfig.Documents.Count == 0)
+                throw new ArgumentException(
+                    "config", "YAML config must have a document root");
+
+            return agrixConfig.LoadServers(
+                (YamlMappingNode)yamlConfig.Documents[0].RootNode);
         }
     }
 }

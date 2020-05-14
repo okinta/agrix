@@ -94,7 +94,7 @@ namespace agrix
 
             try
             {
-                InfrastructureConfiguration.LoadServers(YAML);
+                InfrastructureConfiguration.LoadServers(YAML, platform.AgrixConfig);
             }
             catch (KnownKeyNotFoundException<string> e)
             {
@@ -116,7 +116,8 @@ namespace agrix
             Validate();
 
             var platform = InfrastructureConfiguration.LoadPlatform(YAML, ApiKey);
-            var servers = InfrastructureConfiguration.LoadServers(YAML);
+            var servers = InfrastructureConfiguration.LoadServers(
+                YAML, platform.AgrixConfig);
 
             foreach (var server in servers)
             {
