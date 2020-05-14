@@ -108,7 +108,10 @@ namespace agrix
         /// <summary>
         /// Builds infrastructure from the configuration.
         /// </summary>
-        public void Process()
+        /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
+        /// provision commands will not be sent to the platform and instead messaging
+        /// will be outputted describing what would be done.</param>
+        public void Process(bool dryrun)
         {
             Validate();
 
@@ -117,7 +120,7 @@ namespace agrix
 
             foreach (var server in servers)
             {
-                platform.Provision(server);
+                platform.Provision(server, dryrun);
             }
         }
     }

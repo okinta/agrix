@@ -13,7 +13,7 @@ namespace tests.Platforms.Vultr
 
         private Plan Plan
         {
-            get { return new Plan(2, 1024, "SSD"); }
+            get { return new Plan(1, 1024, "SSD"); }
         }
 
         private const string Region = "New Jersey";
@@ -90,6 +90,15 @@ namespace tests.Platforms.Vultr
             Assert.Null(os.SCRIPTID);
             Assert.Null(os.SNAPSHOTID);
             Assert.True(os.ISOID > 0);
+        }
+
+        [Fact]
+        public void TestProvisionDryRun()
+        {
+            var server = new Server(
+                new OperatingSystem(name: "Fedora 32 x64"),
+                Plan, Region);
+            Platform.Provision(server, true);
         }
     }
 }

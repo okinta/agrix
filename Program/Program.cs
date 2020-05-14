@@ -42,7 +42,7 @@ namespace agrix.Program
 
         private void Provision(ProvisionOptions options)
         {
-            LoadAgrix(options)?.Process();
+            LoadAgrix(options)?.Process(options.Dryrun);
         }
 
         private void Validate(ValidateOptions options)
