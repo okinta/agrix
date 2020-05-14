@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using System.IO;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System;
 
@@ -14,7 +15,8 @@ namespace agrix.Program
     {
         Success = 0,
         BadConfig = 1,
-        InvalidArguments = 2
+        InvalidArguments = 2,
+        Exception = 3
     }
 
     /// <summary>
@@ -42,7 +44,15 @@ namespace agrix.Program
 
         private void Provision(ProvisionOptions options)
         {
-            LoadAgrix(options)?.Process(options.Dryrun);
+            try
+            {
+                LoadAgrix(options)?.Process(options.Dryrun);
+            }
+            catch (WebException e)
+            {
+                Console.Error.WriteLine(e.Message);
+                ExitCode = ExitCode.Exception;
+            }
         }
 
         private void Validate(ValidateOptions options)
