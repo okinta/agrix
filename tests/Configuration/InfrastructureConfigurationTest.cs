@@ -74,6 +74,31 @@ namespace tests.Configuration
         }
 
         [Fact]
+        public void TestLoadScripts()
+        {
+            var scripts = InfrastructureConfiguration.LoadScripts(LoadYaml(
+@"scripts:
+  - name: test
+    type: boot
+    content: this is a test script
+
+  - name: bash-script
+    type: boot
+    content: |
+      #!/usr/bin/env bash
+      echo hello"), AgrixConfig);
+            Assert.Equal(2, scripts.Count);
+            Assert.Equal("test", scripts[0].Name);
+            Assert.Equal("boot", scripts[0].Type);
+            Assert.Equal("this is a test script", scripts[0].Content);
+            Assert.Equal("bash-script", scripts[1].Name);
+            Assert.Equal("boot", scripts[1].Type);
+            Assert.Equal(string.Join('\n',
+                "#!/usr/bin/env bash",
+                "echo hello"), scripts[1].Content);
+        }
+
+        [Fact]
         public void TestLoadPlatform()
         {
             var platform = InfrastructureConfiguration.LoadPlatform(LoadYaml(), ApiKey);
