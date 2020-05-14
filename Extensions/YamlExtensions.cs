@@ -229,7 +229,7 @@ namespace agrix.Extensions
         }
 
         /// <summary>
-        /// Gets a child node from a node.
+        /// Gets a child mapping node from a node.
         /// </summary>
         /// <param name="node">The node to retrieve from.</param>
         /// <param name="name">The name of the key to retrieve.</param>
@@ -257,6 +257,53 @@ namespace agrix.Extensions
                         name, childNode.Start.Line));
 
             return (YamlMappingNode)childNode;
+        }
+
+        /// <summary>
+        /// Gets a child sequence from a node.
+        /// </summary>
+        /// <param name="node">The node to retrieve from.</param>
+        /// <param name="name">The name of the key to retrieve.</param>
+        /// <param name="required">Whether or not the key is required. Defaults to
+        /// true.</param>
+        /// <returns>The child node retrieved.</returns>
+        /// <returns>The YamlSequenceNode child node. Or null if
+        /// <paramref name="required"/> is false and the child node doesn't
+        /// exist.</returns>
+        /// <exception cref="KnownKeyNotFoundException{string}">If
+        /// <paramref name="required"/> is true and the child node doesn't
+        /// exist.</exception>
+        /// <exception cref="InvalidCastException">If the child node is not a sequence
+        /// node.</exception>
+        public static YamlSequenceNode GetSequence(
+            this YamlMappingNode node, string name, bool required = true)
+        {
+            YamlNode childNode;
+            try
+            {
+                childNode = node.Children[new YamlScalarNode(name)];
+            }
+            catch (KeyNotFoundException)
+            {
+                if (required)
+                    throw new KnownKeyNotFoundException<string>(name,
+                        string.Format("{0} not found (line {1})", name, node.Start.Line));
+
+                return null;
+            }
+
+            // If the node isn't required, is present but empty, return null.
+            if (required == false
+                && childNode.NodeType == YamlNodeType.Scalar
+                && string.IsNullOrEmpty((string)childNode))
+                return null;
+
+            if (childNode.NodeType != YamlNodeType.Sequence)
+                throw new InvalidCastException(
+                    string.Format("{0} is not a sequence node (line {1})",
+                        name, childNode.Start.Line));
+
+            return (YamlSequenceNode)childNode;
         }
 
         /// <summary>

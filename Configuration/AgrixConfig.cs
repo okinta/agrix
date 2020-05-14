@@ -29,21 +29,19 @@ namespace agrix.Configuration
         public IList<Server> LoadServers(YamlMappingNode node)
         {
             var servers = new List<Server>();
-            var serverItems = node.Children[new YamlScalarNode("servers")];
+            var serverItems = node.GetSequence("servers", required: false);
 
             // If servers are empty, return an empty list
-            if (serverItems.NodeType == YamlNodeType.Scalar &&
-                string.IsNullOrEmpty((string)serverItems)) return servers;
+            if (serverItems is null) return servers;
 
-            if (serverItems.NodeType != YamlNodeType.Sequence)
-                throw new ArgumentException(
-                    string.Format(
-                        "servers property (line {0}) must be a list",
-                        serverItems.Start.Line)
-                    , "config");
-
-            foreach (YamlMappingNode serverItem in (YamlSequenceNode)serverItems)
+            foreach (var serverItemNode in serverItems)
             {
+                if (serverItemNode.NodeType != YamlNodeType.Mapping)
+                    throw new InvalidCastException(
+                        string.Format("server item must be a mapping type (line {0}",
+                            serverItemNode.Start.Line));
+
+                var serverItem = (YamlMappingNode)serverItemNode;
                 var osMapping = serverItem.GetMapping("os");
                 var os = new OperatingSystem(
                     app: osMapping.GetKey("app"),
@@ -90,17 +88,22 @@ namespace agrix.Configuration
         public IList<Script> LoadScripts(YamlMappingNode node)
         {
             var scripts = new List<Script>();
-            var scriptItems = node.Children[new YamlScalarNode("servers")];
+            var scriptItems = node.GetSequence("scripts", required: false);
 
-            // If servers are empty, return an empty list
-            if (scriptItems.NodeType == YamlNodeType.Scalar &&
-                string.IsNullOrEmpty((string)scriptItems)) return scripts;
+            // If scripts are empty, return an empty list
+            if (scriptItems is null) return scripts;
 
             if (scriptItems.NodeType != YamlNodeType.Sequence)
                 throw new ArgumentException("scripts property must be a list", "config");
 
-            foreach (YamlMappingNode scriptItem in (YamlSequenceNode)scriptItems)
+            foreach (var scriptItemNode in (YamlSequenceNode)scriptItems)
             {
+                if (scriptItemNode.NodeType != YamlNodeType.Mapping)
+                    throw new InvalidCastException(
+                        string.Format("script item must be a mapping type (line {0}",
+                            scriptItemNode.Start.Line));
+
+                var scriptItem = (YamlMappingNode)scriptItemNode;
                 scripts.Add(new Script(
                     name: scriptItem.GetKey("name", required: true),
                     type: scriptItem.GetKey("type", required: true),

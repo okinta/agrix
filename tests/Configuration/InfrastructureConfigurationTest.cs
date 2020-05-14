@@ -12,13 +12,21 @@ namespace tests.Configuration
     {
         private const string ApiKey = "abc123";
 
-        private static IAgrixConfig AgrixConfig = new VultrAgrixConfig();
+        private static readonly IAgrixConfig AgrixConfig = new VultrAgrixConfig();
 
         [Fact]
         public void TestLoadServers()
         {
             var servers = InfrastructureConfiguration.LoadServers(LoadYaml(), AgrixConfig);
             Assert.Equal(3, servers.Count);
+        }
+
+        [Fact]
+        public void TestLoadEmptyServers()
+        {
+            var servers = InfrastructureConfiguration.LoadServers(
+                LoadYaml("platform: vultr"), AgrixConfig);
+            Assert.Equal(0, servers.Count);
         }
 
         [Fact]
@@ -56,6 +64,13 @@ namespace tests.Configuration
         - 2"), AgrixConfig);
             Assert.Equal(1, servers.Count);
             Assert.Equal("{\"my-array\": [\"1\", \"2\"]}", servers[0].UserData);
+        }
+
+        [Fact]
+        public void TestLoadEmptyScripts()
+        {
+            var scripts = InfrastructureConfiguration.LoadScripts(LoadYaml(), AgrixConfig);
+            Assert.Equal(0, scripts.Count);
         }
 
         [Fact]
