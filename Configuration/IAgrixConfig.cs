@@ -15,5 +15,13 @@ namespace agrix.Configuration
         /// <returns>The list of Server configurations loaded from the given
         /// YAML.</returns>
         public IList<Server> LoadServers(YamlMappingNode node);
+
+        /// <summary>
+        /// Loads Script configurations from YAML.
+        /// </summary>
+        /// <param name="node">The YAML node to load configuration from.</param>
+        /// <returns>The list of Script configurations loaded from the given
+        /// YAML.</returns>
+        public IList<Script> LoadScripts(YamlMappingNode node);
     }
 }

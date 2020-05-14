@@ -73,5 +73,23 @@ namespace agrix.Configuration
 
             return servers;
         }
+
+        /// <summary>
+        /// Loads Script configurations from YAML.
+        /// </summary>
+        /// <param name="node">The YAML node to load configuration from.</param>
+        /// <returns>The list of Script configurations loaded from the given
+        /// YAML.</returns>
+        /// <exception cref="ArgumentException">If the scripts property is not a
+        /// list.</exception>
+        /// <exception cref="KnownKeyNotFoundException{string}">If a required key is not
+        /// present in the YAML.</exception>
+        /// <exception cref="InvalidCastException">If a YAML key is in an invalid
+        /// format.</exception>
+        public IList<Script> LoadScripts(YamlMappingNode node)
+        {
+            var scripts = new List<Script>();
+            return scripts;
+        }
     }
 }

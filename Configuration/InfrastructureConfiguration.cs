@@ -55,18 +55,43 @@ namespace agrix.Configuration
         public static IList<Server> LoadServers(
             YamlStream yamlConfig, IAgrixConfig agrixConfig)
         {
-            if (yamlConfig is null)
-                throw new ArgumentNullException("yamlConfig", "must not be null");
-
             if (agrixConfig is null)
                 throw new ArgumentNullException("agrixConfig", "must not be null");
+
+            return agrixConfig.LoadServers(yamlConfig.GetRootNode());
+        }
+
+        /// <summary>
+        /// Loads all the script configurations from the given YAML.
+        /// </summary>
+        /// <param name="yamlConfig">The YAML to load scripts from.</param>
+        /// <param name="agrixConfig">The IAgrixConfig instance to use to load the YAML
+        /// config.</param>
+        /// <returns>The list of Script configurations loaded from the given
+        /// YAML.</returns>
+        /// <exception cref="ArgumentException">If the configuration is
+        /// invalid.</exception>
+        /// <exception cref="ArgumentNullException">If <paramref name="yamlConfig"/> or
+        /// <paramref name="agrixConfig"/> are null</exception>
+        public static IList<Script> LoadScripts(
+            YamlStream yamlConfig, IAgrixConfig agrixConfig)
+        {
+            if (agrixConfig is null)
+                throw new ArgumentNullException("agrixConfig", "must not be null");
+
+            return agrixConfig.LoadScripts(yamlConfig.GetRootNode());
+        }
+
+        private static YamlMappingNode GetRootNode(this YamlStream yamlConfig)
+        {
+            if (yamlConfig is null)
+                throw new ArgumentNullException("yamlConfig", "must not be null");
 
             if (yamlConfig.Documents.Count == 0)
                 throw new ArgumentException(
                     "config", "YAML config must have a document root");
 
-            return agrixConfig.LoadServers(
-                (YamlMappingNode)yamlConfig.Documents[0].RootNode);
+            return (YamlMappingNode)yamlConfig.Documents[0].RootNode;
         }
     }
 }

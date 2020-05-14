@@ -118,11 +118,14 @@ namespace agrix
             var platform = InfrastructureConfiguration.LoadPlatform(YAML, ApiKey);
             var servers = InfrastructureConfiguration.LoadServers(
                 YAML, platform.AgrixConfig);
+            var scripts = InfrastructureConfiguration.LoadScripts(
+                YAML, platform.AgrixConfig);
 
             foreach (var server in servers)
-            {
                 platform.Provision(server, dryrun);
-            }
+
+            foreach (var script in scripts)
+                platform.Provision(script, dryrun);
         }
     }
 }

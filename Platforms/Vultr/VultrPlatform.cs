@@ -32,9 +32,9 @@ namespace agrix.Platforms.Vultr
         }
 
         /// <summary>
-        /// Provisions a server using the given configuration.
+        /// Provisions a Server using the given configuration.
         /// </summary>
-        /// <param name="server">The server configuration to use for provisioning.</param>
+        /// <param name="server">The Server configuration to provision.</param>
         /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
         /// provision commands will not be sent to the platform and instead messaging
         /// will be outputted describing what would be done.</param>
@@ -87,6 +87,18 @@ namespace agrix.Platforms.Vultr
 
                 Console.WriteLine("Provisioned server with ID {0}", result.Server.SUBID);
             }
+        }
+
+        /// <summary>
+        /// Provisions a Script using the given configuration.
+        /// </summary>
+        /// <param name="script">The Script configuration to provision.</param>
+        /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
+        /// provision commands will not be sent to the platform and instead messaging
+        /// will be outputted describing what would be done.</param>
+        public void Provision(Script script, bool dryrun = false)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
