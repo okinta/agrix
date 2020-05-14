@@ -13,6 +13,27 @@ namespace agrix.Extensions
     internal static class YamlExtensions
     {
         /// <summary>
+        /// Gets a child node.
+        /// </summary>
+        /// <param name="node">The node to retrieve the child from.</param>
+        /// <param name="name">The name of the child node to retrieve.</param>
+        /// <returns>The child node.</returns>
+        /// <exception cref="KnownKeyNotFoundException{string}">If the child node doesn't
+        /// exist.</exception>
+        public static YamlNode GetNode(this YamlMappingNode node, string name)
+        {
+            try
+            {
+                return node.Children[new YamlScalarNode(name)];
+            }
+            catch (KeyNotFoundException)
+            {
+                throw new KnownKeyNotFoundException<string>(name,
+                    string.Format("{0} not found (line {1})", name, node.Start.Line));
+            }
+        }
+
+        /// <summary>
         /// Gets a key from the node.
         /// </summary>
         /// <param name="node">The node to retrieve the key from.</param>
@@ -32,15 +53,12 @@ namespace agrix.Extensions
             YamlNode childNode;
             try
             {
-                childNode = node.Children[new YamlScalarNode(name)];
+                childNode = node.GetNode(name);
             }
-            catch (KeyNotFoundException)
+            catch (KnownKeyNotFoundException<string>)
             {
-                if (required)
-                    throw new KnownKeyNotFoundException<string>(name,
-                        string.Format("{0} not found (line {1})", name, node.Start.Line));
-
-                return defaultValue;
+                if (required) throw;
+                else return defaultValue;
             }
 
             if (childNode.NodeType != YamlNodeType.Scalar)
@@ -63,16 +81,7 @@ namespace agrix.Extensions
         /// integer.</exception>
         public static int GetInt(this YamlMappingNode node, string name)
         {
-            YamlNode childNode;
-            try
-            {
-                childNode = node.Children[new YamlScalarNode(name)];
-            }
-            catch (KeyNotFoundException)
-            {
-                throw new KnownKeyNotFoundException<string>(name,
-                    string.Format("{0} not found (line {1})", name, node.Start.Line));
-            }
+            var childNode = node.GetNode(name);
 
             if (childNode.NodeType != YamlNodeType.Scalar)
                 throw new InvalidCastException(
@@ -103,9 +112,9 @@ namespace agrix.Extensions
 
             try
             {
-                childNode = node.Children[new YamlScalarNode(name)];
+                childNode = node.GetNode(name);
             }
-            catch (KeyNotFoundException)
+            catch (KnownKeyNotFoundException<string>)
             {
                 return defaultValue;
             }
@@ -140,9 +149,9 @@ namespace agrix.Extensions
             YamlNode childNode;
             try
             {
-                childNode = node.Children[new YamlScalarNode(name)];
+                childNode = node.GetNode(name);
             }
-            catch (KeyNotFoundException)
+            catch (KnownKeyNotFoundException<string>)
             {
                 return defaultValue;
             }
@@ -192,16 +201,12 @@ namespace agrix.Extensions
             YamlNode jsonNode;
             try
             {
-                jsonNode = node.Children[new YamlScalarNode(name)];
+                jsonNode = node.GetNode(name);
             }
-            catch (KeyNotFoundException)
+            catch (KnownKeyNotFoundException<string>)
             {
-                if (required)
-                    throw new KnownKeyNotFoundException<string>(name,
-                        string.Format("{0} not found (line {1})",
-                            name, node.Start.Line));
-
-                return defaultValue;
+                if (required) throw;
+                else return defaultValue;
             }
 
             return jsonNode.NodeType == YamlNodeType.Scalar ?
@@ -240,16 +245,7 @@ namespace agrix.Extensions
         /// node.</exception>
         public static YamlMappingNode GetMapping(this YamlMappingNode node, string name)
         {
-            YamlNode childNode;
-            try
-            {
-                childNode = node.Children[new YamlScalarNode(name)];
-            }
-            catch (KeyNotFoundException)
-            {
-                throw new KnownKeyNotFoundException<string>(name,
-                    string.Format("{0} not found (line {1})", name, node.Start.Line));
-            }
+            var childNode = node.GetNode(name);
 
             if (childNode.NodeType != YamlNodeType.Mapping)
                 throw new InvalidCastException(
@@ -281,15 +277,12 @@ namespace agrix.Extensions
             YamlNode childNode;
             try
             {
-                childNode = node.Children[new YamlScalarNode(name)];
+                childNode = node.GetNode(name);
             }
-            catch (KeyNotFoundException)
+            catch (KnownKeyNotFoundException<string>)
             {
-                if (required)
-                    throw new KnownKeyNotFoundException<string>(name,
-                        string.Format("{0} not found (line {1})", name, node.Start.Line));
-
-                return null;
+                if (required) throw;
+                else return null;
             }
 
             // If the node isn't required, is present but empty, return null.
@@ -322,9 +315,9 @@ namespace agrix.Extensions
             YamlNode childNode;
             try
             {
-                childNode = node.Children[new YamlScalarNode(name)];
+                childNode = node.GetNode(name);
             }
-            catch (KeyNotFoundException)
+            catch (KnownKeyNotFoundException<string>)
             {
                 return list;
             }

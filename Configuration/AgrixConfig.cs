@@ -108,7 +108,7 @@ namespace agrix.Configuration
                     "pxe" => ScriptType.PXE,
                     _ => throw new ArgumentException(string.Format(
                         "{0} is not a known type (line {1})",
-                        typeName, scriptItemNode.Start.Line)),
+                        typeName, scriptItem.GetNode("type").Start.Line)),
                 };
 
                 scripts.Add(new Script(
