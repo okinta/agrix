@@ -29,20 +29,26 @@ namespace agrix.Extensions
         public static string GetKey(this YamlMappingNode node, string name,
             string defaultValue = "", bool required = false)
         {
+            YamlNode childNode;
             try
             {
-                return (string)node.Children[new YamlScalarNode(name)];
+                childNode = node.Children[new YamlScalarNode(name)];
             }
-            catch (KeyNotFoundException e)
+            catch (KeyNotFoundException)
             {
-                if (required) throw new KnownKeyNotFoundException<string>(name, e);
+                if (required)
+                    throw new KnownKeyNotFoundException<string>(name,
+                        string.Format("{0} not found (line {1})", name, node.Start.Line));
+
                 return defaultValue;
             }
-            catch (ArgumentException e)
-            {
+
+            if (childNode.NodeType != YamlNodeType.Scalar)
                 throw new InvalidCastException(
-                    string.Format("{0} is not a string", name), e);
-            }
+                    string.Format("{0} is not a string (line {1})",
+                        name, childNode.Start.Line));
+
+            return (string)childNode;
         }
 
         /// <summary>
@@ -57,24 +63,26 @@ namespace agrix.Extensions
         /// integer.</exception>
         public static int GetInt(this YamlMappingNode node, string name)
         {
-            string value;
+            YamlNode childNode;
             try
             {
-                value = (string)node.Children[new YamlScalarNode(name)];
+                childNode = node.Children[new YamlScalarNode(name)];
             }
-            catch (KeyNotFoundException e)
+            catch (KeyNotFoundException)
             {
-                throw new KnownKeyNotFoundException<string>(name, e);
-            }
-            catch (ArgumentException e)
-            {
-                throw new InvalidCastException(
-                    string.Format("{0} is not an integer", name), e);
+                throw new KnownKeyNotFoundException<string>(name,
+                    string.Format("{0} not found (line {1})", name, node.Start.Line));
             }
 
-            if (!int.TryParse(value, out int result))
+            if (childNode.NodeType != YamlNodeType.Scalar)
                 throw new InvalidCastException(
-                    string.Format("{0} is not an integer", name));
+                    string.Format("{0} is not an integer (line {1})",
+                        name, childNode.Start.Line));
+
+            if (!int.TryParse((string)childNode, out int result))
+                throw new InvalidCastException(
+                    string.Format("{0} is not an integer (line {1}",
+                        name, childNode.Start.Line));
 
             return result;
         }
@@ -91,24 +99,26 @@ namespace agrix.Extensions
         /// integer.</exception>
         public static int GetInt(this YamlMappingNode node, string name, int defaultValue)
         {
-            string value;
+            YamlNode childNode;
 
             try
             {
-                value = (string)node.Children[new YamlScalarNode(name)];
+                childNode = node.Children[new YamlScalarNode(name)];
             }
             catch (KeyNotFoundException)
             {
                 return defaultValue;
             }
-            catch (ArgumentException e)
-            {
-                throw new InvalidCastException(
-                    string.Format("{0} is not an integer", name), e);
-            }
 
-            if (!int.TryParse(value, out int result))
-                throw new InvalidCastException("{0} is not an integer");
+            if (childNode.NodeType != YamlNodeType.Scalar)
+                throw new InvalidCastException(
+                    string.Format("{0} is not an integer (line {1})",
+                        name, childNode.Start.Line));
+
+            if (!int.TryParse((string)childNode, out int result))
+                throw new InvalidCastException(
+                    string.Format("{0} is not an integer (line {1}",
+                        name, childNode.Start.Line));
 
             return result;
         }
@@ -127,21 +137,22 @@ namespace agrix.Extensions
         public static bool GetBool(this YamlMappingNode node, string name,
             bool defaultValue = false)
         {
-            string value;
+            YamlNode childNode;
             try
             {
-                value = (string)node.Children[new YamlScalarNode(name)];
+                childNode = node.Children[new YamlScalarNode(name)];
             }
             catch (KeyNotFoundException)
             {
                 return defaultValue;
             }
-            catch (ArgumentException e)
-            {
-                throw new InvalidCastException(
-                    string.Format("{0} is not a boolean", name), e);
-            }
 
+            if (childNode.NodeType != YamlNodeType.Scalar)
+                throw new InvalidCastException(
+                    string.Format("{0} is not a boolean (line {1})",
+                        name, childNode.Start.Line));
+
+            var value = (string)childNode;
             switch (value.ToLower())
             {
                 case "on":
@@ -158,7 +169,8 @@ namespace agrix.Extensions
 
                 default:
                     throw new InvalidCastException(
-                        string.Format("{0} is not a boolean", value));
+                        string.Format("{0} is not a boolean (line {1}",
+                            value, childNode.Start.Line));
             }
         }
 
@@ -182,20 +194,18 @@ namespace agrix.Extensions
             {
                 jsonNode = node.Children[new YamlScalarNode(name)];
             }
-            catch (KeyNotFoundException e)
+            catch (KeyNotFoundException)
             {
-                if (required) throw new KnownKeyNotFoundException<string>(name, e);
+                if (required)
+                    throw new KnownKeyNotFoundException<string>(name,
+                        string.Format("{0} not found (line {1})",
+                            name, node.Start.Line));
+
                 return defaultValue;
             }
 
-            if (jsonNode.NodeType == YamlNodeType.Scalar)
-            {
-                return (string)jsonNode;
-            }
-            else
-            {
-                return jsonNode.ToJSON();
-            }
+            return jsonNode.NodeType == YamlNodeType.Scalar ?
+                (string)jsonNode : jsonNode.ToJSON();
         }
 
         /// <summary>
@@ -230,19 +240,23 @@ namespace agrix.Extensions
         /// node.</exception>
         public static YamlMappingNode GetMapping(this YamlMappingNode node, string name)
         {
+            YamlNode childNode;
             try
             {
-                return (YamlMappingNode)node.Children[new YamlScalarNode(name)];
+                childNode = node.Children[new YamlScalarNode(name)];
             }
-            catch (KeyNotFoundException e)
+            catch (KeyNotFoundException)
             {
-                throw new KnownKeyNotFoundException<string>(name, e.Message, e);
+                throw new KnownKeyNotFoundException<string>(name,
+                    string.Format("{0} not found (line {1})", name, node.Start.Line));
             }
-            catch (InvalidCastException e)
-            {
+
+            if (childNode.NodeType != YamlNodeType.Mapping)
                 throw new InvalidCastException(
-                    string.Format("{0} is not a mapping node", name), e);
-            }
+                    string.Format("{0} is not a mapping node (line {1})",
+                        name, childNode.Start.Line));
+
+            return (YamlMappingNode)childNode;
         }
 
         /// <summary>
@@ -258,25 +272,23 @@ namespace agrix.Extensions
         {
             var list = new List<string>();
 
-            YamlSequenceNode sequence;
+            YamlNode childNode;
             try
             {
-                sequence = (YamlSequenceNode)node.Children[new YamlScalarNode(name)];
+                childNode = node.Children[new YamlScalarNode(name)];
             }
             catch (KeyNotFoundException)
             {
                 return list;
             }
-            catch (InvalidCastException e)
-            {
-                throw new InvalidCastException(
-                    string.Format("{0} is not a sequence node", name), e);
-            }
 
-            foreach (string value in sequence)
-            {
+            if (childNode.NodeType != YamlNodeType.Sequence)
+                throw new InvalidCastException(
+                    string.Format("{0} is not a sequence node (line {1})",
+                        name, childNode.Start.Line));
+
+            foreach (string value in (YamlSequenceNode)childNode)
                 list.Add(value);
-            }
 
             return list;
         }

@@ -36,7 +36,11 @@ namespace agrix.Configuration
                 string.IsNullOrEmpty((string)serverItems)) return servers;
 
             if (serverItems.NodeType != YamlNodeType.Sequence)
-                throw new ArgumentException("servers property must be a list", "config");
+                throw new ArgumentException(
+                    string.Format(
+                        "servers property (line {0}) must be a list",
+                        serverItems.Start.Line)
+                    , "config");
 
             foreach (YamlMappingNode serverItem in (YamlSequenceNode)serverItems)
             {
