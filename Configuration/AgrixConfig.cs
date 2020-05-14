@@ -29,7 +29,6 @@ namespace agrix.Configuration
         public IList<Server> LoadServers(YamlMappingNode node)
         {
             var servers = new List<Server>();
-
             var serverItems = node.Children[new YamlScalarNode("servers")];
 
             // If servers are empty, return an empty list
@@ -37,9 +36,7 @@ namespace agrix.Configuration
                 string.IsNullOrEmpty((string)serverItems)) return servers;
 
             if (serverItems.NodeType != YamlNodeType.Sequence)
-            {
                 throw new ArgumentException("servers property must be a list", "config");
-            }
 
             foreach (YamlMappingNode serverItem in (YamlSequenceNode)serverItems)
             {
@@ -89,6 +86,24 @@ namespace agrix.Configuration
         public IList<Script> LoadScripts(YamlMappingNode node)
         {
             var scripts = new List<Script>();
+            var scriptItems = node.Children[new YamlScalarNode("servers")];
+
+            // If servers are empty, return an empty list
+            if (scriptItems.NodeType == YamlNodeType.Scalar &&
+                string.IsNullOrEmpty((string)scriptItems)) return scripts;
+
+            if (scriptItems.NodeType != YamlNodeType.Sequence)
+                throw new ArgumentException("scripts property must be a list", "config");
+
+            foreach (YamlMappingNode scriptItem in (YamlSequenceNode)scriptItems)
+            {
+                scripts.Add(new Script(
+                    name: scriptItem.GetKey("name", required: true),
+                    type: scriptItem.GetKey("type", required: true),
+                    content: scriptItem.GetKey("content", required: true)
+                ));
+            }
+
             return scripts;
         }
     }
