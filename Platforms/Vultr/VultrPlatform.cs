@@ -57,18 +57,18 @@ namespace agrix.Platforms.Vultr
             var tag = server.Tag;
 
             Console.WriteLine("Provisioning server");
-            WriteLine("DCID", DCID);
-            WriteLine("VPSPLANID", VPSPLANID);
-            WriteLine("OSID", OSID);
-            WriteLine("ISOID", ISOID);
-            WriteLine("SCRIPTID", SCRIPTID);
-            WriteLine("SNAPSHOTID", SNAPSHOTID);
-            WriteLine("enable_private_network", enable_private_network);
-            WriteLine("label", label);
-            WriteLine("APPID", APPID);
-            WriteLine("userdata", userdata);
-            WriteLine("notify_activate", notify_activate);
-            WriteLine("tag", tag);
+            ConsoleX.WriteLine("DCID", DCID);
+            ConsoleX.WriteLine("VPSPLANID", VPSPLANID);
+            ConsoleX.WriteLine("OSID", OSID);
+            ConsoleX.WriteLine("ISOID", ISOID);
+            ConsoleX.WriteLine("SCRIPTID", SCRIPTID);
+            ConsoleX.WriteLine("SNAPSHOTID", SNAPSHOTID);
+            ConsoleX.WriteLine("enable_private_network", enable_private_network);
+            ConsoleX.WriteLine("label", label);
+            ConsoleX.WriteLine("APPID", APPID);
+            ConsoleX.WriteLine("userdata", userdata);
+            ConsoleX.WriteLine("notify_activate", notify_activate);
+            ConsoleX.WriteLine("tag", tag);
 
             var existingServers = Client.Server.GetServers();
             bool predicate(KeyValuePair<
@@ -150,9 +150,9 @@ namespace agrix.Platforms.Vultr
             };
 
             Console.WriteLine("Creating script");
-            WriteLine("name", script.Name);
-            WriteLine("type", type);
-            WriteLine("script", script.Content);
+            ConsoleX.WriteLine("name", script.Name);
+            ConsoleX.WriteLine("type", type);
+            ConsoleX.WriteLine("script", script.Content);
 
             var existingScripts = Client.StartupScript.GetStartupScripts();
 
@@ -336,27 +336,6 @@ namespace agrix.Platforms.Vultr
             else
             {
                 return OS.CreateOS(server.OS.Name, Client);
-            }
-        }
-
-        private static void WriteLine(string name, object value)
-        {
-            if (value != null)
-                Console.WriteLine("{0}: {1}", name, value);
-        }
-
-        private static void WriteLine(string name, string value)
-        {
-            if (!string.IsNullOrEmpty(value))
-                Console.WriteLine("{0}: {1}", name, value);
-        }
-
-        private static void WriteLine(string name, bool? value)
-        {
-            if (value != null)
-            {
-                var outputValue = value == true ? "yes" : "no";
-                Console.WriteLine("{0}: {1}", name, outputValue);
             }
         }
     }
