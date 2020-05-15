@@ -127,8 +127,7 @@ namespace tests.Platforms.Vultr
             }
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
-                    "/startupscript/list", "GET", (req, rsp, prm) => ""),
+                new CustomMockHttpHandler("/startupscript/list", "GET", ""),
                 new CustomMockHttpHandler(
                     "/startupscript/create", "POST", CreateStartupScript)
             );
@@ -146,8 +145,7 @@ namespace tests.Platforms.Vultr
             var script = new Script("myscript", ScriptType.Boot, "this is my script");
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
-                    "/startupscript/list", "GET", (req, rsp, prm) => "")
+                new CustomMockHttpHandler("/startupscript/list", "GET", "")
             );
             requests.Platform.Provision(script, dryrun: true);
 
@@ -177,8 +175,7 @@ namespace tests.Platforms.Vultr
 
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler(
-                    "/startupscript/list", "GET", (req, rsp, prm) =>
-                        Resources.VultrStartupScripts),
+                    "/startupscript/list", "GET", Resources.VultrStartupScripts),
                 new CustomMockHttpHandler(
                     "/startupscript/update", "POST", UpdateStartupScript)
             );
@@ -198,8 +195,7 @@ namespace tests.Platforms.Vultr
 
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler(
-                    "/startupscript/list", "GET", (req, rsp, prm) =>
-                        Resources.VultrStartupScripts)
+                    "/startupscript/list", "GET", Resources.VultrStartupScripts)
             );
             requests.Platform.Provision(script, dryrun: true);
 
@@ -240,8 +236,7 @@ namespace tests.Platforms.Vultr
 
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler(
-                    "/startupscript/list", "GET", (req, rsp, prm) =>
-                        Resources.VultrStartupScripts),
+                    "/startupscript/list", "GET", Resources.VultrStartupScripts),
                 new CustomMockHttpHandler(
                     "/startupscript/destroy", "POST", DestroyStartupScript),
                 new CustomMockHttpHandler(
@@ -263,8 +258,7 @@ namespace tests.Platforms.Vultr
 
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler(
-                    "/startupscript/list", "GET", (req, rsp, prm) =>
-                        Resources.VultrStartupScripts)
+                    "/startupscript/list", "GET", Resources.VultrStartupScripts)
             );
             requests.Platform.Provision(script, dryrun: true);
 
@@ -283,8 +277,7 @@ namespace tests.Platforms.Vultr
 
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler(
-                    "/startupscript/list", "GET", (req, rsp, prm) =>
-                        Resources.VultrStartupScripts)
+                    "/startupscript/list", "GET", Resources.VultrStartupScripts)
             );
             requests.Platform.Provision(script);
 

@@ -39,7 +39,7 @@ namespace tests.TestHelpers
             Dictionary<string, string>, string> HandlerFunction { get; }
 
         /// <summary>
-        /// Instantiates the instance.
+        /// Instantiates the instance with a handler function.
         /// </summary>
         /// <param name="url">The URL to mock.</param>
         /// <param name="httpMethod">The HTTP method to mock.</param>
@@ -54,6 +54,23 @@ namespace tests.TestHelpers
             URL = url;
             HttpMethod = httpMethod;
             HandlerFunction = handlerFunction;
+
+            MockHttpHandler = new MockHttpHandler(
+                url, httpMethod, HandlerFunctionWithCounter);
+        }
+
+        /// <summary>
+        /// Instantiates the instance with a string response.
+        /// </summary>
+        /// <param name="url">The URL to mock.</param>
+        /// <param name="httpMethod">The HTTP method to mock.</param>
+        /// <param name="response">The response to return when a mock request is
+        /// received.</param>
+        public CustomMockHttpHandler(string url, string httpMethod, string response)
+        {
+            URL = url;
+            HttpMethod = httpMethod;
+            HandlerFunction = (req, rsp, prm) => response;
 
             MockHttpHandler = new MockHttpHandler(
                 url, httpMethod, HandlerFunctionWithCounter);
