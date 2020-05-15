@@ -1,5 +1,6 @@
 ﻿using MockHttpServer;
 using System;
+using Xunit;
 
 namespace tests.TestHelpers
 {
@@ -48,6 +49,15 @@ namespace tests.TestHelpers
         public void Dispose()
         {
             MockServer.Dispose();
+        }
+
+        /// <summary>
+        /// Asserts that all requests have been called exactly once.
+        /// </summary>
+        public void AssertAllCalledOnce()
+        {
+            foreach (var handler in Handlers)
+                Assert.Equal(1, handler.Called);
         }
     }
 }

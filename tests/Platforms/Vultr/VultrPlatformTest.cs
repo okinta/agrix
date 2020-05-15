@@ -1,8 +1,9 @@
 ﻿using agrix.Configuration;
 using agrix.Platforms.Vultr;
+using OperatingSystem = agrix.Configuration.OperatingSystem;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
+using tests.Properties;
 using tests.TestHelpers;
 using Xunit;
 
@@ -105,10 +106,25 @@ namespace tests.Platforms.Vultr
             Platform.Provision(server, true);
         }
 
+        /// <summary>
+        /// Tests that VultrPlatform.Provision(Script) creates a new script.
+        /// </summary>
         [Fact]
         public void TestProvisionScript()
         {
             var script = new Script("myscript", ScriptType.Boot, "this is my script");
+
+            static string CreateStartupScript(
+                HttpListenerRequest req,
+                HttpListenerResponse rsp,
+                Dictionary<string, string> prm)
+            {
+                Assert.Equal(
+                    "name=myscript&script=this+is+my+script&type=boot",
+                    req.GetContent());
+
+                return "{\"SCRIPTID\": 5}";
+            }
 
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler(
@@ -117,22 +133,80 @@ namespace tests.Platforms.Vultr
                     "/startupscript/create", "POST", CreateStartupScript)
             );
             requests.Platform.Provision(script);
-
-            Assert.Equal(1, requests[0].Called);
-            Assert.Equal(1, requests[1].Called);
+            requests.AssertAllCalledOnce();
         }
 
-        private string CreateStartupScript(
-            HttpListenerRequest req,
-            HttpListenerResponse rsp,
-            Dictionary<string, string> prm)
+        /// <summary>
+        /// Tests that VultrPlatform.Provision(Script, dryrun: true) doesn't create a new
+        /// script.
+        /// </summary>
+        [Fact]
+        public void TestProvisionScriptDryrun()
         {
-            using var reader = new StreamReader(req.InputStream);
-            Assert.Equal(
-                "name=myscript&script=this+is+my+script&type=boot",
-                reader.ReadToEnd());
+            var script = new Script("myscript", ScriptType.Boot, "this is my script");
 
-            return "{\"SCRIPTID\": 5}";
+            using var requests = new MockVultrRequests(
+                new CustomMockHttpHandler(
+                    "/startupscript/list", "GET", (req, rsp, prm) => "")
+            );
+            requests.Platform.Provision(script, dryrun: true);
+
+            requests.AssertAllCalledOnce();
+        }
+
+        /// <summary>
+        /// Tests that VultrPlatform.Provision(Script) updates the content of an existing
+        /// script.
+        /// </summary>
+        [Fact]
+        public void TestProvisionUpdateScriptContent()
+        {
+            var script = new Script("hello-boot", ScriptType.Boot, "this is my script");
+
+            static string UpdateStartupScript(
+                HttpListenerRequest req,
+                HttpListenerResponse rsp,
+                Dictionary<string, string> prm)
+            {
+                Assert.Equal(
+                    "SCRIPTID=3&script=this+is+my+script",
+                    req.GetContent());
+
+                return "";
+            }
+
+            using var requests = new MockVultrRequests(
+                new CustomMockHttpHandler(
+                    "/startupscript/list", "GET", (req, rsp, prm) =>
+                        Resources.VultrStartupScripts),
+                new CustomMockHttpHandler(
+                    "/startupscript/update", "POST", UpdateStartupScript)
+            );
+            requests.Platform.Provision(script);
+
+            requests.AssertAllCalledOnce();
+        }
+
+        [Fact]
+        public void TestProvisionUpdateScriptType()
+        {
+
+        }
+
+        /// <summary>
+        /// Tests that VultrPlatform.Provision(Script) doesn't change a script that
+        /// already matches what the configuration defines.
+        /// </summary>
+        [Fact]
+        public void TestProvisionDontUpdateUnchangedScript()
+        {
+
+        }
+
+        [Fact]
+        public void TestProvisionUpdateScriptContentDryrun()
+        {
+
         }
     }
 }

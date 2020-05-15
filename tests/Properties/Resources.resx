@@ -121,4 +121,25 @@
   <data name="agrix" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\data\agrix.yaml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="VultrStartupScripts" xml:space="preserve">
+    <value>{
+    "3": {
+        "SCRIPTID": "3",
+        "date_created": "2014-05-21 15:27:18",
+        "date_modified": "2014-05-21 15:27:18",
+        "name": "hello-boot",
+        "type": "boot",
+        "script": "#!/bin/bash echo Hello World &gt; /root/hello"
+    },
+    "5": {
+        "SCRIPTID": "5",
+        "date_created": "2014-08-22 15:27:18",
+        "date_modified": "2014-09-22 15:27:18",
+        "name": "hello-pxe",
+        "type": "pxe",
+        "script": "#!ipxe\necho Hello World\nshell"
+    }
+}</value>
+    <comment>Example output from https://api.vultr.com/v1/startupscript/list (https://www.vultr.com/api/#startupscript_startupscript_list)</comment>
+  </data>
 </root>

@@ -124,7 +124,7 @@ namespace agrix.Platforms.Vultr
                 Console.WriteLine("Script {0} with ID {1} already exists",
                     script.Name, existingScript.Key);
 
-                if (existingScript.Value.type != script.Type.ToString())
+                if (existingScript.Value.type != script.Type.ToString().ToLower())
                 {
                     Console.WriteLine("Script {0} type is different", script.Name);
                     Console.WriteLine("Deleting script {0}", script.Name);
