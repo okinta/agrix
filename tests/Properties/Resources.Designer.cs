@@ -71,6 +71,33 @@ namespace tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {&quot;127&quot;:{&quot;OSID&quot;:127,&quot;name&quot;:&quot;CentOS 6 x64&quot;,&quot;arch&quot;:&quot;x64&quot;,&quot;family&quot;:&quot;centos&quot;,&quot;windows&quot;:false},&quot;147&quot;:{&quot;OSID&quot;:147,&quot;name&quot;:&quot;CentOS 6 i386&quot;,&quot;arch&quot;:&quot;i386&quot;,&quot;family&quot;:&quot;centos&quot;,&quot;windows&quot;:false},&quot;167&quot;:{&quot;OSID&quot;:167,&quot;name&quot;:&quot;CentOS 7 x64&quot;,&quot;arch&quot;:&quot;x64&quot;,&quot;family&quot;:&quot;centos&quot;,&quot;windows&quot;:false},&quot;381&quot;:{&quot;OSID&quot;:381,&quot;name&quot;:&quot;CentOS 7 SELinux x64&quot;,&quot;arch&quot;:&quot;x64&quot;,&quot;family&quot;:&quot;centos&quot;,&quot;windows&quot;:false},&quot;362&quot;:{&quot;OSID&quot;:362,&quot;name&quot;:&quot;CentOS 8 x64&quot;,&quot;arch&quot;:&quot;x64&quot;,&quot;family&quot;:&quot;centos&quot;,&quot;windows&quot;:false},&quot;215&quot;:{&quot;OSID&quot;:215,&quot;name&quot;:&quot;Ubuntu 16.04 x64&quot;,&quot;arch&quot;:&quot;x64&quot;,&qu....
+        /// </summary>
+        internal static string VultrOSList {
+            get {
+                return ResourceManager.GetString("VultrOSList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {&quot;201&quot;:{&quot;VPSPLANID&quot;:&quot;201&quot;,&quot;name&quot;:&quot;1024 MB RAM,25 GB SSD,1.00 TB BW&quot;,&quot;vcpu_count&quot;:&quot;1&quot;,&quot;ram&quot;:&quot;1024&quot;,&quot;disk&quot;:&quot;25&quot;,&quot;bandwidth&quot;:&quot;1.00&quot;,&quot;bandwidth_gb&quot;:&quot;1024&quot;,&quot;price_per_month&quot;:&quot;5.00&quot;,&quot;plan_type&quot;:&quot;SSD&quot;,&quot;windows&quot;:false,&quot;available_locations&quot;:[1,2,3,4,5,6,7,8,9,12,19,22,24,25,34,39,40]},&quot;202&quot;:{&quot;VPSPLANID&quot;:&quot;202&quot;,&quot;name&quot;:&quot;2048 MB RAM,55 GB SSD,2.00 TB BW&quot;,&quot;vcpu_count&quot;:&quot;1&quot;,&quot;ram&quot;:&quot;2048&quot;,&quot;disk&quot;:&quot;55&quot;,&quot;bandwidth&quot;:&quot;2.00&quot;,&quot;bandwidth_gb&quot;:&quot;2048&quot;,&quot;price_per_month&quot;:&quot;10.00&quot;,&quot;plan_type&quot;:&quot;SSD&quot;,&quot;windows&quot;:false,&quot;available_locations&quot;:[1, [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string VultrPlansList {
+            get {
+                return ResourceManager.GetString("VultrPlansList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {&quot;6&quot;:{&quot;DCID&quot;:&quot;6&quot;,&quot;name&quot;:&quot;Atlanta&quot;,&quot;country&quot;:&quot;US&quot;,&quot;continent&quot;:&quot;North America&quot;,&quot;state&quot;:&quot;GA&quot;,&quot;ddos_protection&quot;:false,&quot;block_storage&quot;:false,&quot;regioncode&quot;:&quot;ATL&quot;,&quot;availability&quot;:[201,202,203,204,205,206,400,401,402,29,93,94,95,96,97,98,100]},&quot;2&quot;:{&quot;DCID&quot;:&quot;2&quot;,&quot;name&quot;:&quot;Chicago&quot;,&quot;country&quot;:&quot;US&quot;,&quot;continent&quot;:&quot;North America&quot;,&quot;state&quot;:&quot;IL&quot;,&quot;ddos_protection&quot;:true,&quot;block_storage&quot;:false,&quot;regioncode&quot;:&quot;ORD&quot;,&quot;availability&quot;:[201,202,203,204,205,206,400,401,402,29,93,94,95,96,97,98,100]},&quot;3&quot;:{&quot;DCID&quot;:&quot;3&quot;,&quot;name&quot;:&quot;Dallas&quot;,&quot;country&quot;:&quot;US&quot; [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string VultrRegionsList {
+            get {
+                return ResourceManager.GetString("VultrRegionsList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {
         ///    &quot;3&quot;: {
         ///        &quot;SCRIPTID&quot;: &quot;3&quot;,

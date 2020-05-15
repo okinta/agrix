@@ -63,13 +63,13 @@ namespace tests.TestHelpers
             {
                 if (handler.Called == 0)
                     throw new RequestNotCalledException(
-                        URL, string.Format("{0} was not called", URL));
+                        handler.URL, string.Format("{0} was not called", handler.URL));
 
                 if (handler.Called > 1)
                     throw new RequestCalledTooOftenException(
-                        URL, 1, handler.Called, string.Format(
+                        handler.URL, 1, handler.Called, string.Format(
                             "{0} was only expected to be called once. Instead, was called {1} times",
-                            URL, handler.Called));
+                            handler.URL, handler.Called));
             }
         }
     }

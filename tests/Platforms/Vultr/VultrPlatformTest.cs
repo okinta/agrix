@@ -97,14 +97,62 @@ namespace tests.Platforms.Vultr
             Assert.True(os.ISOID > 0);
         }
 
+        #region Test VultrPlatform.Provision(Server, bool)
+
         [Fact]
-        public void TestProvisionDryRun()
+        public void TestProvisionServer()
         {
             var server = new Server(
                 new OperatingSystem(name: "Fedora 32 x64"),
                 Plan, Region);
-            Platform.Provision(server, true);
+
+            static string CreateServer(
+                HttpListenerRequest req,
+                HttpListenerResponse rsp,
+                Dictionary<string, string> prm)
+            {
+                Assert.Equal(
+                    "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&notify_activate=no",
+                    req.GetContent());
+
+                return "{\"SUBID\": \"1312965\"}";
+            }
+
+            using var requests = new MockVultrRequests(
+                new CustomMockHttpHandler("/os/list", Resources.VultrOSList),
+                new CustomMockHttpHandler("/regions/list?availability=yes",
+                    Resources.VultrRegionsList),
+                new CustomMockHttpHandler("/plans/list?type=all",
+                    Resources.VultrPlansList),
+                // new CustomMockHttpHandler("/server/list"),
+                new CustomMockHttpHandler("/server/create", CreateServer)
+            );
+            requests.Platform.Provision(server);
+            requests.AssertAllCalledOnce();
         }
+
+        [Fact]
+        public void TestProvisionServerDryRun()
+        {
+            var server = new Server(
+                new OperatingSystem(name: "Fedora 32 x64"),
+                Plan, Region);
+
+            using var requests = new MockVultrRequests(
+                new CustomMockHttpHandler("/os/list", Resources.VultrOSList),
+                new CustomMockHttpHandler("/regions/list?availability=yes",
+                    Resources.VultrRegionsList),
+                new CustomMockHttpHandler("/plans/list?type=all",
+                    Resources.VultrPlansList),
+                new CustomMockHttpHandler("/server/list")
+            );
+            requests.Platform.Provision(server, dryrun: true);
+            // requests.AssertAllCalledOnce();
+        }
+
+        #endregion
+
+        #region Test VultrPlatform.Provision(Script, bool)
 
         /// <summary>
         /// Tests that VultrPlatform.Provision(Script) creates a new script.
@@ -283,5 +331,7 @@ namespace tests.Platforms.Vultr
 
             requests.AssertAllCalledOnce();
         }
+
+        #endregion
     }
 }
