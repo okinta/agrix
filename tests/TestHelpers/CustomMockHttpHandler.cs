@@ -39,41 +39,72 @@ namespace tests.TestHelpers
             Dictionary<string, string>, string> HandlerFunction { get; }
 
         /// <summary>
-        /// Instantiates the instance with a handler function.
+        /// Creates a HTTP GET mock request that returns an empty response.
         /// </summary>
         /// <param name="url">The URL to mock.</param>
-        /// <param name="httpMethod">The HTTP method to mock.</param>
-        /// <param name="handlerFunction">The function to call when a mock request is
-        /// received.</param>
-        public CustomMockHttpHandler(string url, string httpMethod,
-            Func<
-                HttpListenerRequest,
-                HttpListenerResponse,
-                Dictionary<string, string>, string> handlerFunction)
-        {
-            URL = url;
-            HttpMethod = httpMethod;
-            HandlerFunction = handlerFunction;
-
-            MockHttpHandler = new MockHttpHandler(
-                url, httpMethod, HandlerFunctionWithCounter);
-        }
+        public CustomMockHttpHandler(string url) : this(url, "") { }
 
         /// <summary>
-        /// Instantiates the instance with a string response.
+        /// Creates a HTTP GET mock request that returns the given string.
         /// </summary>
         /// <param name="url">The URL to mock.</param>
-        /// <param name="httpMethod">The HTTP method to mock.</param>
         /// <param name="response">The response to return when a mock request is
         /// received.</param>
-        public CustomMockHttpHandler(string url, string httpMethod, string response)
+        public CustomMockHttpHandler(string url, string response) :
+            this(url, response, HttpMethods.GET) { }
+
+        /// <summary>
+        /// Creates a HTTP mock request that returns the given string.
+        /// </summary>
+        /// <param name="url">The URL to mock.</param>
+        /// <param name="response">The response to return when a mock request is
+        /// received.</param>
+        /// <param name="httpMethod">The HTTP method to mock.</param>
+        public CustomMockHttpHandler(string url, string response, HttpMethods httpMethod)
         {
             URL = url;
-            HttpMethod = httpMethod;
+            HttpMethod = httpMethod.ToString();
             HandlerFunction = (req, rsp, prm) => response;
 
             MockHttpHandler = new MockHttpHandler(
-                url, httpMethod, HandlerFunctionWithCounter);
+                url, HttpMethod, HandlerFunctionWithCounter);
+        }
+
+        /// <summary>
+        /// Creates a HTTP POST mock request that calls the given function when a request
+        /// is received.
+        /// </summary>
+        /// <param name="url">The URL to mock.</param>
+        /// <param name="handlerFunction">The function to call when a mock request is
+        /// received.</param>
+        public CustomMockHttpHandler(string url,
+            Func<
+                HttpListenerRequest,
+                HttpListenerResponse,
+                Dictionary<string, string>, string> handlerFunction) :
+            this(url, handlerFunction, HttpMethods.POST) { }
+
+        /// <summary>
+        /// Creates a HTTP mock request that calls the given function when a request is
+        /// received.
+        /// </summary>
+        /// <param name="url">The URL to mock.</param>
+        /// <param name="handlerFunction">The function to call when a mock request is
+        /// received.</param>
+        /// <param name="httpMethod">The HTTP method to mock.</param>
+        public CustomMockHttpHandler(string url,
+            Func<
+                HttpListenerRequest,
+                HttpListenerResponse,
+                Dictionary<string, string>, string> handlerFunction,
+            HttpMethods httpMethod)
+        {
+            URL = url;
+            HttpMethod = httpMethod.ToString();
+            HandlerFunction = handlerFunction;
+
+            MockHttpHandler = new MockHttpHandler(
+                url, HttpMethod, HandlerFunctionWithCounter);
         }
 
         private string HandlerFunctionWithCounter(
