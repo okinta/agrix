@@ -133,6 +133,51 @@
     <value>{"6":{"DCID":"6","name":"Atlanta","country":"US","continent":"North America","state":"GA","ddos_protection":false,"block_storage":false,"regioncode":"ATL","availability":[201,202,203,204,205,206,400,401,402,29,93,94,95,96,97,98,100]},"2":{"DCID":"2","name":"Chicago","country":"US","continent":"North America","state":"IL","ddos_protection":true,"block_storage":false,"regioncode":"ORD","availability":[201,202,203,204,205,206,400,401,402,29,93,94,95,96,97,98,100]},"3":{"DCID":"3","name":"Dallas","country":"US","continent":"North America","state":"TX","ddos_protection":true,"block_storage":false,"regioncode":"DFW","availability":[201,202,203,204,205,206,207,400,401,402,29,93,94,95,96,97,98,100]},"5":{"DCID":"5","name":"Los Angeles","country":"US","continent":"North America","state":"CA","ddos_protection":true,"block_storage":false,"regioncode":"LAX","availability":[201,202,203,204,205,206,207,400,401,402,29,93,94,95,96,97,98,100]},"39":{"DCID":"39","name":"Miami","country":"US","continent":"North America","state":"FL","ddos_protection":true,"block_storage":false,"regioncode":"MIA","availability":[201,202,203,204,205,206,400,401,402,29,93,94,95,96,97,98,100]},"1":{"DCID":"1","name":"New Jersey","country":"US","continent":"North America","state":"NJ","ddos_protection":true,"block_storage":true,"regioncode":"EWR","availability":[201,202,203,204,205,206,115,116,117,118,400,401,402,403,404,29,93,94,95,96,97,98,100]},"4":{"DCID":"4","name":"Seattle","country":"US","continent":"North America","state":"WA","ddos_protection":true,"block_storage":false,"regioncode":"SEA","availability":[201,202,203,204,205,400,401,402,403,404,405,29,93,94,95,96,97]},"12":{"DCID":"12","name":"Silicon Valley","country":"US","continent":"North America","state":"CA","ddos_protection":true,"block_storage":false,"regioncode":"SJC","availability":[201,202,203,204,205,206,207,400,401,402,403,29,93,94,95,96,97,98,100]},"40":{"DCID":"40","name":"Singapore","country":"SG","continent":"Asia","state":"","ddos_protection":false,"block_storage":false,"regioncode":"SGP","availability":[201,202,203,204,205,206,400,401,402,29,93,94,95,96,97,98,100]},"7":{"DCID":"7","name":"Amsterdam","country":"NL","continent":"Europe","state":"","ddos_protection":true,"block_storage":false,"regioncode":"AMS","availability":[201,202,203,204,205,206,400,401,402,403,29,93,94,95,96,97,98,100]},"34":{"DCID":"34","name":"Seoul","country":"KR","continent":"Asia","state":"","ddos_protection":false,"block_storage":false,"regioncode":"ICN","availability":[201,202,203,204,205,206,207,208,29,93,94,95,96,97,98,100]},"25":{"DCID":"25","name":"Tokyo","country":"JP","continent":"Asia","state":"","ddos_protection":false,"block_storage":false,"regioncode":"NRT","availability":[201,202,203,204,205,206,115,400,401,29,93,94,95,96,97,98]},"8":{"DCID":"8","name":"London","country":"GB","continent":"Europe","state":"","ddos_protection":true,"block_storage":false,"regioncode":"LHR","availability":[201,202,203,204,205,206,207,400,401,402,29,93,94,95,96,97,98,100]},"24":{"DCID":"24","name":"Paris","country":"FR","continent":"Europe","state":"","ddos_protection":true,"block_storage":false,"regioncode":"CDG","availability":[201,202,203,204,205,206,400,401,402,403,404,29,93,94,95,96,97,98,100]},"9":{"DCID":"9","name":"Frankfurt","country":"DE","continent":"Europe","state":"","ddos_protection":true,"block_storage":false,"regioncode":"FRA","availability":[201,202,203,204,205,206,400,401,402,29,93,94,95,96,97,98,100]},"22":{"DCID":"22","name":"Toronto","country":"CA","continent":"North America","state":"","ddos_protection":false,"block_storage":false,"regioncode":"YTO","availability":[201,202,203,204,205,206,400,401,402,403,404,29,93,94,95,96,97,98,100]},"19":{"DCID":"19","name":"Sydney","country":"AU","continent":"Australia","state":"","ddos_protection":false,"block_storage":false,"regioncode":"SYD","availability":[201,202,203,204,205,206,207,400,401,402,403,29,93,94,95,96,97,98,100]}}</value>
     <comment>Example output from `curl https://api.vultr.com/v1/regions/list\?availability\=yes`</comment>
   </data>
+  <data name="VultrServerList" xml:space="preserve">
+    <value>{
+    "576965": {
+        "SUBID": "576965",
+        "os": "CentOS 6 x64",
+        "ram": "4096 MB",
+        "disk": "Virtual 60 GB",
+        "main_ip": "123.123.123.123",
+        "vcpu_count": "2",
+        "location": "New Jersey",
+        "DCID": "1",
+        "default_password": "nreqnusibni",
+        "date_created": "2013-12-19 14:45:41",
+        "pending_charges": "46.67",
+        "status": "active",
+        "cost_per_month": "10.05",
+        "current_bandwidth_gb": 131.512,
+        "allowed_bandwidth_gb": "1000",
+        "netmask_v4": "255.255.255.248",
+        "gateway_v4": "123.123.123.1",
+        "power_status": "running",
+        "server_state": "ok",
+        "VPSPLANID": "28",
+        "v6_main_ip": "2001:DB8:1000::100",
+        "v6_network_size": "64",
+        "v6_network": "2001:DB8:1000::",
+        "v6_networks": [
+            {
+                "v6_network": "2001:DB8:1000::",
+                "v6_main_ip": "2001:DB8:1000::100",
+                "v6_network_size": "64"
+            }
+        ],
+        "label": "my new server",
+        "internal_ip": "10.99.0.10",
+        "kvm_url": "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV",
+        "auto_backups": "yes",
+        "tag": "mytag",
+        "OSID": "127",
+        "APPID": "0",
+        "FIREWALLGROUPID": "0"
+    }
+}</value>
+    <comment>Example output from https://www.vultr.com/api/#server_server_list</comment>
+  </data>
   <data name="VultrStartupScripts" xml:space="preserve">
     <value>{
     "3": {

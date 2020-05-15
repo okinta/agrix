@@ -99,6 +99,31 @@ namespace tests.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to {
+        ///    &quot;576965&quot;: {
+        ///        &quot;SUBID&quot;: &quot;576965&quot;,
+        ///        &quot;os&quot;: &quot;CentOS 6 x64&quot;,
+        ///        &quot;ram&quot;: &quot;4096 MB&quot;,
+        ///        &quot;disk&quot;: &quot;Virtual 60 GB&quot;,
+        ///        &quot;main_ip&quot;: &quot;123.123.123.123&quot;,
+        ///        &quot;vcpu_count&quot;: &quot;2&quot;,
+        ///        &quot;location&quot;: &quot;New Jersey&quot;,
+        ///        &quot;DCID&quot;: &quot;1&quot;,
+        ///        &quot;default_password&quot;: &quot;nreqnusibni&quot;,
+        ///        &quot;date_created&quot;: &quot;2013-12-19 14:45:41&quot;,
+        ///        &quot;pending_charges&quot;: &quot;46.67&quot;,
+        ///        &quot;status&quot;: &quot;active&quot;,
+        ///        &quot;cost_per_month&quot;: &quot;10.05&quot;,
+        ///        &quot;current_bandwidth_gb&quot;: 131.512,
+        ///        &quot;all [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string VultrServerList {
+            get {
+                return ResourceManager.GetString("VultrServerList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
         ///    &quot;3&quot;: {
         ///        &quot;SCRIPTID&quot;: &quot;3&quot;,
         ///        &quot;date_created&quot;: &quot;2014-05-21 15:27:18&quot;,

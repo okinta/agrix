@@ -99,6 +99,9 @@ namespace tests.Platforms.Vultr
 
         #region Test VultrPlatform.Provision(Server, bool)
 
+        /// <summary>
+        /// Tests that VultrPlatform.Provision(Server) stands up a basic server.
+        /// </summary>
         [Fact]
         public void TestProvisionServer()
         {
@@ -121,6 +124,10 @@ namespace tests.Platforms.Vultr
             requests.AssertAllCalledOnce();
         }
 
+        /// <summary>
+        /// Tests that VultrPlatform.Provision(Server, dryrun: true) doesn't stand up
+        /// a basic server.
+        /// </summary>
         [Fact]
         public void TestProvisionServerDryRun()
         {
@@ -139,6 +146,56 @@ namespace tests.Platforms.Vultr
             requests.Platform.Provision(server, dryrun: true);
             requests.AssertAllCalledOnce();
         }
+
+        /// <summary>
+        /// Tests that VultrPlatform.Provision(Server) updates an existing server.
+        /// </summary>
+        [Fact]
+        public void TestProvisionUpdateServer()
+        {
+            var server = new Server(
+                new OperatingSystem(name: "Fedora 32 x64"),
+                Plan, Region, label: "my new server"
+            );
+
+            using var requests = new MockVultrRequests(
+                new CustomMockHttpHandler("/os/list", Resources.VultrOSList),
+                new CustomMockHttpHandler("/regions/list?availability=yes",
+                    Resources.VultrRegionsList),
+                new CustomMockHttpHandler("/plans/list?type=all",
+                    Resources.VultrPlansList),
+                new CustomMockHttpHandler("/server/list", Resources.VultrServerList),
+                new CustomMockHttpHandler("/server/destroy", "SUBID=576965", ""),
+                new CustomMockHttpHandler("/server/create",
+                    "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&label=my+new+server&notify_activate=no",
+                    "{\"SUBID\": \"1312965\"}")
+            );
+            requests.Platform.Provision(server);
+            requests.AssertAllCalledOnce();
+        }
+
+        /// <summary>
+        /// Tests that VultrPlatform.Provision(Server, dryrun: true) doesn't update an
+        /// existing server.
+        /// </summary>
+        [Fact]
+        public void TestProvisionUpdateServerDryrun()
+        {
+            var server = new Server(
+                new OperatingSystem(name: "Fedora 32 x64"),
+                Plan, Region, label: "my new server"
+            );
+
+            using var requests = new MockVultrRequests(
+                new CustomMockHttpHandler("/os/list", Resources.VultrOSList),
+                new CustomMockHttpHandler("/regions/list?availability=yes",
+                    Resources.VultrRegionsList),
+                new CustomMockHttpHandler("/plans/list?type=all",
+                    Resources.VultrPlansList),
+                new CustomMockHttpHandler("/server/list", Resources.VultrServerList)
+            );
+            requests.Platform.Provision(server, dryrun: true);
+            requests.AssertAllCalledOnce();
         }
 
         #endregion
