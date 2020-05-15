@@ -187,10 +187,88 @@ namespace tests.Platforms.Vultr
             requests.AssertAllCalledOnce();
         }
 
+        /// <summary>
+        /// Tests that VultrPlatform.Provision(Script, dryrun: true) doesn't update
+        /// the content of an existing script.
+        /// </summary>
+        [Fact]
+        public void TestProvisionUpdateScriptContentDryrun()
+        {
+            var script = new Script("hello-boot", ScriptType.Boot, "this is my script");
+
+            using var requests = new MockVultrRequests(
+                new CustomMockHttpHandler(
+                    "/startupscript/list", "GET", (req, rsp, prm) =>
+                        Resources.VultrStartupScripts)
+            );
+            requests.Platform.Provision(script, dryrun: true);
+
+            requests.AssertAllCalledOnce();
+        }
+
+        /// <summary>
+        /// Tests that VultrPlatform.Provision(Script) updates the script type and content.
+        /// </summary>
         [Fact]
         public void TestProvisionUpdateScriptType()
         {
+            var script = new Script("hello-boot", ScriptType.PXE, "this is my script");
 
+            static string DestroyStartupScript(
+                HttpListenerRequest req,
+                HttpListenerResponse rsp,
+                Dictionary<string, string> prm)
+            {
+                Assert.Equal(
+                    "SCRIPTID=3",
+                    req.GetContent());
+
+                return "";
+            }
+
+            static string CreateStartupScript(
+                HttpListenerRequest req,
+                HttpListenerResponse rsp,
+                Dictionary<string, string> prm)
+            {
+                Assert.Equal(
+                    "name=hello-boot&script=this+is+my+script&type=pxe",
+                    req.GetContent());
+
+                return "{\"SCRIPTID\": 5}";
+            }
+
+            using var requests = new MockVultrRequests(
+                new CustomMockHttpHandler(
+                    "/startupscript/list", "GET", (req, rsp, prm) =>
+                        Resources.VultrStartupScripts),
+                new CustomMockHttpHandler(
+                    "/startupscript/destroy", "POST", DestroyStartupScript),
+                new CustomMockHttpHandler(
+                    "/startupscript/create", "POST", CreateStartupScript)
+            );
+            requests.Platform.Provision(script);
+
+            requests.AssertAllCalledOnce();
+        }
+
+        /// <summary>
+        /// Tests that VultrPlatform.Provision(Script, dryrun: true) doesn't update
+        /// the script type or content.
+        /// </summary>
+        [Fact]
+        public void TestProvisionUpdateScriptTypeDryrun()
+        {
+            var script = new Script("hello-boot", ScriptType.PXE, "this is my script");
+
+            using var requests = new MockVultrRequests(
+                new CustomMockHttpHandler(
+                    "/startupscript/list", "GET", (req, rsp, prm) =>
+                        Resources.VultrStartupScripts)
+            );
+            requests.Platform.Provision(script, dryrun: true);
+
+            requests.AssertAllCalledOnce();
         }
 
         /// <summary>
@@ -200,13 +278,17 @@ namespace tests.Platforms.Vultr
         [Fact]
         public void TestProvisionDontUpdateUnchangedScript()
         {
+            var script = new Script("hello-boot", ScriptType.Boot,
+                "#!/bin/bash echo Hello World > /root/hello");
 
-        }
+            using var requests = new MockVultrRequests(
+                new CustomMockHttpHandler(
+                    "/startupscript/list", "GET", (req, rsp, prm) =>
+                        Resources.VultrStartupScripts)
+            );
+            requests.Platform.Provision(script);
 
-        [Fact]
-        public void TestProvisionUpdateScriptContentDryrun()
-        {
-
+            requests.AssertAllCalledOnce();
         }
     }
 }
