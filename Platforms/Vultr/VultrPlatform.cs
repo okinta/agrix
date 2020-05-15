@@ -281,7 +281,7 @@ namespace agrix.Platforms.Vultr
         /// <returns>The Operating System configuration for the Server.</returns>
         /// <exception cref="ArgumentException">If the Server Operating System is
         /// misconfigured.</exception>
-        public OS GetOS(Server server)
+        public VultrOS GetOS(Server server)
         {
             if (!string.IsNullOrEmpty(server.OS.App))
             {
@@ -303,7 +303,7 @@ namespace agrix.Platforms.Vultr
                         "OS.StartupScript must be empty if OS.App is set", "server");
                 }
 
-                return OS.CreateApp(server.OS.App, Client);
+                return VultrOS.CreateApp(server.OS.App, Client);
             }
 
             if (!string.IsNullOrEmpty(server.OS.ISO))
@@ -320,7 +320,7 @@ namespace agrix.Platforms.Vultr
                         "OS.StartupScript must be empty if OS.ISO is set", "server");
                 }
 
-                return OS.CreateISO(server.OS.ISO, Client);
+                return VultrOS.CreateISO(server.OS.ISO, Client);
             }
 
             if (string.IsNullOrEmpty(server.OS.Name))
@@ -331,11 +331,11 @@ namespace agrix.Platforms.Vultr
 
             if (!string.IsNullOrEmpty(server.StartupScript))
             {
-                return OS.CreateScript(server.OS.Name, server.StartupScript, Client);
+                return VultrOS.CreateScript(server.OS.Name, server.StartupScript, Client);
             }
             else
             {
-                return OS.CreateOS(server.OS.Name, Client);
+                return VultrOS.CreateOS(server.OS.Name, Client);
             }
         }
     }

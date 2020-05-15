@@ -12,7 +12,7 @@ namespace tests.Platforms.Vultr
         public void TestCreateApp(int id, string name)
         {
             var client = new VultrClient(Settings.Default.VultrApiKey);
-            var app = OS.CreateApp(name, client);
+            var app = VultrOS.CreateApp(name, client);
 
             Assert.Equal(186, app.OSID);
             Assert.Equal(id, app.APPID);
@@ -27,7 +27,7 @@ namespace tests.Platforms.Vultr
         public void TestCreateISO(string name)
         {
             var client = new VultrClient(Settings.Default.VultrApiKey);
-            var iso = OS.CreateISO(name, client);
+            var iso = VultrOS.CreateISO(name, client);
 
             Assert.Equal(159, iso.OSID);
             Assert.True(iso.ISOID > 0);
@@ -42,7 +42,7 @@ namespace tests.Platforms.Vultr
         public void TestCreateOS(int id, string name)
         {
             var client = new VultrClient(Settings.Default.VultrApiKey);
-            var os = OS.CreateOS(name, client);
+            var os = VultrOS.CreateOS(name, client);
 
             Assert.Equal(id, os.OSID);
             Assert.Null(os.APPID);
@@ -56,7 +56,7 @@ namespace tests.Platforms.Vultr
         public void TestCreateScript(string name)
         {
             var client = new VultrClient(Settings.Default.VultrApiKey);
-            var script = OS.CreateScript("FreeBSD 11 x64", name, client);
+            var script = VultrOS.CreateScript("FreeBSD 11 x64", name, client);
 
             Assert.Equal(230, script.OSID);
             Assert.Null(script.APPID);
