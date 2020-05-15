@@ -1,6 +1,6 @@
 ﻿using agrix.Platforms.Vultr;
 
-namespace tests
+namespace tests.TestHelpers
 {
     /// <summary>
     /// Describes methods to mock Vultr API requests.

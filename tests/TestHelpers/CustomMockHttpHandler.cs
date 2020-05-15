@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System;
 
-namespace tests
+namespace tests.TestHelpers
 {
     /// <summary>
     /// Allows counting of calls to a MockHttpHandler.
@@ -66,28 +66,6 @@ namespace tests
         {
             Called += 1;
             return HandlerFunction(req, rsp, prm);
-        }
-    }
-
-    /// <summary>
-    /// Provides an extension method to convert CustomMockHttpHandler instances
-    /// to MockHttpHandler for use by MockServer.
-    /// </summary>
-    internal static class CustomHttpHandlerExtensions
-    {
-        /// <summary>
-        /// Converts to a collection of MockHttpHandler instances.
-        /// </summary>
-        /// <param name="handlers">The handlers to convert.</param>
-        /// <returns>The converted instances.</returns>
-        public static IEnumerable<MockHttpHandler> GetMockHttpHandlers(
-            this IEnumerable<CustomMockHttpHandler> handlers)
-        {
-            var newHandlers = new List<MockHttpHandler>();
-            foreach (var handler in handlers)
-                newHandlers.Add(handler.MockHttpHandler);
-
-            return newHandlers;
         }
     }
 }

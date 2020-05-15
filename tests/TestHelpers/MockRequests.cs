@@ -1,7 +1,7 @@
 ﻿using MockHttpServer;
 using System;
 
-namespace tests
+namespace tests.TestHelpers
 {
     /// <summary>
     /// Describes methods to help mock HTTP requests.

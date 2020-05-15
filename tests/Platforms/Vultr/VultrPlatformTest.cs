@@ -1,9 +1,9 @@
 ﻿using agrix.Configuration;
 using agrix.Platforms.Vultr;
-using MockHttpServer;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using tests.TestHelpers;
 using Xunit;
 
 namespace tests.Platforms.Vultr
