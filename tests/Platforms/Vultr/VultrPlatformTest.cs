@@ -110,14 +110,13 @@ namespace tests.Platforms.Vultr
         {
             var script = new Script("myscript", ScriptType.Boot, "this is my script");
 
-            using var requests = new MockRequests(
+            using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler(
                     "/startupscript/list", "GET", (req, rsp, prm) => ""),
                 new CustomMockHttpHandler(
                     "/startupscript/create", "POST", CreateStartupScript)
             );
-            var platform = new VultrPlatform("abc123", requests.URL);
-            platform.Provision(script);
+            requests.Platform.Provision(script);
 
             Assert.Equal(1, requests[0].Called);
             Assert.Equal(1, requests[1].Called);
