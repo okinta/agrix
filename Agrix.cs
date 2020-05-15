@@ -129,11 +129,11 @@ namespace agrix
             var scripts = InfrastructureConfiguration.LoadScripts(
                 YAML, platform.AgrixConfig);
 
-            foreach (var server in servers)
-                platform.Provision(server, dryrun);
-
             foreach (var script in scripts)
                 platform.Provision(script, dryrun);
+
+            foreach (var server in servers)
+                platform.Provision(server, dryrun);
         }
     }
 }
