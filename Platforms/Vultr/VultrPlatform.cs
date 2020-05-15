@@ -19,17 +19,18 @@ namespace agrix.Platforms.Vultr
         /// </summary>
         public IAgrixConfig AgrixConfig { get; } = new VultrAgrixConfig();
 
-        private string ApiKey { get; }
         private VultrClient Client { get; }
 
         /// <summary>
         /// Instantiates the instance.
         /// </summary>
         /// <param name="apiKey">The API key to use for communicating with Vultr.</param>
-        public VultrPlatform(string apiKey)
+        /// <param name="apiURL">The optional API URL for Vultr. Set this to override
+        /// the Vultr API endpoint (e.g. for testing).</param>
+        public VultrPlatform(string apiKey, string apiURL = null)
         {
-            ApiKey = apiKey;
-            Client = new VultrClient(ApiKey);
+            Client = string.IsNullOrEmpty(apiURL) ?
+                new VultrClient(apiKey) : new VultrClient(apiKey, apiURL);
         }
 
         /// <summary>
@@ -116,7 +117,8 @@ namespace agrix.Platforms.Vultr
 
             bool predicate(KeyValuePair<string, StartupScript> existingScript) =>
                 existingScript.Value.name == script.Name;
-            if (existingScripts.StartupScripts.Exists(predicate))
+            if (existingScripts.StartupScripts != null
+                && existingScripts.StartupScripts.Exists(predicate))
             {
                 var existingScript = existingScripts.StartupScripts.Single(predicate);
                 Console.WriteLine("Script {0} with ID {1} already exists",

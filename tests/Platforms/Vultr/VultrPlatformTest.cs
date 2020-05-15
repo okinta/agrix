@@ -1,14 +1,26 @@
 ﻿using agrix.Configuration;
 using agrix.Platforms.Vultr;
+using MockHttpServer;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using Xunit;
 
 namespace tests.Platforms.Vultr
 {
     public class VultrPlatformTest
     {
+        private const int TestPort = 8873;
+        private const string TestURL = "http://localhost:8873/";
+
         private VultrPlatform Platform
         {
             get { return new VultrPlatform(Settings.Default.VultrApiKey); }
+        }
+
+        private VultrPlatform MockPlatform
+        {
+            get { return new VultrPlatform("abc123", TestURL); }
         }
 
         private Plan Plan
@@ -99,6 +111,38 @@ namespace tests.Platforms.Vultr
                 new OperatingSystem(name: "Fedora 32 x64"),
                 Plan, Region);
             Platform.Provision(server, true);
+        }
+
+        [Fact]
+        public void TestProvisionScript()
+        {
+            var script = new Script("myscript", ScriptType.Boot, "this is my script");
+
+            var handlers = new List<CustomMockHttpHandler>()
+            {
+                new CustomMockHttpHandler(
+                    "/startupscript/list", "GET", (req, rsp, prm) => ""),
+                new CustomMockHttpHandler(
+                    "/startupscript/create", "POST", CreateStartupScript)
+            };
+            using var _ = new MockServer(TestPort, handlers.GetMockHttpHandlers());
+            MockPlatform.Provision(script);
+
+            Assert.Equal(1, handlers[0].Called);
+            Assert.Equal(1, handlers[1].Called);
+        }
+
+        private string CreateStartupScript(
+            HttpListenerRequest req,
+            HttpListenerResponse rsp,
+            Dictionary<string, string> prm)
+        {
+            using var reader = new StreamReader(req.InputStream);
+            Assert.Equal(
+                "name=myscript&script=this+is+my+script&type=boot",
+                reader.ReadToEnd());
+
+            return "{\"SCRIPTID\": 5}";
         }
     }
 }
