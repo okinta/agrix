@@ -1,4 +1,5 @@
-﻿using agrix.Exceptions;
+﻿using agrix.Configuration.Parsers;
+using agrix.Exceptions;
 using agrix.Extensions;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,41 +38,10 @@ namespace agrix.Configuration
             // If servers are empty, return an empty list
             if (serverItems is null) return servers;
 
+            var parser = new ServerParser();
+
             foreach (var serverItemNode in serverItems)
-            {
-                if (serverItemNode.NodeType != YamlNodeType.Mapping)
-                    throw new InvalidCastException(
-                        string.Format("server item must be a mapping type (line {0}",
-                            serverItemNode.Start.Line));
-
-                var serverItem = (YamlMappingNode)serverItemNode;
-                var osMapping = serverItem.GetMapping("os");
-                var os = new OperatingSystem(
-                    app: osMapping.GetKey("app"),
-                    iso: osMapping.GetKey("iso"),
-                    name: osMapping.GetKey("name")
-                );
-
-                var planMapping = serverItem.GetMapping("plan");
-                var plan = new Plan(
-                    cpu: planMapping.GetInt("cpu"),
-                    memory: planMapping.GetInt("memory"),
-                    type: planMapping.GetKey("type", required: true)
-                );
-
-                servers.Add(new Server(
-                    os: os,
-                    plan: plan,
-                    region: serverItem.GetKey("region", required: true),
-                    privateNetworking: serverItem.GetBool("private-networking", false),
-                    firewall: serverItem.GetKey("firewall"),
-                    label: serverItem.GetKey("label"),
-                    startupScript: serverItem.GetKey("startup-script"),
-                    tag: serverItem.GetKey("tag"),
-                    userData: serverItem.GetJSON("userdata"),
-                    sshKeys: serverItem.GetList("ssh-keys").ToArray()
-                ));
-            }
+                servers.Add(parser.Parse(serverItemNode));
 
             return servers;
         }
