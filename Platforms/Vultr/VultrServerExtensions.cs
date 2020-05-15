@@ -6,7 +6,7 @@ namespace agrix.Platforms.Vultr
     /// <summary>
     /// Extends the Vultr.API.Models.Server class.
     /// </summary>
-    internal static class ServerExtensions
+    internal static class VultrServerExtensions
     {
         /// <summary>
         /// Returns whether or not the two given servers are equivalent.
