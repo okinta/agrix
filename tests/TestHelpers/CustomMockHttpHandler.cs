@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System;
+using Xunit;
 
 namespace tests.TestHelpers
 {
@@ -37,6 +38,9 @@ namespace tests.TestHelpers
             HttpListenerRequest,
             HttpListenerResponse,
             Dictionary<string, string>, string> HandlerFunction { get; }
+
+        private string ExpectedResponse { get; } = "";
+        private string ValidatedRequestResponse { get; } = "";
 
         /// <summary>
         /// Creates a HTTP GET mock request that returns an empty response.
@@ -107,6 +111,27 @@ namespace tests.TestHelpers
                 url, HttpMethod, HandlerFunctionWithCounter);
         }
 
+        /// <summary>
+        /// Creates a HTTP POST mock request that validates the given parameters were
+        /// received from the request and returns the given response.
+        /// </summary>
+        /// <param name="url">The URL to mock.</param>
+        /// <param name="expectedContent">The content expected to be received by from
+        /// request.</param>
+        /// <param name="response">The response to return when a mock request is
+        /// received.</param>
+        public CustomMockHttpHandler(string url, string expectedContent, string response)
+        {
+            URL = url;
+            HttpMethod = HttpMethods.POST.ToString();
+            ExpectedResponse = expectedContent;
+            ValidatedRequestResponse = response;
+            HandlerFunction = ValidateRequest;
+
+            MockHttpHandler = new MockHttpHandler(
+                url, HttpMethod, HandlerFunctionWithCounter);
+        }
+
         private string HandlerFunctionWithCounter(
             HttpListenerRequest req,
             HttpListenerResponse rsp,
@@ -114,6 +139,15 @@ namespace tests.TestHelpers
         {
             Called += 1;
             return HandlerFunction(req, rsp, prm);
+        }
+
+        private string ValidateRequest(
+            HttpListenerRequest req,
+            HttpListenerResponse rsp,
+            Dictionary<string, string> prm)
+        {
+            Assert.Equal(ExpectedResponse, req.GetContent());
+            return ValidatedRequestResponse;
         }
     }
 }

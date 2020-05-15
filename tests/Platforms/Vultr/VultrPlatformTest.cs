@@ -106,18 +106,6 @@ namespace tests.Platforms.Vultr
                 new OperatingSystem(name: "Fedora 32 x64"),
                 Plan, Region);
 
-            static string CreateServer(
-                HttpListenerRequest req,
-                HttpListenerResponse rsp,
-                Dictionary<string, string> prm)
-            {
-                Assert.Equal(
-                    "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&notify_activate=no",
-                    req.GetContent());
-
-                return "{\"SUBID\": \"1312965\"}";
-            }
-
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler("/os/list", Resources.VultrOSList),
                 new CustomMockHttpHandler("/regions/list?availability=yes",
@@ -125,7 +113,9 @@ namespace tests.Platforms.Vultr
                 new CustomMockHttpHandler("/plans/list?type=all",
                     Resources.VultrPlansList),
                 // new CustomMockHttpHandler("/server/list"),
-                new CustomMockHttpHandler("/server/create", CreateServer)
+                new CustomMockHttpHandler("/server/create",
+                    "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&notify_activate=no",
+                    "{\"SUBID\": \"1312965\"}")
             );
             requests.Platform.Provision(server);
             requests.AssertAllCalledOnce();
@@ -162,22 +152,12 @@ namespace tests.Platforms.Vultr
         {
             var script = new Script("myscript", ScriptType.Boot, "this is my script");
 
-            static string CreateStartupScript(
-                HttpListenerRequest req,
-                HttpListenerResponse rsp,
-                Dictionary<string, string> prm)
-            {
-                Assert.Equal(
-                    "name=myscript&script=this+is+my+script&type=boot",
-                    req.GetContent());
-
-                return "{\"SCRIPTID\": 5}";
-            }
-
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler("/startupscript/list"),
                 new CustomMockHttpHandler(
-                    "/startupscript/create", CreateStartupScript)
+                    "/startupscript/create",
+                    "name=myscript&script=this+is+my+script&type=boot",
+                    "{\"SCRIPTID\": 5}")
             );
             requests.Platform.Provision(script);
             requests.AssertAllCalledOnce();
@@ -193,7 +173,7 @@ namespace tests.Platforms.Vultr
             var script = new Script("myscript", ScriptType.Boot, "this is my script");
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler("/startupscript/list", "")
+                new CustomMockHttpHandler("/startupscript/list")
             );
             requests.Platform.Provision(script, dryrun: true);
 
@@ -209,23 +189,13 @@ namespace tests.Platforms.Vultr
         {
             var script = new Script("hello-boot", ScriptType.Boot, "this is my script");
 
-            static string UpdateStartupScript(
-                HttpListenerRequest req,
-                HttpListenerResponse rsp,
-                Dictionary<string, string> prm)
-            {
-                Assert.Equal(
-                    "SCRIPTID=3&script=this+is+my+script",
-                    req.GetContent());
-
-                return "";
-            }
-
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler(
                     "/startupscript/list", Resources.VultrStartupScripts),
                 new CustomMockHttpHandler(
-                    "/startupscript/update", UpdateStartupScript)
+                    "/startupscript/update",
+                    "SCRIPTID=3&script=this+is+my+script",
+                    "")
             );
             requests.Platform.Provision(script);
 
@@ -258,37 +228,15 @@ namespace tests.Platforms.Vultr
         {
             var script = new Script("hello-boot", ScriptType.PXE, "this is my script");
 
-            static string DestroyStartupScript(
-                HttpListenerRequest req,
-                HttpListenerResponse rsp,
-                Dictionary<string, string> prm)
-            {
-                Assert.Equal(
-                    "SCRIPTID=3",
-                    req.GetContent());
-
-                return "";
-            }
-
-            static string CreateStartupScript(
-                HttpListenerRequest req,
-                HttpListenerResponse rsp,
-                Dictionary<string, string> prm)
-            {
-                Assert.Equal(
-                    "name=hello-boot&script=this+is+my+script&type=pxe",
-                    req.GetContent());
-
-                return "{\"SCRIPTID\": 5}";
-            }
-
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler(
                     "/startupscript/list", Resources.VultrStartupScripts),
                 new CustomMockHttpHandler(
-                    "/startupscript/destroy", DestroyStartupScript),
+                    "/startupscript/destroy", "SCRIPTID=3", ""),
                 new CustomMockHttpHandler(
-                    "/startupscript/create", CreateStartupScript)
+                    "/startupscript/create",
+                    "name=hello-boot&script=this+is+my+script&type=pxe",
+                    "{\"SCRIPTID\": 5}")
             );
             requests.Platform.Provision(script);
 
