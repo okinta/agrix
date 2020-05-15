@@ -66,30 +66,10 @@ namespace agrix.Configuration
             // If scripts are empty, return an empty list
             if (scriptItems is null) return scripts;
 
+            var parser = new ScriptParser();
+
             foreach (var scriptItemNode in scriptItems)
-            {
-                if (scriptItemNode.NodeType != YamlNodeType.Mapping)
-                    throw new InvalidCastException(
-                        string.Format("script item must be a mapping type (line {0}",
-                            scriptItemNode.Start.Line));
-
-                var scriptItem = (YamlMappingNode)scriptItemNode;
-                var typeName = scriptItem.GetKey("type", required: true);
-                var type = (typeName.ToLower()) switch
-                {
-                    "boot" => ScriptType.Boot,
-                    "pxe" => ScriptType.PXE,
-                    _ => throw new ArgumentException(string.Format(
-                        "{0} is not a known type (line {1})",
-                        typeName, scriptItem.GetNode("type").Start.Line)),
-                };
-
-                scripts.Add(new Script(
-                    name: scriptItem.GetKey("name", required: true),
-                    type: type,
-                    content: scriptItem.GetKey("content", required: true)
-                ));
-            }
+                scripts.Add(parser.Parse(scriptItemNode));
 
             return scripts;
         }
