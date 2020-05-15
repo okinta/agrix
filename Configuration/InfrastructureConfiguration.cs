@@ -82,6 +82,27 @@ namespace agrix.Configuration
             return agrixConfig.LoadScripts(yamlConfig.GetRootNode());
         }
 
+        /// <summary>
+        /// Loads all the firewall configurations from the given YAML.
+        /// </summary>
+        /// <param name="yamlConfig">The YAML to load firewalls from.</param>
+        /// <param name="agrixConfig">The IAgrixConfig instance to use to load the YAML
+        /// config.</param>
+        /// <returns>The list of Firewall configurations loaded from the given
+        /// YAML</returns>
+        /// <exception cref="ArgumentException">If the configuration is
+        /// invalid.</exception>
+        /// <exception cref="ArgumentNullException">If <paramref name="yamlConfig"/> or
+        /// <paramref name="agrixConfig"/> are null</exception>
+        public static IList<Firewall> LoadFirewalls(
+            YamlStream yamlConfig, IAgrixConfig agrixConfig)
+        {
+            if (agrixConfig is null)
+                throw new ArgumentNullException("agrixConfig", "must not be null");
+
+            return agrixConfig.LoadFirewalls(yamlConfig.GetRootNode());
+        }
+
         private static YamlMappingNode GetRootNode(this YamlStream yamlConfig)
         {
             if (yamlConfig is null)

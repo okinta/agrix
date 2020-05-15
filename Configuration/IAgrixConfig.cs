@@ -23,5 +23,13 @@ namespace agrix.Configuration
         /// <returns>The list of Script configurations loaded from the given
         /// YAML.</returns>
         public IList<Script> LoadScripts(YamlMappingNode node);
+
+        /// <summary>
+        /// Loads Firewall configurations from YAML.
+        /// </summary>
+        /// <param name="node">The YAML node to load configuration from.</param>
+        /// <returns>The list of Firewall configurations loaded from the given
+        /// YAML.</returns>
+        public IList<Firewall> LoadFirewalls(YamlMappingNode node);
     }
 }
