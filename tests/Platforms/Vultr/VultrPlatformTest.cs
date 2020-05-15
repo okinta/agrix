@@ -10,17 +10,9 @@ namespace tests.Platforms.Vultr
 {
     public class VultrPlatformTest
     {
-        private const int TestPort = 8873;
-        private const string TestURL = "http://localhost:8873/";
-
         private VultrPlatform Platform
         {
             get { return new VultrPlatform(Settings.Default.VultrApiKey); }
-        }
-
-        private VultrPlatform MockPlatform
-        {
-            get { return new VultrPlatform("abc123", TestURL); }
         }
 
         private Plan Plan
@@ -118,18 +110,17 @@ namespace tests.Platforms.Vultr
         {
             var script = new Script("myscript", ScriptType.Boot, "this is my script");
 
-            var handlers = new List<CustomMockHttpHandler>()
-            {
+            using var requests = new MockRequests(
                 new CustomMockHttpHandler(
                     "/startupscript/list", "GET", (req, rsp, prm) => ""),
                 new CustomMockHttpHandler(
                     "/startupscript/create", "POST", CreateStartupScript)
-            };
-            using var _ = new MockServer(TestPort, handlers.GetMockHttpHandlers());
-            MockPlatform.Provision(script);
+            );
+            var platform = new VultrPlatform("abc123", requests.URL);
+            platform.Provision(script);
 
-            Assert.Equal(1, handlers[0].Called);
-            Assert.Equal(1, handlers[1].Called);
+            Assert.Equal(1, requests[0].Called);
+            Assert.Equal(1, requests[1].Called);
         }
 
         private string CreateStartupScript(
