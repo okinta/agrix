@@ -18,6 +18,17 @@ namespace tests.Platforms.Vultr
                 APPID = "123",
                 tag = "test"
             }));
+
+            Assert.True(new Server()
+            {
+                APPID = "123",
+                tag = "test"
+            }.IsEquivalent(new Server()
+            {
+                APPID = "123",
+                tag = "test",
+                default_password = "698hrg"
+            }));
         }
 
         [Fact]
@@ -31,17 +42,6 @@ namespace tests.Platforms.Vultr
             {
                 APPID = "123",
                 tag = "test"
-            }));
-
-            Assert.False(new Server()
-            {
-                APPID = "123",
-                tag = "test"
-            }.IsEquivalent(new Server()
-            {
-                APPID = "123",
-                tag = "test",
-                SUBID = "156"
             }));
         }
     }

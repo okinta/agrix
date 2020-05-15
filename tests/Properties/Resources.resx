@@ -155,7 +155,7 @@
         "gateway_v4": "123.123.123.1",
         "power_status": "running",
         "server_state": "ok",
-        "VPSPLANID": "28",
+        "VPSPLANID": "203",
         "v6_main_ip": "2001:DB8:1000::100",
         "v6_network_size": "64",
         "v6_network": "2001:DB8:1000::",

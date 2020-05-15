@@ -28,10 +28,14 @@ namespace agrix.Platforms.Vultr
             foreach (var property in server.GetType().GetProperties())
             {
                 var serverValue = property.GetValue(server);
+                if (serverValue is null) continue;
+                if (serverValue.ToString() == "0") continue;
+
                 var otherValue = property.GetValue(other);
                 if (serverValue == otherValue) continue;
+                if (serverValue.Equals(otherValue)) continue;
 
-                if (serverValue?.GetType() == typeof(double)
+                if (serverValue.GetType() == typeof(double)
                     && otherValue?.GetType() == typeof(double)
                     && Math.Abs((double)serverValue - (double)otherValue) < 0.1)
                         continue;

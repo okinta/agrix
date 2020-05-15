@@ -198,6 +198,30 @@ namespace tests.Platforms.Vultr
             requests.AssertAllCalledOnce();
         }
 
+        /// <summary>
+        /// Tests that VultrPlatform.Provision(Server) doesn't change a server that
+        /// already matches what the configuration defines.
+        /// </summary>
+        [Fact]
+        public void TestProvisionDontUpdateUnchangedServer()
+        {
+            var server = new Server(
+                new OperatingSystem(name: "CentOS 6 x64"),
+                new Plan(2, 4096, "SSD"), Region, label: "my new server", tag: "mytag"
+            );
+
+            using var requests = new MockVultrRequests(
+                new CustomMockHttpHandler("/os/list", Resources.VultrOSList),
+                new CustomMockHttpHandler("/regions/list?availability=yes",
+                    Resources.VultrRegionsList),
+                new CustomMockHttpHandler("/plans/list?type=all",
+                    Resources.VultrPlansList),
+                new CustomMockHttpHandler("/server/list", Resources.VultrServerList)
+            );
+            requests.Platform.Provision(server);
+            requests.AssertAllCalledOnce();
+        }
+
         #endregion
 
         #region Test VultrPlatform.Provision(Script, bool)
