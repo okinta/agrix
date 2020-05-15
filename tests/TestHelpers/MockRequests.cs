@@ -1,6 +1,5 @@
 ﻿using MockHttpServer;
 using System;
-using Xunit;
 
 namespace tests.TestHelpers
 {
@@ -54,10 +53,24 @@ namespace tests.TestHelpers
         /// <summary>
         /// Asserts that all requests have been called exactly once.
         /// </summary>
+        /// <exception cref="RequestNotCalledException">If a request was not
+        /// called.</exception>
+        /// <exception cref="RequestCalledTooOftenException">If a request was called
+        /// more than once.</exception>
         public void AssertAllCalledOnce()
         {
             foreach (var handler in Handlers)
-                Assert.Equal(1, handler.Called);
+            {
+                if (handler.Called == 0)
+                    throw new RequestNotCalledException(
+                        URL, string.Format("{0} was not called", URL));
+
+                if (handler.Called > 1)
+                    throw new RequestCalledTooOftenException(
+                        URL, 1, handler.Called, string.Format(
+                            "{0} was only expected to be called once. Instead, was called {1} times",
+                            URL, handler.Called));
+            }
         }
     }
 }
