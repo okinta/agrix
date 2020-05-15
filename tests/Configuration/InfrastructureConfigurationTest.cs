@@ -119,44 +119,65 @@ namespace tests.Configuration
 @"firewalls:
   - name: ssh
     rules:
-      - ip-type: v4
-        protocol: tcp
+      - protocol: tcp
         source: 0.0.0.0/0
         port: 22
 
-      - ip-type: v4
-        protocol: tcp
+      - protocol: tcp
         source: 0.0.0.0/0
         port: 3389
 
   - name: myapp
     rules:
-      - ip-type: v4
-        protocol: udp
+      - protocol: udp
         source: 172.0.24.1/20
-        ports: 8000 - 8100"), AgrixConfig);
+        ports: 8000 - 8100
+
+      - protocol: tcp
+        source: cloudflare
+        port: 80"), AgrixConfig);
 
             Assert.Equal(2, firewalls.Count);
+
+            var firewall = firewalls[0];
             Assert.Equal("ssh", firewalls[0].Name);
             Assert.Equal(2, firewalls[0].Rules.Count);
 
-            Assert.Equal(IPType.V4, firewalls[0].Rules[0].IPType);
-            Assert.Equal(Protocol.TCP, firewalls[0].Rules[0].Protocol);
-            Assert.Equal("0.0.0.0/0", firewalls[0].Rules[0].Source);
-            Assert.Empty(firewalls[0].Rules[0].Ports.Except(new List<int>() { 22 }));
+            var rule = firewall.Rules[0];
+            Assert.Equal(IPType.V4, rule.IPType);
+            Assert.Equal(Protocol.TCP, rule.Protocol);
+            Assert.Equal("", rule.Source);
+            Assert.Equal("0.0.0.0", rule.Subnet);
+            Assert.Equal(0, rule.SubnetSize);
+            Assert.Equal("22", rule.Ports);
 
-            Assert.Equal(IPType.V4, firewalls[0].Rules[1].IPType);
-            Assert.Equal(Protocol.TCP, firewalls[0].Rules[1].Protocol);
-            Assert.Equal("0.0.0.0/0", firewalls[0].Rules[1].Source);
-            Assert.Empty(firewalls[0].Rules[1].Ports.Except(new List<int>() { 3389 }));
+            rule = firewall.Rules[1];
+            Assert.Equal(IPType.V4, rule.IPType);
+            Assert.Equal(Protocol.TCP, rule.Protocol);
+            Assert.Equal("", rule.Source);
+            Assert.Equal("0.0.0.0", rule.Subnet);
+            Assert.Equal(0, rule.SubnetSize);
+            Assert.Equal("3389", rule.Ports);
 
-            Assert.Equal("myapp", firewalls[1].Name);
-            Assert.Equal(1, firewalls[1].Rules.Count);
+            firewall = firewalls[1];
+            Assert.Equal("myapp", firewall.Name);
+            Assert.Equal(2, firewall.Rules.Count);
 
-            Assert.Equal(IPType.V4, firewalls[1].Rules[0].IPType);
-            Assert.Equal(Protocol.UDP, firewalls[1].Rules[0].Protocol);
-            Assert.Equal("172.0.24.1/20", firewalls[1].Rules[0].Source);
-            Assert.Empty(firewalls[1].Rules[0].Ports.Except(Enumerable.Range(8000, 8100)));
+            rule = firewall.Rules[0];
+            Assert.Equal(IPType.V4, rule.IPType);
+            Assert.Equal(Protocol.UDP, rule.Protocol);
+            Assert.Equal("", rule.Source);
+            Assert.Equal("172.0.24.1", rule.Subnet);
+            Assert.Equal(20, rule.SubnetSize);
+            Assert.Equal("8000:8100", rule.Ports);
+
+            rule = firewall.Rules[1];
+            Assert.Equal(IPType.V4, rule.IPType);
+            Assert.Equal(Protocol.TCP, rule.Protocol);
+            Assert.Equal("cloudflare", rule.Source);
+            Assert.Equal("", rule.Subnet);
+            Assert.Equal(0, rule.SubnetSize);
+            Assert.Equal("80", rule.Ports);
         }
 
         [Fact]
