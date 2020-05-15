@@ -112,7 +112,7 @@ namespace tests.Platforms.Vultr
                     Resources.VultrRegionsList),
                 new CustomMockHttpHandler("/plans/list?type=all",
                     Resources.VultrPlansList),
-                // new CustomMockHttpHandler("/server/list"),
+                new CustomMockHttpHandler("/server/list"),
                 new CustomMockHttpHandler("/server/create",
                     "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&notify_activate=no",
                     "{\"SUBID\": \"1312965\"}")
@@ -137,7 +137,8 @@ namespace tests.Platforms.Vultr
                 new CustomMockHttpHandler("/server/list")
             );
             requests.Platform.Provision(server, dryrun: true);
-            // requests.AssertAllCalledOnce();
+            requests.AssertAllCalledOnce();
+        }
         }
 
         #endregion

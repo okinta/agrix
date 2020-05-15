@@ -70,6 +70,47 @@ namespace agrix.Platforms.Vultr
             WriteLine("notify_activate", notify_activate);
             WriteLine("tag", tag);
 
+            var existingServers = Client.Server.GetServers();
+            bool predicate(KeyValuePair<
+                string, global::Vultr.API.Models.Server> existingServer) =>
+                    existingServer.Value.DCID == DCID.ToString()
+                    && existingServer.Value.label == label;
+
+            if (existingServers.Servers != null
+                && existingServers.Servers.Exists(predicate))
+            {
+                var existingServer = existingServers.Servers.Single(predicate);
+                Console.WriteLine("Server with label {0} in DCID {1} already exists",
+                    label, DCID);
+
+                var vultrServer = new global::Vultr.API.Models.Server()
+                {
+                    OSID = OSID.ToString(),
+                    tag = tag,
+                    label = label,
+                    VPSPLANID = VPSPLANID.ToString(),
+                    APPID = APPID?.ToString(),
+                    DCID = DCID.ToString()
+                };
+
+                var subid = int.Parse(existingServer.Key);
+                if (!vultrServer.IsEquivalent(existingServer.Value))
+                {
+                    Console.WriteLine("Server is different. Deleting server {0}", subid);
+
+                    if (!dryrun)
+                    {
+                        Client.Server.DestroyServer(subid);
+                        Console.WriteLine("Deleted server {0}", subid);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Server {0} is the same. Moving on.", subid);
+                    return;
+                }
+            }
+
             if (!dryrun)
             {
                 var result = Client.Server.CreateServer(
