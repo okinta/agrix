@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -45,7 +46,7 @@ namespace agrix.Program
         /// <param name="assembly">The Assembly to use for loading platforms.</param>
         /// <param name="args">The CLI arguments provided to the program.</param>
         /// <returns>The application status code.</returns>
-        public static int Main(Assembly assembly, string[] args)
+        public static int Main(Assembly assembly, params string[] args)
         {
             var program = new Program(assembly);
             Parser.Default.ParseArguments<
@@ -53,7 +54,8 @@ namespace agrix.Program
                 ValidateOptions
             >(args)
                 .WithParsed<ProvisionOptions>(program.Provision)
-                .WithParsed<ValidateOptions>(program.Validate);
+                .WithParsed<ValidateOptions>(program.Validate)
+                .WithNotParsed(program.HandleParseError);
             return (int)program.ExitCode;
         }
 
@@ -87,6 +89,11 @@ namespace agrix.Program
             }
 
             Console.WriteLine("Configuration is valid");
+        }
+
+        private void HandleParseError(IEnumerable<Error> errors)
+        {
+            ExitCode = ExitCode.InvalidArguments;
         }
 
         /// <summary>
