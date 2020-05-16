@@ -15,7 +15,7 @@ namespace agrix.Configuration.Parsers
         /// </summary>
         /// <param name="node">The YAML configuration to parse.</param>
         /// <returns>The Server instance parsed from the given YAML.</returns>
-        public Server Parse(YamlNode node)
+        public virtual Server Parse(YamlNode node)
         {
             if (node.NodeType != YamlNodeType.Mapping)
                 throw new InvalidCastException(

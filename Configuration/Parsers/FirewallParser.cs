@@ -6,16 +6,29 @@ using YamlDotNet.RepresentationModel;
 namespace agrix.Configuration.Parsers
 {
     /// <summary>
+    /// Creates a FirewallRule instance from a YAML configuration.
+    /// </summary>
+    /// <param name="node">The YAML configuration to parse.</param>
+    /// <returns>The FirewallRule instance parsed from the given YAML.</returns>
+    internal delegate FirewallRule ParseFirewallRule(YamlNode node);
+
+    /// <summary>
     /// Parses a firewall configuration.
     /// </summary>
     internal class FirewallParser
     {
         /// <summary>
+        /// Delegate used to create a FirewallRule instance from a YAML configuration. Can
+        /// be overridden in subclasses.
+        /// </summary>
+        protected ParseFirewallRule ParseRule = new FirewallRuleParser().Parse;
+
+        /// <summary>
         /// Creates a Firewall instance from a YAML configuration.
         /// </summary>
         /// <param name="node">The YAML configuration to parse.</param>
         /// <returns>The Firewall instance parsed from the given YAML.</returns>
-        public Firewall Parse(YamlNode node)
+        public virtual Firewall Parse(YamlNode node)
         {
             if (node.NodeType != YamlNodeType.Mapping)
                 throw new InvalidCastException(
@@ -26,10 +39,9 @@ namespace agrix.Configuration.Parsers
             var name = firewallItem.GetKey("name");
 
             var rules = new List<FirewallRule>();
-            var parser = new FirewallRuleParser();
 
             foreach (var childNode in firewallItem.GetSequence("rules", required: true))
-                rules.Add(parser.Parse(childNode));
+                rules.Add(ParseRule(childNode));
 
             return new Firewall(name, rules);
         }

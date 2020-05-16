@@ -8,12 +8,51 @@ using YamlDotNet.RepresentationModel;
 namespace agrix.Configuration
 {
     /// <summary>
+    /// Creates a Firewall instance from a YAML configuration.
+    /// </summary>
+    /// <param name="node">The YAML configuration to parse.</param>
+    /// <returns>The Firewall instance parsed from the given YAML.</returns>
+    internal delegate Firewall ParseFirewall(YamlNode node);
+
+    /// <summary>
+    /// Creates a Script instance from a YAML configuration.
+    /// </summary>
+    /// <param name="node">The YAML configuration to parse.</param>
+    /// <returns>The Script instance parsed from the given YAML.</returns>
+    internal delegate Script ParseScript(YamlNode node);
+
+    /// <summary>
+    /// Creates a Server instance from a YAML configuration.
+    /// </summary>
+    /// <param name="node">The YAML configuration to parse.</param>
+    /// <returns>The Server instance parsed from the given YAML.</returns>
+    internal delegate Server ParseServer(YamlNode node);
+
+    /// <summary>
     /// Describes methods for the IAgrixConfig to load configuration from YAML. Can be
     /// used as a starting point to customize loading of configurations for individual
     /// platforms.
     /// </summary>
     internal abstract class AgrixConfig : IAgrixConfig
     {
+        /// <summary>
+        /// Delegate used to create a Firewall instance from a YAML configuration. Can
+        /// be overridden in subclasses.
+        /// </summary>
+        protected ParseFirewall ParseFirewall { get; set; } = new FirewallParser().Parse;
+
+        /// <summary>
+        /// Delegate used to create a Script instance from a YAML configuration. Can
+        /// be overridden in subclasses.
+        /// </summary>
+        protected ParseScript ParseScript { get; set; } = new ScriptParser().Parse;
+
+        /// <summary>
+        /// Delegate used to create a Server instance from a YAML configuration. Can
+        /// be overridden in subclasses.
+        /// </summary>
+        protected ParseServer ParseServer { get; set; } = new ServerParser().Parse;
+
         /// <summary>
         /// Loads Server configurations from YAML.
         /// </summary>
@@ -26,7 +65,7 @@ namespace agrix.Configuration
         /// present in the YAML.</exception>
         /// <exception cref="InvalidCastException">If a YAML key is in an invalid
         /// format.</exception>
-        public IList<Server> LoadServers(YamlMappingNode node)
+        public virtual IList<Server> LoadServers(YamlMappingNode node)
         {
             var servers = new List<Server>();
             var serverItems = node.GetSequence("servers", required: false);
@@ -34,10 +73,8 @@ namespace agrix.Configuration
             // If servers are empty, return an empty list
             if (serverItems is null) return servers;
 
-            var parser = new ServerParser();
-
             foreach (var serverItemNode in serverItems)
-                servers.Add(parser.Parse(serverItemNode));
+                servers.Add(ParseServer(serverItemNode));
 
             return servers;
         }
@@ -54,7 +91,7 @@ namespace agrix.Configuration
         /// present in the YAML.</exception>
         /// <exception cref="InvalidCastException">If a YAML key is in an invalid
         /// format.</exception>
-        public IList<Script> LoadScripts(YamlMappingNode node)
+        public virtual IList<Script> LoadScripts(YamlMappingNode node)
         {
             var scripts = new List<Script>();
             var scriptItems = node.GetSequence("scripts", required: false);
@@ -62,10 +99,8 @@ namespace agrix.Configuration
             // If scripts are empty, return an empty list
             if (scriptItems is null) return scripts;
 
-            var parser = new ScriptParser();
-
             foreach (var scriptItemNode in scriptItems)
-                scripts.Add(parser.Parse(scriptItemNode));
+                scripts.Add(ParseScript(scriptItemNode));
 
             return scripts;
         }
@@ -82,7 +117,7 @@ namespace agrix.Configuration
         /// present in the YAML.</exception>
         /// <exception cref="InvalidCastException">If a YAML key is in an invalid
         /// format.</exception>
-        public IList<Firewall> LoadFirewalls(YamlMappingNode node)
+        public virtual IList<Firewall> LoadFirewalls(YamlMappingNode node)
         {
             var firwalls = new List<Firewall>();
             var firwallItems = node.GetSequence("firewalls", required: false);
@@ -90,10 +125,8 @@ namespace agrix.Configuration
             // If firwalls are empty, return an empty list
             if (firwallItems is null) return firwalls;
 
-            var parser = new FirewallParser();
-
             foreach (var firwallItemNode in firwallItems)
-                firwalls.Add(parser.Parse(firwallItemNode));
+                firwalls.Add(ParseFirewall(firwallItemNode));
 
             return firwalls;
         }

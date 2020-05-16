@@ -18,7 +18,7 @@ namespace agrix.Configuration.Parsers
         /// </summary>
         /// <param name="node">The YAML configuration to parse.</param>
         /// <returns>The FirewallRule instance parsed from the given YAML.</returns>
-        public FirewallRule Parse(YamlNode node)
+        public virtual FirewallRule Parse(YamlNode node)
         {
             if (node.NodeType != YamlNodeType.Mapping)
                 throw new ArgumentException(string.Format(
