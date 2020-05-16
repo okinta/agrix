@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System;
 
@@ -26,15 +27,27 @@ namespace agrix.Program
     {
         private ExitCode ExitCode { get; set; } = ExitCode.Success;
 
-        private Program() { }
+        private Assembly Assembly { get; }
+
+        private Program(Assembly assembly) { Assembly = assembly; }
 
         /// <summary>
         /// Entrypoint for the program. Processes CLI arguments and runs the application.
         /// </summary>
         /// <param name="args">The CLI arguments provided to the program.</param>
-        public static int Main(string[] args)
+        /// <returns>The application status code.</returns>
+        public static int Main(string[] args) { return Main(null, args); }
+
+        /// <summary>
+        /// Test entrypoint for the program. Processes CLI arguments and runs the
+        /// application.
+        /// </summary>
+        /// <param name="assembly">The Assembly to use for loading platforms.</param>
+        /// <param name="args">The CLI arguments provided to the program.</param>
+        /// <returns>The application status code.</returns>
+        public static int Main(Assembly assembly, string[] args)
         {
-            var program = new Program();
+            var program = new Program(assembly);
             Parser.Default.ParseArguments<
                 ProvisionOptions,
                 ValidateOptions
@@ -87,9 +100,8 @@ namespace agrix.Program
         {
             string input;
             if (string.IsNullOrEmpty(options.Filename))
-            {
                 input = StdInput.Read();
-            }
+
             else
             {
                 try
@@ -112,10 +124,8 @@ namespace agrix.Program
             }
 
             if (string.IsNullOrEmpty(options.ApiKey))
-            {
                 options.ApiKey = Environment.GetEnvironmentVariable(
                     Constants.EnvPlatformApiKey);
-            }
 
             if (string.IsNullOrEmpty(options.ApiKey))
             {
@@ -126,7 +136,7 @@ namespace agrix.Program
                 return null;
             }
 
-            return new Agrix(input, options.ApiKey);
+            return new Agrix(input, options.ApiKey, Assembly);
         }
     }
 }
