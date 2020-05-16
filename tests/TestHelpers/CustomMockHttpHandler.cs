@@ -1,7 +1,6 @@
 ﻿using MockHttpServer;
 using System.Collections.Generic;
 using System.Net;
-using System;
 using Xunit;
 
 namespace tests.TestHelpers
@@ -11,6 +10,20 @@ namespace tests.TestHelpers
     /// </summary>
     internal class CustomMockHttpHandler
     {
+        /// <summary>
+        /// Called when a mock request is received.
+        /// </summary>
+        /// <param name="req">The HttpListenerRequest that represents the mock
+        /// request.</param>
+        /// <param name="rsp">The HttpListenerResponse instance that will be sent back
+        /// for the mock request.</param>
+        /// <param name="prm">The list of parameters received in the URL.</param>
+        /// <returns>The response content to send back for the mock request.</returns>
+        public delegate string Handler(
+            HttpListenerRequest req,
+            HttpListenerResponse rsp,
+            Dictionary<string, string> prm);
+
         /// <summary>
         /// Gets the number of times the MockHttpHandler was called.
         /// </summary>
@@ -34,10 +47,7 @@ namespace tests.TestHelpers
         /// <summary>
         /// Gets the MockHttpHandler handler function.
         /// </summary>
-        public Func<
-            HttpListenerRequest,
-            HttpListenerResponse,
-            Dictionary<string, string>, string> HandlerFunction { get; }
+        public Handler HandlerFunction { get; }
 
         private string ExpectedResponse { get; } = "";
         private string ValidatedRequestResponse { get; } = "";
@@ -81,11 +91,7 @@ namespace tests.TestHelpers
         /// <param name="url">The URL to mock.</param>
         /// <param name="handlerFunction">The function to call when a mock request is
         /// received.</param>
-        public CustomMockHttpHandler(string url,
-            Func<
-                HttpListenerRequest,
-                HttpListenerResponse,
-                Dictionary<string, string>, string> handlerFunction) :
+        public CustomMockHttpHandler(string url, Handler handlerFunction) :
             this(url, handlerFunction, HttpMethods.POST) { }
 
         /// <summary>
@@ -96,11 +102,7 @@ namespace tests.TestHelpers
         /// <param name="handlerFunction">The function to call when a mock request is
         /// received.</param>
         /// <param name="httpMethod">The HTTP method to mock.</param>
-        public CustomMockHttpHandler(string url,
-            Func<
-                HttpListenerRequest,
-                HttpListenerResponse,
-                Dictionary<string, string>, string> handlerFunction,
+        public CustomMockHttpHandler(string url, Handler handlerFunction,
             HttpMethods httpMethod)
         {
             URL = url;
