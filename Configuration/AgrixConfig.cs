@@ -28,8 +28,7 @@ namespace agrix.Configuration
         /// <param name="parse">The delegate to use to parse the configuration.</param>
         /// <returns>The list of parsed configurations loaded from the given YAML.</returns>
         /// <exception cref="ArgumentNullException">If any arguments are null.</exception>
-        public virtual IList<T> Load<T>(string name, YamlNode node,
-            Parse<T> parse)
+        public virtual IList<T> Load<T>(string name, YamlNode node, Parse<T> parse)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentNullException("name", "name must not be empty");

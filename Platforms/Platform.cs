@@ -1,7 +1,6 @@
 ﻿using agrix.Configuration.Parsers;
 using agrix.Configuration;
 using agrix.Extensions;
-using agrix.Platforms.Vultr;
 using System.Collections.Generic;
 using System;
 using YamlDotNet.RepresentationModel;
@@ -33,24 +32,28 @@ namespace agrix.Platforms
         protected Parse<Server> ParseServer { get; set; } = new ServerParser().Parse;
 
         /// <summary>
+        /// The instance used to process YAML and call the relevant Parse{T} delegate.
+        /// </summary>
+        protected AgrixConfig Config { get; set; } = new AgrixConfig();
+
+        /// <summary>
         /// Loads infrastructure configuration from the given YAML.
         /// </summary>
         /// <param name="yaml">The YAML to load configuration from.</param>
         /// <returns>The infrastructure configuration loaded from the given YAML.</returns>
         public virtual Infrastructure Load(YamlMappingNode node)
         {
-            var config = new AgrixConfig();
             var infrastructure = new Infrastructure();
 
             var knownNodes = new Dictionary<string, Action<YamlNode>>
             {
                 ["platform"] = item => { },
                 ["servers"] = item =>
-                    infrastructure.AddItems(config.Load("servers", item, ParseServer)),
+                    infrastructure.AddItems(Config.Load("servers", item, ParseServer)),
                 ["scripts"] = item =>
-                    infrastructure.AddItems(config.Load("scripts", item, ParseScript)),
+                    infrastructure.AddItems(Config.Load("scripts", item, ParseScript)),
                 ["firewalls"] = item =>
-                    infrastructure.AddItems(config.Load("firewalls", item, ParseFirewall))
+                    infrastructure.AddItems(Config.Load("firewalls", item, ParseFirewall))
             };
 
             foreach (var item in node.Children)
