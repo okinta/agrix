@@ -36,18 +36,18 @@ namespace agrix.Platforms
         /// </summary>
         protected IParser Parser { get; set; } = new Parser();
 
-        protected Dictionary<string, Action<Infrastructure, YamlNode>> KnownNodes =
+        private Dictionary<string, Action<Infrastructure, YamlNode>> KnownNodes { get; } =
             new Dictionary<string, Action<Infrastructure, YamlNode>>();
 
+        /// <summary>
+        /// Instantiates a new instance.
+        /// </summary>
         public Platform()
         {
-            KnownNodes["platform"] = (infrastructure, item) => { };
-            KnownNodes["servers"] = (infrastructure, item) =>
-                infrastructure.AddItems(Parser.Load("servers", item, ParseServer));
-            KnownNodes["scripts"] = (infrastructure, item) =>
-                infrastructure.AddItems(Parser.Load("scripts", item, ParseScript));
-            KnownNodes["firewalls"] = (infrastructure, item) =>
-                infrastructure.AddItems(Parser.Load("firewalls", item, ParseFirewall));
+            AddNullParser("platform");
+            AddParser("servers", ParseServer);
+            AddParser("scripts", ParseScript);
+            AddParser("firewalls", ParseFirewall);
         }
 
         /// <summary>
@@ -85,5 +85,27 @@ namespace agrix.Platforms
         /// Tests the connection. Throws an exception if the connection is invalid.
         /// </summary>
         public abstract void TestConnection();
+
+        /// <summary>
+        /// Adds a parser that ignores an YAML node.
+        /// </summary>
+        /// <param name="name">The name of the node to ignore.</param>
+        protected void AddNullParser(string name)
+        {
+            KnownNodes[name] = (infrastructure, item) => { };
+        }
+
+        /// <summary>
+        /// Adds a parser to create instances from a YAML node.
+        /// </summary>
+        /// <typeparam name="T">The type of instances to create.</typeparam>
+        /// <param name="name">The name of the node to create instances from.</param>
+        /// <param name="parser">The parser to use to create instances from a YAML
+        /// node.</param>
+        protected void AddParser<T>(string name, Parse<T> parser)
+        {
+            KnownNodes[name] = (infrastructure, item) =>
+                infrastructure.AddItems(Parser.Load(name, item, parser));
+        }
     }
 }
