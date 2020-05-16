@@ -46,18 +46,16 @@ namespace agrix
         /// <param name="configuration">The YAML configuration to process.</param>
         /// <param name="apiKey">The platform API key to use for communicating with
         /// the platform.</param>
+        /// <exception cref="ArgumentNullException">If any arguments are null or
+        /// empty.</exception>
         public Agrix(string configuration, string apiKey)
         {
             if (string.IsNullOrEmpty(configuration))
-            {
                 throw new ArgumentNullException(
                     "configuration", "Configuration must not be empty");
-            }
 
             if (string.IsNullOrEmpty(apiKey))
-            {
                 throw new ArgumentNullException("apiKey", "API key must not be empty");
-            }
 
             ApiKey = apiKey;
             Configuration = configuration;

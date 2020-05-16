@@ -36,8 +36,8 @@ namespace agrix.Platforms
         /// </summary>
         protected IParser Parser { get; set; } = new Parser();
 
-        private Dictionary<string, Action<Infrastructure, YamlNode>> KnownNodes { get; } =
-            new Dictionary<string, Action<Infrastructure, YamlNode>>();
+        private Dictionary<string, Action<Infrastructure, YamlNode>> KnownParserNodes
+            { get; } = new Dictionary<string, Action<Infrastructure, YamlNode>>();
 
         /// <summary>
         /// Instantiates a new instance.
@@ -61,7 +61,7 @@ namespace agrix.Platforms
 
             foreach (var item in node.Children)
             {
-                if (!KnownNodes.TryGetValue(item.Key.GetTag(), out var action))
+                if (!KnownParserNodes.TryGetValue(item.Key.GetTag(), out var action))
                     throw new ArgumentException(string.Format(
                         "Unknown tag {0} (line {1})",
                         item.Key.GetTag(), item.Key.Start.Line));
@@ -92,7 +92,7 @@ namespace agrix.Platforms
         /// <param name="name">The name of the node to ignore.</param>
         protected void AddNullParser(string name)
         {
-            KnownNodes[name] = (infrastructure, item) => { };
+            KnownParserNodes[name] = (infrastructure, item) => { };
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace agrix.Platforms
         /// node.</param>
         protected void AddParser<T>(string name, Parse<T> parser)
         {
-            KnownNodes[name] = (infrastructure, item) =>
+            KnownParserNodes[name] = (infrastructure, item) =>
                 infrastructure.AddItems(Parser.Load(name, item, parser));
         }
     }
