@@ -2,6 +2,7 @@
 using agrix.Extensions;
 using agrix.Platforms.Vultr.Provisioning;
 using Server = agrix.Configuration.Server;
+using System.Collections.Generic;
 using System;
 using Vultr.API;
 using YamlDotNet.RepresentationModel;
@@ -41,26 +42,26 @@ namespace agrix.Platforms.Vultr
         {
             var config = new VultrAgrixConfig();
             var infrastructure = new Infrastructure();
+
+            var knownNodes = new Dictionary<string, Action<YamlNode>>
+            {
+                ["platform"] = item => { },
+                ["servers"] = item =>
+                    infrastructure.AddItems(config.LoadServers(item)),
+                ["scripts"] = item =>
+                    infrastructure.AddItems(config.LoadScripts(item)),
+                ["firewalls"] = item =>
+                    infrastructure.AddItems(config.LoadFirewalls(item))
+            };
+
             foreach (var item in node.Children)
             {
-                if (item.Key.GetTag() == "platform") continue;
-                else if (item.Key.GetTag() == "servers")
-                {
-                    infrastructure.AddItems(config.LoadServers(item.Value));
-                }
-                else if (item.Key.GetTag() == "scripts")
-                {
-                    infrastructure.AddItems(config.LoadScripts(item.Value));
-                }
-                else if (item.Key.GetTag() == "firewalls")
-                {
-                    infrastructure.AddItems(config.LoadFirewalls(item.Value));
-                }
-                else
-                {
-                    throw new ArgumentException(
-                        string.Format("Unknown tag {0}", item.Key.GetTag()));
-                }
+                if (!knownNodes.TryGetValue(item.Key.GetTag(), out var action))
+                    throw new ArgumentException(string.Format(
+                        "Unknown tag {0} (line {1})",
+                        item.Key.GetTag(), item.Key.Start.Line));
+
+                action(item.Value);
             }
 
             return infrastructure;
