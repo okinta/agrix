@@ -1,6 +1,7 @@
 ﻿using agrix.Configuration;
 using agrix.Platforms.Vultr.Provisioning;
 using Server = agrix.Configuration.Server;
+using System.Collections.Generic;
 using System;
 using Vultr.API;
 
@@ -34,38 +35,38 @@ namespace agrix.Platforms.Vultr
         /// will be outputted describing what would be done.</param>
         public override void Provision(Infrastructure infrastructure, bool dryrun = false)
         {
+            var mapping = new Dictionary<Type, Action<object, bool>>
+            {
+                [typeof(Firewall)] = (firewall, dryrun) =>
+                {
+                    var provisioner = new VultrFirewallProvisioner(Client);
+                    provisioner.Provision((Firewall)firewall, dryrun);
+                },
+
+                [typeof(Server)] = (server, dryrun) =>
+                {
+                    var provisioner = new VultrServerProvisioner(Client);
+                    provisioner.Provision((Server)server, dryrun);
+                },
+
+                [typeof(Script)] = (script, dryrun) =>
+                {
+                    var provisioner = new VultrScriptProvisioner(Client);
+                    provisioner.Provision((Script)script, dryrun);
+                }
+            };
+
             foreach (var type in infrastructure.Types)
             {
-                if (type == typeof(Firewall))
+                foreach (var item in infrastructure.GetItems(type))
                 {
-                    foreach (var firewall in infrastructure.GetItems<Firewall>())
-                    {
-                        var provisioner = new VultrFirewallProvisioner(Client);
-                        provisioner.Provision(firewall, dryrun);
-                    }
-                }
-                else if (type == typeof(Script))
-                {
-                    foreach (var script in infrastructure.GetItems<Script>())
-                    {
-                        var provisioner = new VultrScriptProvisioner(Client);
-                        provisioner.Provision(script, dryrun);
-                    }
-                }
-                else if (type == typeof(Server))
-                {
-                    foreach (var server in infrastructure.GetItems<Server>())
-                    {
-                        var provisioner = new VultrServerProvisioner(Client);
-                        provisioner.Provision(server, dryrun);
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException("unknown type");
+                    if (!mapping.TryGetValue(type, out var action))
+                        throw new ArgumentException(string.Format(
+                            "Unknown item type {0}", type));
+
+                    action(item, dryrun);
                 }
             }
-            throw new NotImplementedException();
         }
 
         /// <summary>

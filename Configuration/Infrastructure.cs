@@ -51,5 +51,15 @@ namespace agrix.Configuration
 
             return items;
         }
+
+        /// <summary>
+        /// Gets the items defined in this configuration.
+        /// </summary>
+        /// <param name="type">The type of items to retrieve.</typeparam>
+        /// <returns>The list of items in this configuration.</returns>
+        public IReadOnlyList<object> GetItems(Type type)
+        {
+            return (IReadOnlyList<object>)Items[type];
+        }
     }
 }
