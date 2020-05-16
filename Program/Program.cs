@@ -27,29 +27,38 @@ namespace agrix.Program
     /// </summary>
     internal class Program
     {
-        private ExitCode ExitCode { get; set; } = ExitCode.Success;
-
         private Assembly Assembly { get; }
+        private ExitCode ExitCode { get; set; } = ExitCode.Success;
+        private StdInput.ReadLine ReadLine { get; }
 
-        private Program(Assembly assembly) { Assembly = assembly; }
+        private Program(Assembly assembly, StdInput.ReadLine readLine)
+        {
+            Assembly = assembly;
+            ReadLine = readLine;
+        }
 
         /// <summary>
         /// Entrypoint for the program. Processes CLI arguments and runs the application.
         /// </summary>
         /// <param name="args">The CLI arguments provided to the program.</param>
         /// <returns>The application status code.</returns>
-        public static int Main(string[] args) { return Main(null, args); }
+        public static int Main(string[] args)
+        {
+            return Main(null, Console.ReadLine, args);
+        }
 
         /// <summary>
         /// Test entrypoint for the program. Processes CLI arguments and runs the
         /// application.
         /// </summary>
         /// <param name="assembly">The Assembly to use for loading platforms.</param>
+        /// <param name="readLine">The function to use to read user input.</param>
         /// <param name="args">The CLI arguments provided to the program.</param>
         /// <returns>The application status code.</returns>
-        public static int Main(Assembly assembly, params string[] args)
+        public static int Main(
+            Assembly assembly, StdInput.ReadLine readLine, params string[] args)
         {
-            var program = new Program(assembly);
+            var program = new Program(assembly, readLine);
             Parser.Default.ParseArguments<
                 ProvisionOptions,
                 ValidateOptions
@@ -113,7 +122,7 @@ namespace agrix.Program
         {
             string input;
             if (string.IsNullOrEmpty(options.Filename))
-                input = StdInput.Read();
+                input = StdInput.Read(ReadLine);
 
             else
             {
