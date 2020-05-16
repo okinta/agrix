@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System;
+﻿using System;
 
 namespace agrix.Configuration
 {
@@ -46,7 +45,7 @@ namespace agrix.Configuration
         /// <summary>
         /// Gets the size of the subnet this firewall rule applies to.
         /// </summary>
-        public int SubnetSize { get; }
+        public int? SubnetSize { get; }
 
         /// <summary>
         /// Gets the source that's allowed through this firewall rule.
@@ -85,7 +84,7 @@ namespace agrix.Configuration
             Protocol = protocol;
             Source = source;
             Subnet = "";
-            SubnetSize = 0;
+            SubnetSize = null;
         }
 
         /// <summary>

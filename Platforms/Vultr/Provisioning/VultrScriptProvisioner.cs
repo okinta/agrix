@@ -97,7 +97,7 @@ namespace agrix.Platforms.Vultr.Provisioning
                 if (!dryrun)
                 {
                     var result = Client.StartupScript.CreateStartupScript(
-                    script.Name, script.Content, type);
+                        script.Name, script.Content, type);
                     Console.WriteLine(
                         "Created script with ID {0}", result.StartupScript.SCRIPTID);
                 }

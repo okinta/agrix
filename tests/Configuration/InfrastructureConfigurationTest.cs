@@ -176,7 +176,7 @@ namespace tests.Configuration
             Assert.Equal(Protocol.TCP, rule.Protocol);
             Assert.Equal("cloudflare", rule.Source);
             Assert.Equal("", rule.Subnet);
-            Assert.Equal(0, rule.SubnetSize);
+            Assert.Null(rule.SubnetSize);
             Assert.Equal("80", rule.Ports);
         }
 
