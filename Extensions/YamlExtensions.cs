@@ -13,6 +13,34 @@ namespace agrix.Extensions
     internal static class YamlExtensions
     {
         /// <summary>
+        /// Gets the root mapping node in the YAML document.
+        /// </summary>
+        /// <param name="yamlConfig">The YAML document to get the root node from.</param>
+        /// <returns>The root mapping node in the YAML document.</returns>
+        public static YamlMappingNode GetRootNode(this YamlStream yamlConfig)
+        {
+            if (yamlConfig is null)
+                throw new ArgumentNullException("yamlConfig", "must not be null");
+
+            if (yamlConfig.Documents.Count == 0)
+                throw new ArgumentException(
+                    "config", "YAML config must have a document root");
+
+            return (YamlMappingNode)yamlConfig.Documents[0].RootNode;
+        }
+
+        /// <summary>
+        /// Gets the tag (name) of the node.
+        /// </summary>
+        /// <param name="node">The node to get the tag for.</param>
+        /// <returns>The tag of the node.</returns>
+        public static string GetTag(this YamlNode node)
+        {
+            return node.NodeType == YamlNodeType.Scalar ?
+                ((YamlScalarNode)node).Value : node.Tag;
+        }
+
+        /// <summary>
         /// Gets a child node.
         /// </summary>
         /// <param name="node">The node to retrieve the child from.</param>

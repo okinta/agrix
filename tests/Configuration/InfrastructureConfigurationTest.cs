@@ -6,34 +6,36 @@ using System;
 using tests.Properties;
 using Xunit;
 using YamlDotNet.RepresentationModel;
+using agrix.Platforms.Vultr.Provisioning;
+using agrix.Configuration.Parsers;
+using agrix.Extensions;
+using agrix;
 
 namespace tests.Configuration
 {
+    // TODO: Rename
     public class InfrastructureConfigurationTest
     {
         private const string ApiKey = "abc123";
 
-        private static readonly IAgrixConfig AgrixConfig = new VultrAgrixConfig();
-
         [Fact]
         public void TestLoadServers()
         {
-            var servers = InfrastructureConfiguration.LoadServers(LoadYaml(), AgrixConfig);
+            var servers = new VultrAgrixConfig().LoadServers(LoadYaml());
             Assert.Equal(3, servers.Count);
         }
 
         [Fact]
         public void TestLoadEmptyServers()
         {
-            var servers = InfrastructureConfiguration.LoadServers(
-                LoadYaml("platform: vultr"), AgrixConfig);
+            var servers = new VultrAgrixConfig().LoadServers(LoadYaml("platform: vultr"));
             Assert.Equal(0, servers.Count);
         }
 
         [Fact]
         public void TestLoadUserData()
         {
-            var servers = InfrastructureConfiguration.LoadServers(LoadYaml(
+            var servers = new VultrAgrixConfig().LoadServers(LoadYaml(
 @"servers:
   - os:
       iso: alpine.iso
@@ -42,7 +44,7 @@ namespace tests.Configuration
       memory: 4096
       type: SSD
     region: Chicago
-    userdata: test data"), AgrixConfig);
+    userdata: test data"));
             Assert.Equal(1, servers.Count);
             Assert.Equal("test data", servers[0].UserData);
         }
@@ -50,7 +52,7 @@ namespace tests.Configuration
         [Fact]
         public void TestLoadJsonUserData()
         {
-            var servers = InfrastructureConfiguration.LoadServers(LoadYaml(
+            var servers = new VultrAgrixConfig().LoadServers(LoadYaml(
 @"servers:
   - os:
       iso: alpine.iso
@@ -62,7 +64,7 @@ namespace tests.Configuration
     userdata:
       my-array:
         - 1
-        - 2"), AgrixConfig);
+        - 2"));
             Assert.Equal(1, servers.Count);
             Assert.Equal("{\"my-array\": [\"1\", \"2\"]}", servers[0].UserData);
         }
@@ -70,14 +72,14 @@ namespace tests.Configuration
         [Fact]
         public void TestLoadEmptyScripts()
         {
-            var scripts = InfrastructureConfiguration.LoadScripts(LoadYaml(), AgrixConfig);
+            var scripts = new VultrAgrixConfig().LoadScripts(LoadYaml());
             Assert.Equal(0, scripts.Count);
         }
 
         [Fact]
         public void TestLoadScripts()
         {
-            var scripts = InfrastructureConfiguration.LoadScripts(LoadYaml(
+            var scripts = new VultrAgrixConfig().LoadScripts(LoadYaml(
 @"scripts:
   - name: test
     type: boot
@@ -87,7 +89,7 @@ namespace tests.Configuration
     type: boot
     content: |
       #!/usr/bin/env bash
-      echo hello"), AgrixConfig);
+      echo hello"));
             Assert.Equal(2, scripts.Count);
             Assert.Equal("test", scripts[0].Name);
             Assert.Equal(ScriptType.Boot, scripts[0].Type);
@@ -103,17 +105,17 @@ namespace tests.Configuration
         public void TestLoadInvalidTypeScript()
         {
             Assert.Throws<ArgumentException>(() =>
-                InfrastructureConfiguration.LoadScripts(LoadYaml(
+                new VultrAgrixConfig().LoadScripts(LoadYaml(
 @"scripts:
   - name: test
     type: tony
-    content: this is a test script"), AgrixConfig));
+    content: this is a test script")));
         }
 
         [Fact]
         public void TestLoadFirewalls()
         {
-            var firewalls = InfrastructureConfiguration.LoadFirewalls(LoadYaml(
+            var firewalls = new VultrAgrixConfig().LoadFirewalls(LoadYaml(
 @"firewalls:
   - name: ssh
     rules:
@@ -133,7 +135,7 @@ namespace tests.Configuration
 
       - protocol: tcp
         source: cloudflare
-        port: 80"), AgrixConfig);
+        port: 80"));
 
             Assert.Equal(2, firewalls.Count);
 
@@ -181,24 +183,25 @@ namespace tests.Configuration
         [Fact]
         public void TestLoadPlatform()
         {
-            var platform = InfrastructureConfiguration.LoadPlatform(LoadYaml(), ApiKey);
+            var agrix = new Agrix(Encoding.Default.GetString(Resources.agrix), ApiKey);
+            var platform = agrix.LoadPlatform();
             Assert.Equal(typeof(VultrPlatform), platform.GetType());
         }
 
-        private YamlStream LoadYaml()
+        private YamlMappingNode LoadYaml()
         {
             var input = new StringReader(Encoding.Default.GetString(Resources.agrix));
             var yaml = new YamlStream();
             yaml.Load(input);
-            return yaml;
+            return yaml.GetRootNode();
         }
 
-        private YamlStream LoadYaml(string content)
+        private YamlMappingNode LoadYaml(string content)
         {
             var input = new StringReader(content);
             var yaml = new YamlStream();
             yaml.Load(input);
-            return yaml;
+            return yaml.GetRootNode();
         }
     }
 }

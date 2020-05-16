@@ -1,7 +1,10 @@
 ﻿using agrix.Configuration;
+using agrix.Extensions;
 using agrix.Platforms.Vultr.Provisioning;
 using Server = agrix.Configuration.Server;
+using System;
 using Vultr.API;
+using YamlDotNet.RepresentationModel;
 
 namespace agrix.Platforms.Vultr
 {
@@ -30,39 +33,83 @@ namespace agrix.Platforms.Vultr
         }
 
         /// <summary>
-        /// Provisions a Server using the given configuration.
+        /// Loads infrastructure configuration from the given YAML.
         /// </summary>
-        /// <param name="server">The Server configuration to provision.</param>
-        /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
-        /// provision commands will not be sent to the platform and instead messaging
-        /// will be outputted describing what would be done.</param>
-        public void Provision(Server server, bool dryrun = false)
+        /// <param name="yaml">The YAML to load configuration from.</param>
+        /// <returns>The infrastructure configuration loaded from the given YAML.</returns>
+        public Infrastructure Load(YamlMappingNode node)
         {
-            new VultrServerProvisioner(Client).Provision(server, dryrun);
+            var config = new VultrAgrixConfig();
+            var infrastructure = new Infrastructure();
+            foreach (var item in node.Children)
+            {
+                if (item.Key.GetTag() == "platform") continue;
+                else if (item.Key.GetTag() == "servers")
+                {
+                    infrastructure.AddItems(
+                        config.LoadServers(node));
+                }
+                else if (item.Key.GetTag() == "scripts")
+                {
+                    infrastructure.AddItems(
+                        config.LoadScripts(node));
+                }
+                else if (item.Key.GetTag() == "firewalls")
+                {
+                    infrastructure.AddItems(
+                        config.LoadFirewalls(node));
+                }
+                else
+                {
+                    throw new ArgumentException(
+                        string.Format("Unknown tag {0}", item.Key.GetTag()));
+                }
+            }
+
+            return infrastructure;
         }
 
         /// <summary>
-        /// Provisions a Script using the given configuration.
+        /// Provisions infrastructure referencing the given configuration.
         /// </summary>
-        /// <param name="script">The Script configuration to provision.</param>
+        /// <param name="server">The Infrastructure configuration to provision.</param>
         /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
         /// provision commands will not be sent to the platform and instead messaging
         /// will be outputted describing what would be done.</param>
-        public void Provision(Script script, bool dryrun = false)
+        public void Provision(Infrastructure infrastructure, bool dryrun = false)
         {
-            new VultrScriptProvisioner(Client).Provision(script, dryrun);
-        }
-
-        /// <summary>
-        /// Provisions a Firewall using the given configuration.
-        /// </summary>
-        /// <param name="firewall">The Firewall configuration to provision.</param>
-        /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
-        /// provision commands will not be sent to the platform and instead messaging
-        /// will be outputted describing what would be done.</param>
-        public void Provision(Firewall firewall, bool dryrun = false)
-        {
-            new VultrFirewallProvisioner(Client).Provision(firewall, dryrun);
+            foreach (var type in infrastructure.Types)
+            {
+                if (type == typeof(Firewall))
+                {
+                    foreach (var firewall in infrastructure.GetItems<Firewall>())
+                    {
+                        var provisioner = new VultrFirewallProvisioner(Client);
+                        provisioner.Provision(firewall, dryrun);
+                    }
+                }
+                else if (type == typeof(Script))
+                {
+                    foreach (var script in infrastructure.GetItems<Script>())
+                    {
+                        var provisioner = new VultrScriptProvisioner(Client);
+                        provisioner.Provision(script, dryrun);
+                    }
+                }
+                else if (type == typeof(Server))
+                {
+                    foreach (var server in infrastructure.GetItems<Server>())
+                    {
+                        var provisioner = new VultrServerProvisioner(Client);
+                        provisioner.Provision(server, dryrun);
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException("unknown type");
+                }
+            }
+            throw new NotImplementedException();
         }
 
         /// <summary>

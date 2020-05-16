@@ -3,6 +3,7 @@ using OperatingSystem = agrix.Configuration.OperatingSystem;
 using tests.Properties;
 using tests.TestHelpers;
 using Xunit;
+using agrix.Platforms.Vultr.Provisioning;
 
 namespace tests.Platforms.Vultr
 {
@@ -35,7 +36,7 @@ namespace tests.Platforms.Vultr
                     "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&userdata=dGVzdA%3D%3D&notify_activate=no",
                     "{\"SUBID\": \"1312965\"}")
             );
-            requests.Platform.Provision(server);
+            new VultrServerProvisioner(requests.Client).Provision(server);
             requests.AssertAllCalledOnce();
         }
 
@@ -58,7 +59,7 @@ namespace tests.Platforms.Vultr
                     Resources.VultrPlansList),
                 new CustomMockHttpHandler("/server/list")
             );
-            requests.Platform.Provision(server, dryrun: true);
+            new VultrServerProvisioner(requests.Client).Provision(server, dryrun: true);
             requests.AssertAllCalledOnce();
         }
 
@@ -85,7 +86,7 @@ namespace tests.Platforms.Vultr
                     "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&label=my+new+server&notify_activate=no",
                     "{\"SUBID\": \"1312965\"}")
             );
-            requests.Platform.Provision(server);
+            new VultrServerProvisioner(requests.Client).Provision(server);
             requests.AssertAllCalledOnce();
         }
 
@@ -109,7 +110,7 @@ namespace tests.Platforms.Vultr
                     Resources.VultrPlansList),
                 new CustomMockHttpHandler("/server/list", Resources.VultrServerList)
             );
-            requests.Platform.Provision(server, dryrun: true);
+            new VultrServerProvisioner(requests.Client).Provision(server, dryrun: true);
             requests.AssertAllCalledOnce();
         }
 
@@ -133,7 +134,7 @@ namespace tests.Platforms.Vultr
                     Resources.VultrPlansList),
                 new CustomMockHttpHandler("/server/list", Resources.VultrServerList)
             );
-            requests.Platform.Provision(server);
+            new VultrServerProvisioner(requests.Client).Provision(server);
             requests.AssertAllCalledOnce();
         }
 
@@ -156,7 +157,7 @@ namespace tests.Platforms.Vultr
                     "name=myscript&script=this+is+my+script&type=boot",
                     "{\"SCRIPTID\": 5}")
             );
-            requests.Platform.Provision(script);
+            new VultrScriptProvisioner(requests.Client).Provision(script);
             requests.AssertAllCalledOnce();
         }
 
@@ -172,7 +173,7 @@ namespace tests.Platforms.Vultr
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler("/startupscript/list")
             );
-            requests.Platform.Provision(script, dryrun: true);
+            new VultrScriptProvisioner(requests.Client).Provision(script, dryrun: true);
 
             requests.AssertAllCalledOnce();
         }
@@ -194,7 +195,7 @@ namespace tests.Platforms.Vultr
                     "SCRIPTID=3&script=this+is+my+script",
                     "")
             );
-            requests.Platform.Provision(script);
+            new VultrScriptProvisioner(requests.Client).Provision(script);
 
             requests.AssertAllCalledOnce();
         }
@@ -212,7 +213,7 @@ namespace tests.Platforms.Vultr
                 new CustomMockHttpHandler(
                     "/startupscript/list", Resources.VultrStartupScripts)
             );
-            requests.Platform.Provision(script, dryrun: true);
+            new VultrScriptProvisioner(requests.Client).Provision(script, dryrun: true);
 
             requests.AssertAllCalledOnce();
         }
@@ -235,7 +236,7 @@ namespace tests.Platforms.Vultr
                     "name=hello-boot&script=this+is+my+script&type=pxe",
                     "{\"SCRIPTID\": 5}")
             );
-            requests.Platform.Provision(script);
+            new VultrScriptProvisioner(requests.Client).Provision(script);
 
             requests.AssertAllCalledOnce();
         }
@@ -253,7 +254,7 @@ namespace tests.Platforms.Vultr
                 new CustomMockHttpHandler(
                     "/startupscript/list", Resources.VultrStartupScripts)
             );
-            requests.Platform.Provision(script, dryrun: true);
+            new VultrScriptProvisioner(requests.Client).Provision(script, dryrun: true);
 
             requests.AssertAllCalledOnce();
         }
@@ -272,7 +273,7 @@ namespace tests.Platforms.Vultr
                 new CustomMockHttpHandler(
                     "/startupscript/list", Resources.VultrStartupScripts)
             );
-            requests.Platform.Provision(script);
+            new VultrScriptProvisioner(requests.Client).Provision(script);
 
             requests.AssertAllCalledOnce();
         }

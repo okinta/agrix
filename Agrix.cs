@@ -1,5 +1,6 @@
-﻿using agrix.Configuration;
-using agrix.Exceptions;
+﻿using agrix.Exceptions;
+using agrix.Extensions;
+using agrix.Platforms.Vultr;
 using agrix.Platforms;
 using System.Collections.Generic;
 using System.IO;
@@ -63,6 +64,26 @@ namespace agrix
         }
 
         /// <summary>
+        /// Loads the platform configuration from the given YAML.
+        /// </summary>
+        /// <returns>The platform configuration loaded from the given YAML.</returns>
+        /// <exception cref="KeyNotFoundException">If the platform key is not present
+        /// inside <paramref name="config"/>.</exception>
+        /// <exception cref="ArgumentException">If the platform is not
+        /// supported.</exception>
+        public IPlatform LoadPlatform()
+        {
+            var platform = YAML.GetRootNode().GetKey("platform", required: true);
+
+            return platform switch
+            {
+                "vultr" => new VultrPlatform(ApiKey),
+                _ => throw new ArgumentException(
+                    string.Format("Unknown platform: {0}", platform), "config"),
+            };
+        }
+
+        /// <summary>
         /// Validates the YAML configuration to ensure correctness.
         /// </summary>
         /// <exception cref="AgrixValidationException">If there is a validation
@@ -72,7 +93,7 @@ namespace agrix
             IPlatform platform;
             try
             {
-                platform = InfrastructureConfiguration.LoadPlatform(YAML, ApiKey);
+                platform = LoadPlatform();
             }
             catch (KeyNotFoundException e)
             {
@@ -94,32 +115,12 @@ namespace agrix
 
             try
             {
-                InfrastructureConfiguration.LoadScripts(YAML, platform.AgrixConfig);
+                platform.Load(YAML.GetRootNode());
             }
             catch (KnownKeyNotFoundException<string> e)
             {
                 throw new AgrixValidationException(
                     string.Format("scripts validation error: {0}", e.Message), e);
-            }
-
-            try
-            {
-                InfrastructureConfiguration.LoadFirewalls(YAML, platform.AgrixConfig);
-            }
-            catch (KnownKeyNotFoundException<string> e)
-            {
-                throw new AgrixValidationException(
-                    string.Format("firewalls validation error: {0}", e.Message), e);
-            }
-
-            try
-            {
-                InfrastructureConfiguration.LoadServers(YAML, platform.AgrixConfig);
-            }
-            catch (KnownKeyNotFoundException<string> e)
-            {
-                throw new AgrixValidationException(
-                    string.Format("servers validation error: {0}", e.Message), e);
             }
         }
 
@@ -133,22 +134,9 @@ namespace agrix
         {
             Validate();
 
-            var platform = InfrastructureConfiguration.LoadPlatform(YAML, ApiKey);
-            var scripts = InfrastructureConfiguration.LoadScripts(
-                YAML, platform.AgrixConfig);
-            var firewalls = InfrastructureConfiguration.LoadFirewalls(
-                YAML, platform.AgrixConfig);
-            var servers = InfrastructureConfiguration.LoadServers(
-                YAML, platform.AgrixConfig);
-
-            foreach (var script in scripts)
-                platform.Provision(script, dryrun);
-
-            foreach (var firewall in firewalls)
-                platform.Provision(firewall, dryrun);
-
-            foreach (var server in servers)
-                platform.Provision(server, dryrun);
+            var platform = LoadPlatform();
+            var infrastructure = platform.Load(YAML.GetRootNode());
+            platform.Provision(infrastructure, dryrun);
         }
     }
 }

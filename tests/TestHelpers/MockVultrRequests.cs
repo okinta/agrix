@@ -1,4 +1,5 @@
 ﻿using agrix.Platforms.Vultr;
+using Vultr.API;
 
 namespace tests.TestHelpers
 {
@@ -11,7 +12,7 @@ namespace tests.TestHelpers
         /// Gets the VultrPlatform instance that has its requests routed to the mock
         /// server.
         /// </summary>
-        public VultrPlatform Platform { get; }
+        public VultrClient Client { get; }
 
         /// <summary>
         /// Instantiates a new instance. Starts the mock HTTP server.
@@ -22,7 +23,7 @@ namespace tests.TestHelpers
         public MockVultrRequests(params CustomMockHttpHandler[] handlers) :
             base(handlers)
         {
-            Platform = new VultrPlatform("abc123", URL);
+            Client = new VultrClient("abc123", URL);
         }
     }
 }
