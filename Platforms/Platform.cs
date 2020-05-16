@@ -36,6 +36,20 @@ namespace agrix.Platforms
         /// </summary>
         protected IParser Parser { get; set; } = new Parser();
 
+        protected Dictionary<string, Action<Infrastructure, YamlNode>> KnownNodes =
+            new Dictionary<string, Action<Infrastructure, YamlNode>>();
+
+        public Platform()
+        {
+            KnownNodes["platform"] = (infrastructure, item) => { };
+            KnownNodes["servers"] = (infrastructure, item) =>
+                infrastructure.AddItems(Parser.Load("servers", item, ParseServer));
+            KnownNodes["scripts"] = (infrastructure, item) =>
+                infrastructure.AddItems(Parser.Load("scripts", item, ParseScript));
+            KnownNodes["firewalls"] = (infrastructure, item) =>
+                infrastructure.AddItems(Parser.Load("firewalls", item, ParseFirewall));
+        }
+
         /// <summary>
         /// Loads infrastructure configuration from the given YAML.
         /// </summary>
@@ -45,25 +59,14 @@ namespace agrix.Platforms
         {
             var infrastructure = new Infrastructure();
 
-            var knownNodes = new Dictionary<string, Action<YamlNode>>
-            {
-                ["platform"] = item => { },
-                ["servers"] = item =>
-                    infrastructure.AddItems(Parser.Load("servers", item, ParseServer)),
-                ["scripts"] = item =>
-                    infrastructure.AddItems(Parser.Load("scripts", item, ParseScript)),
-                ["firewalls"] = item =>
-                    infrastructure.AddItems(Parser.Load("firewalls", item, ParseFirewall))
-            };
-
             foreach (var item in node.Children)
             {
-                if (!knownNodes.TryGetValue(item.Key.GetTag(), out var action))
+                if (!KnownNodes.TryGetValue(item.Key.GetTag(), out var action))
                     throw new ArgumentException(string.Format(
                         "Unknown tag {0} (line {1})",
                         item.Key.GetTag(), item.Key.Start.Line));
 
-                action(item.Value);
+                action(infrastructure, item.Value);
             }
 
             return infrastructure;
