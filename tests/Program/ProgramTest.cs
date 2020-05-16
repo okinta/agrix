@@ -13,5 +13,11 @@ namespace tests.Program
         {
             Assert.Equal(2, AProgram.Main(TestAssembly, "bad", "arguments"));
         }
+
+        [Fact]
+        public void TestHelp()
+        {
+            Assert.Equal(0, AProgram.Main(TestAssembly, "help"));
+        }
     }
 }

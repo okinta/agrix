@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -93,6 +94,11 @@ namespace agrix.Program
 
         private void HandleParseError(IEnumerable<Error> errors)
         {
+            if (errors.Count() == 1
+                && (errors.First().Tag == ErrorType.HelpRequestedError
+                    || errors.First().Tag == ErrorType.HelpVerbRequestedError))
+                return;
+
             ExitCode = ExitCode.InvalidArguments;
         }
 
