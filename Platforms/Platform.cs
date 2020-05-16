@@ -34,7 +34,7 @@ namespace agrix.Platforms
         /// <summary>
         /// The instance used to process YAML and call the relevant Parse{T} delegate.
         /// </summary>
-        protected AgrixConfig Config { get; set; } = new AgrixConfig();
+        protected Parser Parser { get; set; } = new Parser();
 
         /// <summary>
         /// Loads infrastructure configuration from the given YAML.
@@ -49,11 +49,11 @@ namespace agrix.Platforms
             {
                 ["platform"] = item => { },
                 ["servers"] = item =>
-                    infrastructure.AddItems(Config.Load("servers", item, ParseServer)),
+                    infrastructure.AddItems(Parser.Load("servers", item, ParseServer)),
                 ["scripts"] = item =>
-                    infrastructure.AddItems(Config.Load("scripts", item, ParseScript)),
+                    infrastructure.AddItems(Parser.Load("scripts", item, ParseScript)),
                 ["firewalls"] = item =>
-                    infrastructure.AddItems(Config.Load("firewalls", item, ParseFirewall))
+                    infrastructure.AddItems(Parser.Load("firewalls", item, ParseFirewall))
             };
 
             foreach (var item in node.Children)

@@ -20,7 +20,7 @@ namespace tests.Configuration
         [Fact]
         public void TestLoadServers()
         {
-            var servers = new AgrixConfig().Load(
+            var servers = new Parser().Load(
                 "servers",
                 LoadYaml().GetSequence("servers"),
                 new ServerParser().Parse);
@@ -41,7 +41,7 @@ namespace tests.Configuration
     region: Chicago
     userdata: test data").GetSequence("servers");
 
-            var servers = new AgrixConfig().Load(
+            var servers = new Parser().Load(
                 "servers",
                 node,
                 new ServerParser().Parse);
@@ -66,7 +66,7 @@ namespace tests.Configuration
         - 1
         - 2").GetSequence("servers");
 
-            var servers = new AgrixConfig().Load(
+            var servers = new Parser().Load(
                 "servers",
                 node,
                 new ServerParser().Parse);
@@ -89,7 +89,7 @@ namespace tests.Configuration
       #!/usr/bin/env bash
       echo hello").GetSequence("scripts");
 
-            var scripts = new AgrixConfig().Load(
+            var scripts = new Parser().Load(
                 "scripts",
                 node,
                 new ScriptParser().Parse);
@@ -115,7 +115,7 @@ namespace tests.Configuration
     content: this is a test script").GetSequence("scripts");
 
             Assert.Throws<ArgumentException>(() =>
-                new AgrixConfig().Load(
+                new Parser().Load(
                     "scripts",
                     node,
                     new ScriptParser().Parse));
@@ -146,7 +146,7 @@ namespace tests.Configuration
         source: cloudflare
         port: 80").GetSequence("firewalls");
 
-            var firewalls = new AgrixConfig().Load(
+            var firewalls = new Parser().Load(
                 "firewalls",
                 node,
                 new FirewallParser().Parse);

@@ -17,7 +17,7 @@ namespace agrix.Configuration
     /// used as a starting point to customize loading of configurations for individual
     /// platforms.
     /// </summary>
-    internal class AgrixConfig
+    internal class Parser
     {
         /// <summary>
         /// Loads an instance from a YAML configuration.
