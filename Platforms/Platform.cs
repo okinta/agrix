@@ -8,6 +8,16 @@ using YamlDotNet.RepresentationModel;
 namespace agrix.Platforms
 {
     /// <summary>
+    /// Provisions infrastructure.
+    /// </summary>
+    /// <typeparam name="T">The type the provisioner provisions.</typeparam>
+    /// <param name="item">The item to provision.</param>
+    /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
+    /// provision commands will not be sent to the platform and instead messaging
+    /// will be outputted describing what would be done.</param>
+    internal delegate void Provisioner<T>(T item, bool dryrun = false);
+
+    /// <summary>
     /// Describes an interface for communicating with a platform. Intended as a base
     /// class for concrete platform implementations.
     /// </summary>
@@ -38,6 +48,8 @@ namespace agrix.Platforms
 
         private Dictionary<string, Action<Infrastructure, YamlNode>> KnownParserNodes
             { get; } = new Dictionary<string, Action<Infrastructure, YamlNode>>();
+        private Dictionary<Type, Action<object, bool>> KnownProvisioners { get; }
+            = new Dictionary<Type, Action<object, bool>>();
 
         /// <summary>
         /// Instantiates a new instance.
@@ -79,7 +91,20 @@ namespace agrix.Platforms
         /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
         /// provision commands will not be sent to the platform and instead messaging
         /// will be outputted describing what would be done.</param>
-        public abstract void Provision(Infrastructure server, bool dryrun = false);
+        public virtual void Provision(Infrastructure infrastructure, bool dryrun = false)
+        {
+            foreach (var type in infrastructure.Types)
+            {
+                foreach (var item in infrastructure.GetItems(type))
+                {
+                    if (!KnownProvisioners.TryGetValue(type, out var action))
+                        throw new ArgumentException(string.Format(
+                            "Unknown item type {0}", type));
+
+                    action(item, dryrun);
+                }
+            }
+        }
 
         /// <summary>
         /// Tests the connection. Throws an exception if the connection is invalid.
@@ -106,6 +131,17 @@ namespace agrix.Platforms
         {
             KnownParserNodes[name] = (infrastructure, item) =>
                 infrastructure.AddItems(Parser.Load(name, item, parser));
+        }
+
+        /// <summary>
+        /// Adds a provisioner to create infrastructure from a configuration.
+        /// </summary>
+        /// <typeparam name="T">The type of configuration the provisioner
+        /// provisions.</typeparam>
+        /// <param name="provisioner">The provisioner to add.</param>
+        protected void AddProvisioner<T>(Provisioner<T> provisioner)
+        {
+            KnownProvisioners[typeof(T)] = (item, dryrun) => provisioner((T)item, dryrun);
         }
     }
 }
