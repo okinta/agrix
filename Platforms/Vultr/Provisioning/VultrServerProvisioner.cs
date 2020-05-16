@@ -11,18 +11,13 @@ namespace agrix.Platforms.Vultr.Provisioning
     /// <summary>
     /// Provisions Vultr servers.
     /// </summary>
-    internal class VultrServerProvisioner
+    internal class VultrServerProvisioner : VultrProvisioner
     {
-        private VultrClient Client { get; }
-
         /// <summary>
         /// Instantiates a new instance.
         /// </summary>
         /// <param name="client">The VultrClient to use to provision servers.</param>
-        public VultrServerProvisioner(VultrClient client)
-        {
-            Client = client;
-        }
+        public VultrServerProvisioner(VultrClient client) : base(client) { }
 
         /// <summary>
         /// Provisions a new Vultr server.
