@@ -20,12 +20,12 @@ namespace agrix
         /// <summary>
         /// The YAML configuration to process, as a string.
         /// </summary>
-        public string Configuration { get; }
+        private string Configuration { get; }
 
         /// <summary>
         /// The YAML configuration to process, as a YamlStream.
         /// </summary>
-        public YamlStream YAML
+        private YamlStream YAML
         {
             get
             {

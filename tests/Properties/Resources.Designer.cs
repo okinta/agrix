@@ -71,6 +71,65 @@ namespace tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to platform: vultr
+        ///servers:
+        ///  - label: test.
+        /// </summary>
+        internal static string InvalidServerConfig {
+            get {
+                return ResourceManager.GetString("InvalidServerConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to platform: vultr
+        ///servers:.
+        /// </summary>
+        internal static string SimpleConfig {
+            get {
+                return ResourceManager.GetString("SimpleConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to platform: vultr
+        ///servers:
+        ///  - os:
+        ///      iso: alpine.iso
+        ///    plan:
+        ///      cpu: 2
+        ///      memory: 4096
+        ///      type: SSD
+        ///    region: Chicago
+        ///    userdata:
+        ///      my-array:
+        ///        - 1
+        ///        - 2.
+        /// </summary>
+        internal static string ValidAlpineConfig {
+            get {
+                return ResourceManager.GetString("ValidAlpineConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to platform: vultr
+        ///servers:
+        ///  - os:
+        ///      name: Fedora 32 x64
+        ///    plan:
+        ///      cpu: 2
+        ///      memory: 4096
+        ///      type: SSD
+        ///    region: Atlanta.
+        /// </summary>
+        internal static string ValidFedoraConfig {
+            get {
+                return ResourceManager.GetString("ValidFedoraConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {&quot;127&quot;:{&quot;OSID&quot;:127,&quot;name&quot;:&quot;CentOS 6 x64&quot;,&quot;arch&quot;:&quot;x64&quot;,&quot;family&quot;:&quot;centos&quot;,&quot;windows&quot;:false},&quot;147&quot;:{&quot;OSID&quot;:147,&quot;name&quot;:&quot;CentOS 6 i386&quot;,&quot;arch&quot;:&quot;i386&quot;,&quot;family&quot;:&quot;centos&quot;,&quot;windows&quot;:false},&quot;167&quot;:{&quot;OSID&quot;:167,&quot;name&quot;:&quot;CentOS 7 x64&quot;,&quot;arch&quot;:&quot;x64&quot;,&quot;family&quot;:&quot;centos&quot;,&quot;windows&quot;:false},&quot;381&quot;:{&quot;OSID&quot;:381,&quot;name&quot;:&quot;CentOS 7 SELinux x64&quot;,&quot;arch&quot;:&quot;x64&quot;,&quot;family&quot;:&quot;centos&quot;,&quot;windows&quot;:false},&quot;362&quot;:{&quot;OSID&quot;:362,&quot;name&quot;:&quot;CentOS 8 x64&quot;,&quot;arch&quot;:&quot;x64&quot;,&quot;family&quot;:&quot;centos&quot;,&quot;windows&quot;:false},&quot;215&quot;:{&quot;OSID&quot;:215,&quot;name&quot;:&quot;Ubuntu 16.04 x64&quot;,&quot;arch&quot;:&quot;x64&quot;,&qu....
         /// </summary>
         internal static string VultrOSList {
