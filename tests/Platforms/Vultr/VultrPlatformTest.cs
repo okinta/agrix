@@ -22,7 +22,7 @@ namespace tests.Platforms.Vultr
         {
             var server = new Server(
                 new OperatingSystem(name: "Fedora 32 x64"),
-                Plan, Region);
+                Plan, Region, userData: "test");
 
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler("/os/list", Resources.VultrOSList),
@@ -32,7 +32,7 @@ namespace tests.Platforms.Vultr
                     Resources.VultrPlansList),
                 new CustomMockHttpHandler("/server/list"),
                 new CustomMockHttpHandler("/server/create",
-                    "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&notify_activate=no",
+                    "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&userdata=dGVzdA%3D%3D&notify_activate=no",
                     "{\"SUBID\": \"1312965\"}")
             );
             requests.Platform.Provision(server);

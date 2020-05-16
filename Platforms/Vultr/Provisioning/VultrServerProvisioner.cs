@@ -39,7 +39,7 @@ namespace agrix.Platforms.Vultr.Provisioning
             var enable_private_network = server.PrivateNetworking;
             var label = server.Label;
             var APPID = os.APPID;
-            var userdata = server.UserData;
+            var userdata = server.UserData.Base64Encode();
             var notify_activate = false;
             var tag = server.Tag;
 
@@ -79,6 +79,8 @@ namespace agrix.Platforms.Vultr.Provisioning
                     APPID = APPID?.ToString(),
                     DCID = DCID.ToString()
                 };
+
+                // TODO: Check if userdata has changed
 
                 var subid = int.Parse(existingServer.Key);
                 if (!vultrServer.IsEquivalent(existingServer.Value))
