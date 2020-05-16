@@ -34,7 +34,7 @@ namespace agrix.Platforms
         /// <summary>
         /// The instance used to process YAML and call the relevant Parse{T} delegate.
         /// </summary>
-        protected Parser Parser { get; set; } = new Parser();
+        protected IParser Parser { get; set; } = new Parser();
 
         /// <summary>
         /// Loads infrastructure configuration from the given YAML.

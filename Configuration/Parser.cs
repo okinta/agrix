@@ -5,19 +5,9 @@ using YamlDotNet.RepresentationModel;
 namespace agrix.Configuration
 {
     /// <summary>
-    /// Creates an instance from a YAML configuration.
+    /// Describes methods to load configuration from YAML.
     /// </summary>
-    /// <typeparam name="T">The type of instance to create.</typeparam>
-    /// <param name="node">The YAML configuration to parse.</param>
-    /// <returns>The instance parsed from the given YAML.</returns>
-    internal delegate T Parse<T>(YamlNode node);
-
-    /// <summary>
-    /// Describes methods for the IAgrixConfig to load configuration from YAML. Can be
-    /// used as a starting point to customize loading of configurations for individual
-    /// platforms.
-    /// </summary>
-    internal class Parser
+    internal class Parser : IParser
     {
         /// <summary>
         /// Loads an instance from a YAML configuration.
