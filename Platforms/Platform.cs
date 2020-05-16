@@ -15,11 +15,6 @@ namespace agrix.Platforms
     internal abstract class Platform : IPlatform
     {
         /// <summary>
-        /// The IAgrixConfig to use to load configuration from YAML.
-        /// </summary>
-        public abstract IAgrixConfig AgrixConfig { get; }
-
-        /// <summary>
         /// Delegate used to create a Firewall instance from a YAML configuration. Can
         /// be overridden in subclasses.
         /// </summary>
@@ -44,7 +39,7 @@ namespace agrix.Platforms
         /// <returns>The infrastructure configuration loaded from the given YAML.</returns>
         public virtual Infrastructure Load(YamlMappingNode node)
         {
-            var config = new VultrAgrixConfig();
+            var config = new AgrixConfig();
             var infrastructure = new Infrastructure();
 
             var knownNodes = new Dictionary<string, Action<YamlNode>>

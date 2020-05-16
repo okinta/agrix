@@ -11,11 +11,6 @@ namespace agrix.Platforms.Vultr
     /// </summary>
     internal class VultrPlatform : Platform
     {
-        /// <summary>
-        /// The IAgrixConfig to use to load configuration from YAML.
-        /// </summary>
-        public override IAgrixConfig AgrixConfig { get; } = new VultrAgrixConfig();
-
         private VultrClient Client { get; }
 
         /// <summary>

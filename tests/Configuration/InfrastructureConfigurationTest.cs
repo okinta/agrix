@@ -1,15 +1,14 @@
-﻿using agrix.Configuration;
+﻿using agrix.Configuration.Parsers;
+using agrix.Configuration;
+using agrix.Extensions;
 using agrix.Platforms.Vultr;
+using agrix;
 using System.IO;
 using System.Text;
 using System;
 using tests.Properties;
 using Xunit;
 using YamlDotNet.RepresentationModel;
-using agrix.Platforms.Vultr.Provisioning;
-using agrix.Configuration.Parsers;
-using agrix.Extensions;
-using agrix;
 
 namespace tests.Configuration
 {
@@ -21,15 +20,17 @@ namespace tests.Configuration
         [Fact]
         public void TestLoadServers()
         {
-            var servers = new VultrAgrixConfig().LoadServers(
-                LoadYaml().GetSequence("servers"));
+            var servers = new AgrixConfig().Load(
+                "servers",
+                LoadYaml().GetSequence("servers"),
+                new ServerParser().Parse);
             Assert.Equal(3, servers.Count);
         }
 
         [Fact]
         public void TestLoadUserData()
         {
-            var servers = new VultrAgrixConfig().LoadServers(LoadYaml(
+            var node = LoadYaml(
 @"servers:
   - os:
       iso: alpine.iso
@@ -38,7 +39,12 @@ namespace tests.Configuration
       memory: 4096
       type: SSD
     region: Chicago
-    userdata: test data").GetSequence("servers"));
+    userdata: test data").GetSequence("servers");
+
+            var servers = new AgrixConfig().Load(
+                "servers",
+                node,
+                new ServerParser().Parse);
             Assert.Equal(1, servers.Count);
             Assert.Equal("test data", servers[0].UserData);
         }
@@ -46,7 +52,7 @@ namespace tests.Configuration
         [Fact]
         public void TestLoadJsonUserData()
         {
-            var servers = new VultrAgrixConfig().LoadServers(LoadYaml(
+            var node = LoadYaml(
 @"servers:
   - os:
       iso: alpine.iso
@@ -58,7 +64,12 @@ namespace tests.Configuration
     userdata:
       my-array:
         - 1
-        - 2").GetSequence("servers"));
+        - 2").GetSequence("servers");
+
+            var servers = new AgrixConfig().Load(
+                "servers",
+                node,
+                new ServerParser().Parse);
             Assert.Equal(1, servers.Count);
             Assert.Equal("{\"my-array\": [\"1\", \"2\"]}", servers[0].UserData);
         }
@@ -66,7 +77,7 @@ namespace tests.Configuration
         [Fact]
         public void TestLoadScripts()
         {
-            var scripts = new VultrAgrixConfig().LoadScripts(LoadYaml(
+            var node = LoadYaml(
 @"scripts:
   - name: test
     type: boot
@@ -76,7 +87,13 @@ namespace tests.Configuration
     type: boot
     content: |
       #!/usr/bin/env bash
-      echo hello").GetSequence("scripts"));
+      echo hello").GetSequence("scripts");
+
+            var scripts = new AgrixConfig().Load(
+                "scripts",
+                node,
+                new ScriptParser().Parse);
+
             Assert.Equal(2, scripts.Count);
             Assert.Equal("test", scripts[0].Name);
             Assert.Equal(ScriptType.Boot, scripts[0].Type);
@@ -91,18 +108,23 @@ namespace tests.Configuration
         [Fact]
         public void TestLoadInvalidTypeScript()
         {
-            Assert.Throws<ArgumentException>(() =>
-                new VultrAgrixConfig().LoadScripts(LoadYaml(
+            var node = LoadYaml(
 @"scripts:
   - name: test
     type: tony
-    content: this is a test script")));
+    content: this is a test script").GetSequence("scripts");
+
+            Assert.Throws<ArgumentException>(() =>
+                new AgrixConfig().Load(
+                    "scripts",
+                    node,
+                    new ScriptParser().Parse));
         }
 
         [Fact]
         public void TestLoadFirewalls()
         {
-            var firewalls = new VultrAgrixConfig().LoadFirewalls(LoadYaml(
+            var node = LoadYaml(
 @"firewalls:
   - name: ssh
     rules:
@@ -122,7 +144,12 @@ namespace tests.Configuration
 
       - protocol: tcp
         source: cloudflare
-        port: 80").GetSequence("firewalls"));
+        port: 80").GetSequence("firewalls");
+
+            var firewalls = new AgrixConfig().Load(
+                "firewalls",
+                node,
+                new FirewallParser().Parse);
 
             Assert.Equal(2, firewalls.Count);
 

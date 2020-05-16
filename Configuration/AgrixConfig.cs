@@ -1,6 +1,4 @@
-﻿using agrix.Configuration.Parsers;
-using agrix.Exceptions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 using YamlDotNet.RepresentationModel;
 
@@ -19,77 +17,8 @@ namespace agrix.Configuration
     /// used as a starting point to customize loading of configurations for individual
     /// platforms.
     /// </summary>
-    internal abstract class AgrixConfig : IAgrixConfig
+    internal class AgrixConfig
     {
-        /// <summary>
-        /// Delegate used to create a Firewall instance from a YAML configuration. Can
-        /// be overridden in subclasses.
-        /// </summary>
-        protected Parse<Firewall> ParseFirewall { get; set; } = new FirewallParser().Parse;
-
-        /// <summary>
-        /// Delegate used to create a Script instance from a YAML configuration. Can
-        /// be overridden in subclasses.
-        /// </summary>
-        protected Parse<Script> ParseScript { get; set; } = new ScriptParser().Parse;
-
-        /// <summary>
-        /// Delegate used to create a Server instance from a YAML configuration. Can
-        /// be overridden in subclasses.
-        /// </summary>
-        protected Parse<Server> ParseServer { get; set; } = new ServerParser().Parse;
-
-        /// <summary>
-        /// Loads Server configurations from YAML.
-        /// </summary>
-        /// <param name="node">The YAML node to load configuration from.</param>
-        /// <returns>The list of Server configurations loaded from the given
-        /// YAML.</returns>
-        /// <exception cref="ArgumentException">If the servers property is not a
-        /// list.</exception>
-        /// <exception cref="KnownKeyNotFoundException{string}">If a required key is not
-        /// present in the YAML.</exception>
-        /// <exception cref="InvalidCastException">If a YAML key is in an invalid
-        /// format.</exception>
-        public virtual IList<Server> LoadServers(YamlNode node)
-        {
-            return Load("servers", node, ParseServer);
-        }
-
-        /// <summary>
-        /// Loads Script configurations from YAML.
-        /// </summary>
-        /// <param name="node">The YAML node to load configuration from.</param>
-        /// <returns>The list of Script configurations loaded from the given
-        /// YAML.</returns>
-        /// <exception cref="ArgumentException">If the scripts property is not a
-        /// list.</exception>
-        /// <exception cref="KnownKeyNotFoundException{string}">If a required key is not
-        /// present in the YAML.</exception>
-        /// <exception cref="InvalidCastException">If a YAML key is in an invalid
-        /// format.</exception>
-        public virtual IList<Script> LoadScripts(YamlNode node)
-        {
-            return Load("scripts", node, ParseScript);
-        }
-
-        /// <summary>
-        /// Loads Firewall configurations from YAML.
-        /// </summary>
-        /// <param name="node">The YAML node to load configuration from.</param>
-        /// <returns>The list of Firwall configurations loaded from the given
-        /// YAML.</returns>
-        /// <exception cref="ArgumentException">If the scripts property is not a
-        /// list.</exception>
-        /// <exception cref="KnownKeyNotFoundException{string}">If a required key is not
-        /// present in the YAML.</exception>
-        /// <exception cref="InvalidCastException">If a YAML key is in an invalid
-        /// format.</exception>
-        public virtual IList<Firewall> LoadFirewalls(YamlNode node)
-        {
-            return Load("firewalls", node, ParseFirewall);
-        }
-
         /// <summary>
         /// Loads an instance from a YAML configuration.
         /// </summary>

@@ -9,11 +9,6 @@ namespace agrix.Platforms
     internal interface IPlatform
     {
         /// <summary>
-        /// The IAgrixConfig to use to load configuration from YAML.
-        /// </summary>
-        public IAgrixConfig AgrixConfig { get; }
-
-        /// <summary>
         /// Loads infrastructure configuration from the given YAML.
         /// </summary>
         /// <param name="yaml">The YAML to load configuration from.</param>
