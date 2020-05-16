@@ -85,5 +85,21 @@ namespace tests
             var agrix = new Agrix(config, Settings.Default.VultrApiKey);
             agrix.Validate();
         }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void TestProcess(bool dryrun)
+        {
+            var agrix = new Agrix(Resources.TestPlatformConfig, "abc123");
+            agrix.Process(dryrun, TestAssembly);
+
+            var platform = TestPlatform.LastInstance;
+            Assert.Equal(1, platform.Provisions.Count);
+
+            var server = platform.Provisions[0].Item1;
+            Assert.Equal("Fedora 32 x64", server.OS.Name);
+            Assert.Equal(dryrun, platform.Provisions[0].Item2);
+        }
     }
 }

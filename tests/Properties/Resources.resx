@@ -131,6 +131,18 @@ servers:
 servers:</value>
     <comment>Basic config</comment>
   </data>
+  <data name="TestPlatformConfig" xml:space="preserve">
+    <value>platform: test
+servers:
+  - os:
+      name: Fedora 32 x64
+    plan:
+      cpu: 2
+      memory: 4096
+      type: SSD
+    region: Atlanta</value>
+    <comment>Configuration for the "test" platform</comment>
+  </data>
   <data name="ValidAlpineConfig" xml:space="preserve">
     <value>platform: vultr
 servers:

@@ -92,14 +92,16 @@ namespace agrix
         /// <summary>
         /// Validates the YAML configuration to ensure correctness.
         /// </summary>
+        /// <param name="assembly">The optional Assembly to search within for
+        /// platforms. Defaults to this assembly.</param>
         /// <exception cref="AgrixValidationException">If there is a validation
         /// error.</exception>
-        public void Validate()
+        public void Validate(Assembly assembly = null)
         {
             IPlatform platform;
             try
             {
-                platform = LoadPlatform();
+                platform = LoadPlatform(assembly);
             }
             catch (KeyNotFoundException e)
             {
@@ -136,11 +138,13 @@ namespace agrix
         /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
         /// provision commands will not be sent to the platform and instead messaging
         /// will be outputted describing what would be done.</param>
-        public void Process(bool dryrun)
+        /// <param name="assembly">The optional Assembly to search within for
+        /// platforms. Defaults to this assembly.</param>
+        public void Process(bool dryrun, Assembly assembly = null)
         {
-            Validate();
+            Validate(assembly);
 
-            var platform = LoadPlatform();
+            var platform = LoadPlatform(assembly);
             var infrastructure = platform.Load(YAML.GetRootNode());
             platform.Provision(infrastructure, dryrun);
         }

@@ -92,6 +92,23 @@ namespace tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to platform: test
+        ///servers:
+        ///  - os:
+        ///      name: Fedora 32 x64
+        ///    plan:
+        ///      cpu: 2
+        ///      memory: 4096
+        ///      type: SSD
+        ///    region: Atlanta.
+        /// </summary>
+        internal static string TestPlatformConfig {
+            get {
+                return ResourceManager.GetString("TestPlatformConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to platform: vultr
         ///servers:
         ///  - os:

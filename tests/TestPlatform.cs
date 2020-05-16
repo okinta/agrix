@@ -1,6 +1,7 @@
 ﻿using agrix.Configuration;
 using agrix.Platforms;
-using YamlDotNet.RepresentationModel;
+using System.Collections.Generic;
+using System;
 
 namespace tests
 {
@@ -8,23 +9,34 @@ namespace tests
     /// A non-functional platform used for testing purposes.
     /// </summary>
     [Platform("test")]
-    internal class TestPlatform : IPlatform
+    internal class TestPlatform : Platform
     {
-        public TestPlatform(string _) { }
+        /// <summary>
+        /// Gets the last TestPlatform instance that was instantiated.
+        /// </summary>
+        public static TestPlatform LastInstance { get; private set; } = null;
 
-        public Infrastructure Load(YamlMappingNode yaml)
+        /// <summary>
+        /// Gets the list of server provision calls.
+        /// </summary>
+        public IReadOnlyList<Tuple<Server, bool>> Provisions { get { return provisions; } }
+
+        private readonly List<Tuple<Server, bool>> provisions =
+            new List<Tuple<Server, bool>>();
+
+        public TestPlatform(string _)
         {
-            throw new System.NotImplementedException();
+            AddProvisioner<Server>(ProvisionServer);
+            LastInstance = this;
         }
 
-        public void Provision(Infrastructure server, bool dryrun = false)
+        public override void TestConnection()
         {
-            throw new System.NotImplementedException();
         }
 
-        public void TestConnection()
+        private void ProvisionServer(Server server, bool dryrun = false)
         {
-            throw new System.NotImplementedException();
+            provisions.Add(new Tuple<Server, bool>(server, dryrun));
         }
     }
 }
