@@ -26,6 +26,8 @@ namespace agrix.Program
     {
         private ExitCode ExitCode { get; set; } = ExitCode.Success;
 
+        private Program() { }
+
         /// <summary>
         /// Entrypoint for the program. Processes CLI arguments and runs the application.
         /// </summary>
