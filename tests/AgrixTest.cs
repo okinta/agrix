@@ -1,12 +1,17 @@
-﻿using agrix;
-using agrix.Exceptions;
+﻿using agrix.Exceptions;
+using agrix.Platforms.Vultr;
+using agrix;
+using System.Reflection;
 using System;
+using tests.Properties;
 using Xunit;
 
 namespace tests
 {
     public class AgrixTest
     {
+        private readonly Assembly TestAssembly = Assembly.GetExecutingAssembly();
+
         [Fact]
         public void TestConfigurationCannotBeEmpty()
         {
@@ -19,6 +24,20 @@ namespace tests
         {
             Assert.Throws<ArgumentNullException>(() => new Agrix("config", ""));
             Assert.Throws<ArgumentNullException>(() => new Agrix("config", null));
+        }
+
+        [Fact]
+        public void TestLoadPlatform()
+        {
+            var agrix = new Agrix("platform: vultr", "abc");
+            Assert.Equal(typeof(VultrPlatform), agrix.LoadPlatform().GetType());
+        }
+
+        [Fact]
+        public void TestLoadCustomPlatform()
+        {
+            var agrix = new Agrix("platform: test", "abc");
+            Assert.Equal(typeof(TestPlatform), agrix.LoadPlatform(TestAssembly).GetType());
         }
 
         [Fact]
