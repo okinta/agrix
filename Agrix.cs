@@ -41,15 +41,19 @@ namespace agrix
 
         private string ApiKey { get; }
 
+        private Assembly Assembly { get; }
+
         /// <summary>
         /// Instantiates a new instance.
         /// </summary>
         /// <param name="configuration">The YAML configuration to process.</param>
         /// <param name="apiKey">The platform API key to use for communicating with
         /// the platform.</param>
+        /// <param name="assembly">The optional Assembly to search within for
+        /// platforms. Defaults to this assembly.</param>
         /// <exception cref="ArgumentNullException">If any arguments are null or
         /// empty.</exception>
-        public Agrix(string configuration, string apiKey)
+        public Agrix(string configuration, string apiKey, Assembly assembly = null)
         {
             if (string.IsNullOrEmpty(configuration))
                 throw new ArgumentNullException(
@@ -60,25 +64,22 @@ namespace agrix
 
             ApiKey = apiKey;
             Configuration = configuration;
+            Assembly = assembly ?? Assembly.GetAssembly(typeof(IPlatform));
         }
 
         /// <summary>
         /// Loads the platform configuration from the given YAML.
         /// </summary>
-        /// <param name="assembly">The optional Assembly to search within for
-        /// platforms. Defaults to this assembly.</param>
         /// <returns>The platform configuration loaded from the given YAML.</returns>
         /// <exception cref="KeyNotFoundException">If the platform key is not present
         /// inside <paramref name="config"/>.</exception>
         /// <exception cref="ArgumentException">If the platform is not
         /// supported.</exception>
-        public IPlatform LoadPlatform(Assembly assembly = null)
+        public IPlatform LoadPlatform()
         {
             var root = YAML.GetRootNode();
             var platformName = root.GetKey("platform", required: true);
-
-            var availablePlatforms = GetAvailablePlatforms(
-                assembly is null ? Assembly.GetAssembly(typeof(IPlatform)) : assembly);
+            var availablePlatforms = GetAvailablePlatforms(Assembly);
 
             if (!availablePlatforms.TryGetValue(platformName, out var platform))
                 throw new ArgumentException(string.Format(
@@ -92,16 +93,14 @@ namespace agrix
         /// <summary>
         /// Validates the YAML configuration to ensure correctness.
         /// </summary>
-        /// <param name="assembly">The optional Assembly to search within for
-        /// platforms. Defaults to this assembly.</param>
         /// <exception cref="AgrixValidationException">If there is a validation
         /// error.</exception>
-        public void Validate(Assembly assembly = null)
+        public void Validate()
         {
             IPlatform platform;
             try
             {
-                platform = LoadPlatform(assembly);
+                platform = LoadPlatform();
             }
             catch (KeyNotFoundException e)
             {
@@ -138,13 +137,11 @@ namespace agrix
         /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
         /// provision commands will not be sent to the platform and instead messaging
         /// will be outputted describing what would be done.</param>
-        /// <param name="assembly">The optional Assembly to search within for
-        /// platforms. Defaults to this assembly.</param>
-        public void Process(bool dryrun, Assembly assembly = null)
+        public void Process(bool dryrun)
         {
-            Validate(assembly);
+            Validate();
 
-            var platform = LoadPlatform(assembly);
+            var platform = LoadPlatform();
             var infrastructure = platform.Load(YAML.GetRootNode());
             platform.Provision(infrastructure, dryrun);
         }

@@ -36,8 +36,8 @@ namespace tests
         [Fact]
         public void TestLoadCustomPlatform()
         {
-            var agrix = new Agrix("platform: test", "abc");
-            Assert.Equal(typeof(TestPlatform), agrix.LoadPlatform(TestAssembly).GetType());
+            var agrix = new Agrix("platform: test", "abc", TestAssembly);
+            Assert.Equal(typeof(TestPlatform), agrix.LoadPlatform().GetType());
         }
 
         [Fact]
@@ -91,8 +91,8 @@ namespace tests
         [InlineData(false)]
         public void TestProcess(bool dryrun)
         {
-            var agrix = new Agrix(Resources.TestPlatformConfig, "abc123");
-            agrix.Process(dryrun, TestAssembly);
+            var agrix = new Agrix(Resources.TestPlatformConfig, "abc123", TestAssembly);
+            agrix.Process(dryrun);
 
             var platform = TestPlatform.LastInstance;
             Assert.Equal(1, platform.Provisions.Count);
