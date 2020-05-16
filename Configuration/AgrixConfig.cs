@@ -8,25 +8,12 @@ using YamlDotNet.RepresentationModel;
 namespace agrix.Configuration
 {
     /// <summary>
-    /// Creates a Firewall instance from a YAML configuration.
+    /// Creates an instance from a YAML configuration.
     /// </summary>
+    /// <typeparam name="T">The type of instance to create.</typeparam>
     /// <param name="node">The YAML configuration to parse.</param>
-    /// <returns>The Firewall instance parsed from the given YAML.</returns>
-    internal delegate Firewall ParseFirewall(YamlNode node);
-
-    /// <summary>
-    /// Creates a Script instance from a YAML configuration.
-    /// </summary>
-    /// <param name="node">The YAML configuration to parse.</param>
-    /// <returns>The Script instance parsed from the given YAML.</returns>
-    internal delegate Script ParseScript(YamlNode node);
-
-    /// <summary>
-    /// Creates a Server instance from a YAML configuration.
-    /// </summary>
-    /// <param name="node">The YAML configuration to parse.</param>
-    /// <returns>The Server instance parsed from the given YAML.</returns>
-    internal delegate Server ParseServer(YamlNode node);
+    /// <returns>The instance parsed from the given YAML.</returns>
+    internal delegate T Parse<T>(YamlNode node);
 
     /// <summary>
     /// Describes methods for the IAgrixConfig to load configuration from YAML. Can be
@@ -39,19 +26,19 @@ namespace agrix.Configuration
         /// Delegate used to create a Firewall instance from a YAML configuration. Can
         /// be overridden in subclasses.
         /// </summary>
-        protected ParseFirewall ParseFirewall { get; set; } = new FirewallParser().Parse;
+        protected Parse<Firewall> ParseFirewall { get; set; } = new FirewallParser().Parse;
 
         /// <summary>
         /// Delegate used to create a Script instance from a YAML configuration. Can
         /// be overridden in subclasses.
         /// </summary>
-        protected ParseScript ParseScript { get; set; } = new ScriptParser().Parse;
+        protected Parse<Script> ParseScript { get; set; } = new ScriptParser().Parse;
 
         /// <summary>
         /// Delegate used to create a Server instance from a YAML configuration. Can
         /// be overridden in subclasses.
         /// </summary>
-        protected ParseServer ParseServer { get; set; } = new ServerParser().Parse;
+        protected Parse<Server> ParseServer { get; set; } = new ServerParser().Parse;
 
         /// <summary>
         /// Loads Server configurations from YAML.
@@ -67,16 +54,7 @@ namespace agrix.Configuration
         /// format.</exception>
         public virtual IList<Server> LoadServers(YamlMappingNode node)
         {
-            var servers = new List<Server>();
-            var serverItems = node.GetSequence("servers", required: false);
-
-            // If servers are empty, return an empty list
-            if (serverItems is null) return servers;
-
-            foreach (var serverItemNode in serverItems)
-                servers.Add(ParseServer(serverItemNode));
-
-            return servers;
+            return Load("servers", node, ParseServer);
         }
 
         /// <summary>
@@ -93,16 +71,7 @@ namespace agrix.Configuration
         /// format.</exception>
         public virtual IList<Script> LoadScripts(YamlMappingNode node)
         {
-            var scripts = new List<Script>();
-            var scriptItems = node.GetSequence("scripts", required: false);
-
-            // If scripts are empty, return an empty list
-            if (scriptItems is null) return scripts;
-
-            foreach (var scriptItemNode in scriptItems)
-                scripts.Add(ParseScript(scriptItemNode));
-
-            return scripts;
+            return Load("scripts", node, ParseScript);
         }
 
         /// <summary>
@@ -119,16 +88,39 @@ namespace agrix.Configuration
         /// format.</exception>
         public virtual IList<Firewall> LoadFirewalls(YamlMappingNode node)
         {
-            var firwalls = new List<Firewall>();
-            var firwallItems = node.GetSequence("firewalls", required: false);
+            return Load("firewalls", node, ParseFirewall);
+        }
 
-            // If firwalls are empty, return an empty list
-            if (firwallItems is null) return firwalls;
+        /// <summary>
+        /// Loads an instance from a YAML configuration.
+        /// </summary>
+        /// <typeparam name="T">The type of instance to load.</typeparam>
+        /// <param name="name">The name of the node to load instances from.</param>
+        /// <param name="node">The YAML node to load configuration from.</param>
+        /// <param name="parse">The delegate to use to parse the configuration.</param>
+        /// <returns>The list of parsed configurations loaded from the given YAML.</returns>
+        /// <exception cref="ArgumentNullException">If any arguments are null.</exception>
+        protected virtual IList<T> Load<T>(string name, YamlMappingNode node, Parse<T> parse)
+        {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException("name", "name must not be empty");
 
-            foreach (var firwallItemNode in firwallItems)
-                firwalls.Add(ParseFirewall(firwallItemNode));
+            if (node is null)
+                throw new ArgumentNullException("node", "node must not be empty");
 
-            return firwalls;
+            if (parse is null)
+                throw new ArgumentNullException("parse", "parse must not be empty");
+
+            var items = new List<T>();
+            var nodeItems = node.GetSequence(name, required: false);
+
+            // If servers are empty, return an empty list
+            if (nodeItems is null) return items;
+
+            foreach (var nodeItem in nodeItems)
+                items.Add(parse(nodeItem));
+
+            return items;
         }
     }
 }

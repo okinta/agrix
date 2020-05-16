@@ -6,13 +6,6 @@ using YamlDotNet.RepresentationModel;
 namespace agrix.Configuration.Parsers
 {
     /// <summary>
-    /// Creates a FirewallRule instance from a YAML configuration.
-    /// </summary>
-    /// <param name="node">The YAML configuration to parse.</param>
-    /// <returns>The FirewallRule instance parsed from the given YAML.</returns>
-    internal delegate FirewallRule ParseFirewallRule(YamlNode node);
-
-    /// <summary>
     /// Parses a firewall configuration.
     /// </summary>
     internal class FirewallParser
@@ -21,7 +14,7 @@ namespace agrix.Configuration.Parsers
         /// Delegate used to create a FirewallRule instance from a YAML configuration. Can
         /// be overridden in subclasses.
         /// </summary>
-        protected ParseFirewallRule ParseRule = new FirewallRuleParser().Parse;
+        protected Parse<FirewallRule> ParseRule = new FirewallRuleParser().Parse;
 
         /// <summary>
         /// Creates a Firewall instance from a YAML configuration.
