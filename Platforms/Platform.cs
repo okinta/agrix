@@ -1,4 +1,5 @@
-﻿using agrix.Configuration;
+﻿using agrix.Configuration.Parsers;
+using agrix.Configuration;
 using agrix.Extensions;
 using agrix.Platforms.Vultr;
 using System.Collections.Generic;
@@ -19,6 +20,24 @@ namespace agrix.Platforms
         public abstract IAgrixConfig AgrixConfig { get; }
 
         /// <summary>
+        /// Delegate used to create a Firewall instance from a YAML configuration. Can
+        /// be overridden in subclasses.
+        /// </summary>
+        protected Parse<Firewall> ParseFirewall { get; set; } = new FirewallParser().Parse;
+
+        /// <summary>
+        /// Delegate used to create a Script instance from a YAML configuration. Can
+        /// be overridden in subclasses.
+        /// </summary>
+        protected Parse<Script> ParseScript { get; set; } = new ScriptParser().Parse;
+
+        /// <summary>
+        /// Delegate used to create a Server instance from a YAML configuration. Can
+        /// be overridden in subclasses.
+        /// </summary>
+        protected Parse<Server> ParseServer { get; set; } = new ServerParser().Parse;
+
+        /// <summary>
         /// Loads infrastructure configuration from the given YAML.
         /// </summary>
         /// <param name="yaml">The YAML to load configuration from.</param>
@@ -32,11 +51,11 @@ namespace agrix.Platforms
             {
                 ["platform"] = item => { },
                 ["servers"] = item =>
-                    infrastructure.AddItems(config.LoadServers(item)),
+                    infrastructure.AddItems(config.Load("servers", item, ParseServer)),
                 ["scripts"] = item =>
-                    infrastructure.AddItems(config.LoadScripts(item)),
+                    infrastructure.AddItems(config.Load("scripts", item, ParseScript)),
                 ["firewalls"] = item =>
-                    infrastructure.AddItems(config.LoadFirewalls(item))
+                    infrastructure.AddItems(config.Load("firewalls", item, ParseFirewall))
             };
 
             foreach (var item in node.Children)
