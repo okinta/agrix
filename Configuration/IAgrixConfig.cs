@@ -14,7 +14,7 @@ namespace agrix.Configuration
         /// <param name="node">The YAML node to load configuration from.</param>
         /// <returns>The list of Server configurations loaded from the given
         /// YAML.</returns>
-        public IList<Server> LoadServers(YamlMappingNode node);
+        public IList<Server> LoadServers(YamlNode node);
 
         /// <summary>
         /// Loads Script configurations from YAML.
@@ -22,7 +22,7 @@ namespace agrix.Configuration
         /// <param name="node">The YAML node to load configuration from.</param>
         /// <returns>The list of Script configurations loaded from the given
         /// YAML.</returns>
-        public IList<Script> LoadScripts(YamlMappingNode node);
+        public IList<Script> LoadScripts(YamlNode node);
 
         /// <summary>
         /// Loads Firewall configurations from YAML.
@@ -30,6 +30,6 @@ namespace agrix.Configuration
         /// <param name="node">The YAML node to load configuration from.</param>
         /// <returns>The list of Firewall configurations loaded from the given
         /// YAML.</returns>
-        public IList<Firewall> LoadFirewalls(YamlMappingNode node);
+        public IList<Firewall> LoadFirewalls(YamlNode node);
     }
 }

@@ -21,15 +21,9 @@ namespace tests.Configuration
         [Fact]
         public void TestLoadServers()
         {
-            var servers = new VultrAgrixConfig().LoadServers(LoadYaml());
+            var servers = new VultrAgrixConfig().LoadServers(
+                LoadYaml().GetSequence("servers"));
             Assert.Equal(3, servers.Count);
-        }
-
-        [Fact]
-        public void TestLoadEmptyServers()
-        {
-            var servers = new VultrAgrixConfig().LoadServers(LoadYaml("platform: vultr"));
-            Assert.Equal(0, servers.Count);
         }
 
         [Fact]
@@ -44,7 +38,7 @@ namespace tests.Configuration
       memory: 4096
       type: SSD
     region: Chicago
-    userdata: test data"));
+    userdata: test data").GetSequence("servers"));
             Assert.Equal(1, servers.Count);
             Assert.Equal("test data", servers[0].UserData);
         }
@@ -64,16 +58,9 @@ namespace tests.Configuration
     userdata:
       my-array:
         - 1
-        - 2"));
+        - 2").GetSequence("servers"));
             Assert.Equal(1, servers.Count);
             Assert.Equal("{\"my-array\": [\"1\", \"2\"]}", servers[0].UserData);
-        }
-
-        [Fact]
-        public void TestLoadEmptyScripts()
-        {
-            var scripts = new VultrAgrixConfig().LoadScripts(LoadYaml());
-            Assert.Equal(0, scripts.Count);
         }
 
         [Fact]
@@ -89,7 +76,7 @@ namespace tests.Configuration
     type: boot
     content: |
       #!/usr/bin/env bash
-      echo hello"));
+      echo hello").GetSequence("scripts"));
             Assert.Equal(2, scripts.Count);
             Assert.Equal("test", scripts[0].Name);
             Assert.Equal(ScriptType.Boot, scripts[0].Type);
@@ -135,7 +122,7 @@ namespace tests.Configuration
 
       - protocol: tcp
         source: cloudflare
-        port: 80"));
+        port: 80").GetSequence("firewalls"));
 
             Assert.Equal(2, firewalls.Count);
 

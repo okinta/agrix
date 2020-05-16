@@ -46,18 +46,15 @@ namespace agrix.Platforms.Vultr
                 if (item.Key.GetTag() == "platform") continue;
                 else if (item.Key.GetTag() == "servers")
                 {
-                    infrastructure.AddItems(
-                        config.LoadServers(node));
+                    infrastructure.AddItems(config.LoadServers(item.Value));
                 }
                 else if (item.Key.GetTag() == "scripts")
                 {
-                    infrastructure.AddItems(
-                        config.LoadScripts(node));
+                    infrastructure.AddItems(config.LoadScripts(item.Value));
                 }
                 else if (item.Key.GetTag() == "firewalls")
                 {
-                    infrastructure.AddItems(
-                        config.LoadFirewalls(node));
+                    infrastructure.AddItems(config.LoadFirewalls(item.Value));
                 }
                 else
                 {

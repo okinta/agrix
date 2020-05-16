@@ -1,6 +1,5 @@
 ﻿using agrix.Configuration.Parsers;
 using agrix.Exceptions;
-using agrix.Extensions;
 using System.Collections.Generic;
 using System;
 using YamlDotNet.RepresentationModel;
@@ -52,7 +51,7 @@ namespace agrix.Configuration
         /// present in the YAML.</exception>
         /// <exception cref="InvalidCastException">If a YAML key is in an invalid
         /// format.</exception>
-        public virtual IList<Server> LoadServers(YamlMappingNode node)
+        public virtual IList<Server> LoadServers(YamlNode node)
         {
             return Load("servers", node, ParseServer);
         }
@@ -69,7 +68,7 @@ namespace agrix.Configuration
         /// present in the YAML.</exception>
         /// <exception cref="InvalidCastException">If a YAML key is in an invalid
         /// format.</exception>
-        public virtual IList<Script> LoadScripts(YamlMappingNode node)
+        public virtual IList<Script> LoadScripts(YamlNode node)
         {
             return Load("scripts", node, ParseScript);
         }
@@ -86,7 +85,7 @@ namespace agrix.Configuration
         /// present in the YAML.</exception>
         /// <exception cref="InvalidCastException">If a YAML key is in an invalid
         /// format.</exception>
-        public virtual IList<Firewall> LoadFirewalls(YamlMappingNode node)
+        public virtual IList<Firewall> LoadFirewalls(YamlNode node)
         {
             return Load("firewalls", node, ParseFirewall);
         }
@@ -100,7 +99,8 @@ namespace agrix.Configuration
         /// <param name="parse">The delegate to use to parse the configuration.</param>
         /// <returns>The list of parsed configurations loaded from the given YAML.</returns>
         /// <exception cref="ArgumentNullException">If any arguments are null.</exception>
-        protected virtual IList<T> Load<T>(string name, YamlMappingNode node, Parse<T> parse)
+        protected virtual IList<T> Load<T>(string name, YamlNode node,
+            Parse<T> parse)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentNullException("name", "name must not be empty");
@@ -112,12 +112,18 @@ namespace agrix.Configuration
                 throw new ArgumentNullException("parse", "parse must not be empty");
 
             var items = new List<T>();
-            var nodeItems = node.GetSequence(name, required: false);
 
-            // If servers are empty, return an empty list
-            if (nodeItems is null) return items;
+            // If items are empty, return an empty list
+            if (node.NodeType == YamlNodeType.Scalar
+                && string.IsNullOrEmpty(((YamlScalarNode)node).Value))
+                return items;
 
-            foreach (var nodeItem in nodeItems)
+            if (node.NodeType != YamlNodeType.Sequence)
+                throw new ArgumentException("node",
+                    string.Format("{0} must be a sequence (line {1})",
+                    name, node.Start.Line));
+
+            foreach (var nodeItem in (YamlSequenceNode)node)
                 items.Add(parse(nodeItem));
 
             return items;
