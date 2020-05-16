@@ -7,12 +7,17 @@ using Vultr.API;
 
 namespace agrix.Platforms.Vultr
 {
+    internal delegate void Provisioner<T>(T firewall, bool dryrun = false);
+
     /// <summary>
     /// Describes methods to communicate with the Vultr platform.
     /// </summary>
     internal class VultrPlatform : Platform
     {
         private VultrClient Client { get; }
+
+        private Dictionary<Type, Action<object, bool>> KnownProvisioners { get; }
+            = new Dictionary<Type, Action<object, bool>>();
 
         /// <summary>
         /// Instantiates the instance.
@@ -24,6 +29,21 @@ namespace agrix.Platforms.Vultr
         {
             Client = string.IsNullOrEmpty(apiURL) ?
                 new VultrClient(apiKey) : new VultrClient(apiKey, apiURL);
+
+            AddProvisioner<Firewall>(new VultrFirewallProvisioner(Client).Provision);
+            AddProvisioner<Script>(new VultrScriptProvisioner(Client).Provision);
+            AddProvisioner<Server>(new VultrServerProvisioner(Client).Provision);
+        }
+
+        /// <summary>
+        /// Adds a provisioner to create infrastructure from a configuration.
+        /// </summary>
+        /// <typeparam name="T">The type of configuration the provisioner
+        /// provisions.</typeparam>
+        /// <param name="provisioner">The provisioner to add.</param>
+        protected void AddProvisioner<T>(Provisioner<T> provisioner)
+        {
+            KnownProvisioners[typeof(T)] = (item, dryrun) => provisioner((T)item, dryrun);
         }
 
         /// <summary>
@@ -35,32 +55,11 @@ namespace agrix.Platforms.Vultr
         /// will be outputted describing what would be done.</param>
         public override void Provision(Infrastructure infrastructure, bool dryrun = false)
         {
-            var mapping = new Dictionary<Type, Action<object, bool>>
-            {
-                [typeof(Firewall)] = (firewall, dryrun) =>
-                {
-                    var provisioner = new VultrFirewallProvisioner(Client);
-                    provisioner.Provision((Firewall)firewall, dryrun);
-                },
-
-                [typeof(Server)] = (server, dryrun) =>
-                {
-                    var provisioner = new VultrServerProvisioner(Client);
-                    provisioner.Provision((Server)server, dryrun);
-                },
-
-                [typeof(Script)] = (script, dryrun) =>
-                {
-                    var provisioner = new VultrScriptProvisioner(Client);
-                    provisioner.Provision((Script)script, dryrun);
-                }
-            };
-
             foreach (var type in infrastructure.Types)
             {
                 foreach (var item in infrastructure.GetItems(type))
                 {
-                    if (!mapping.TryGetValue(type, out var action))
+                    if (!KnownProvisioners.TryGetValue(type, out var action))
                         throw new ArgumentException(string.Format(
                             "Unknown item type {0}", type));
 
