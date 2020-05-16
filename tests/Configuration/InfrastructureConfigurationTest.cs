@@ -1,8 +1,6 @@
 ﻿using agrix.Configuration;
 using agrix.Platforms.Vultr;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System;
 using tests.Properties;

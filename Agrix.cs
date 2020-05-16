@@ -94,22 +94,32 @@ namespace agrix
 
             try
             {
-                InfrastructureConfiguration.LoadServers(YAML, platform.AgrixConfig);
-            }
-            catch (KnownKeyNotFoundException<string> e)
-            {
-                throw new AgrixValidationException(
-                    string.Format("servers validation error: {0}", e.Message), e);
-            }
-
-            try
-            {
                 InfrastructureConfiguration.LoadScripts(YAML, platform.AgrixConfig);
             }
             catch (KnownKeyNotFoundException<string> e)
             {
                 throw new AgrixValidationException(
                     string.Format("scripts validation error: {0}", e.Message), e);
+            }
+
+            try
+            {
+                InfrastructureConfiguration.LoadFirewalls(YAML, platform.AgrixConfig);
+            }
+            catch (KnownKeyNotFoundException<string> e)
+            {
+                throw new AgrixValidationException(
+                    string.Format("firewalls validation error: {0}", e.Message), e);
+            }
+
+            try
+            {
+                InfrastructureConfiguration.LoadServers(YAML, platform.AgrixConfig);
+            }
+            catch (KnownKeyNotFoundException<string> e)
+            {
+                throw new AgrixValidationException(
+                    string.Format("servers validation error: {0}", e.Message), e);
             }
         }
 
@@ -124,13 +134,18 @@ namespace agrix
             Validate();
 
             var platform = InfrastructureConfiguration.LoadPlatform(YAML, ApiKey);
-            var servers = InfrastructureConfiguration.LoadServers(
-                YAML, platform.AgrixConfig);
             var scripts = InfrastructureConfiguration.LoadScripts(
+                YAML, platform.AgrixConfig);
+            var firewalls = InfrastructureConfiguration.LoadFirewalls(
+                YAML, platform.AgrixConfig);
+            var servers = InfrastructureConfiguration.LoadServers(
                 YAML, platform.AgrixConfig);
 
             foreach (var script in scripts)
                 platform.Provision(script, dryrun);
+
+            foreach (var firewall in firewalls)
+                platform.Provision(firewall, dryrun);
 
             foreach (var server in servers)
                 platform.Provision(server, dryrun);

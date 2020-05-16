@@ -54,6 +54,18 @@ namespace agrix.Platforms.Vultr
         }
 
         /// <summary>
+        /// Provisions a Firewall using the given configuration.
+        /// </summary>
+        /// <param name="firewall">The Firewall configuration to provision.</param>
+        /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
+        /// provision commands will not be sent to the platform and instead messaging
+        /// will be outputted describing what would be done.</param>
+        public void Provision(Firewall firewall, bool dryrun = false)
+        {
+            new VultrFirewallProvisioner(Client).Provision(firewall, dryrun);
+        }
+
+        /// <summary>
         /// Tests the connection. Throws an exception if the connection is invalid.
         /// </summary>
         public void TestConnection()
