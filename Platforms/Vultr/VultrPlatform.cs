@@ -8,6 +8,7 @@ namespace agrix.Platforms.Vultr
     /// <summary>
     /// Describes methods to communicate with the Vultr platform.
     /// </summary>
+    [Platform("vultr")]
     internal class VultrPlatform : Platform
     {
         private VultrClient Client { get; }
@@ -18,7 +19,15 @@ namespace agrix.Platforms.Vultr
         /// <param name="apiKey">The API key to use for communicating with Vultr.</param>
         /// <param name="apiURL">The optional API URL for Vultr. Set this to override
         /// the Vultr API endpoint (e.g. for testing).</param>
-        public VultrPlatform(string apiKey, string apiURL = null)
+        public VultrPlatform(string apiKey) : this(apiKey, null) { }
+
+        /// <summary>
+        /// Instantiates the instance and overrides the Vultr API URL.
+        /// </summary>
+        /// <param name="apiKey">The API key to use for communicating with Vultr.</param>
+        /// <param name="apiURL">The API URL for Vultr. Set this to override the
+        /// Vultr API endpoint (e.g. for testing).</param>
+        public VultrPlatform(string apiKey, string apiURL)
         {
             Client = string.IsNullOrEmpty(apiURL) ?
                 new VultrClient(apiKey) : new VultrClient(apiKey, apiURL);

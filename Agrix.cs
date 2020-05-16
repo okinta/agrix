@@ -1,9 +1,10 @@
 ﻿using agrix.Exceptions;
 using agrix.Extensions;
-using agrix.Platforms.Vultr;
 using agrix.Platforms;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System;
 using YamlDotNet.RepresentationModel;
 
@@ -64,21 +65,28 @@ namespace agrix
         /// <summary>
         /// Loads the platform configuration from the given YAML.
         /// </summary>
+        /// <param name="assembly">The optional Assembly to search within for
+        /// platforms. Defaults to this assembly.</param>
         /// <returns>The platform configuration loaded from the given YAML.</returns>
         /// <exception cref="KeyNotFoundException">If the platform key is not present
         /// inside <paramref name="config"/>.</exception>
         /// <exception cref="ArgumentException">If the platform is not
         /// supported.</exception>
-        public IPlatform LoadPlatform()
+        public IPlatform LoadPlatform(Assembly assembly = null)
         {
-            var platform = YAML.GetRootNode().GetKey("platform", required: true);
+            var root = YAML.GetRootNode();
+            var platformName = root.GetKey("platform", required: true);
 
-            return platform switch
-            {
-                "vultr" => new VultrPlatform(ApiKey),
-                _ => throw new ArgumentException(
-                    string.Format("Unknown platform: {0}", platform), "config"),
-            };
+            var availablePlatforms = GetAvailablePlatforms(
+                assembly is null ? Assembly.GetAssembly(typeof(IPlatform)) : assembly);
+
+            if (!availablePlatforms.TryGetValue(platformName, out var platform))
+                throw new ArgumentException(string.Format(
+                    "Unknown platform {0} (line {1}). Available platforms are: {2}",
+                    platformName, root.GetNode("platform").Start.Line,
+                    string.Join(", ", availablePlatforms.Keys)), "config");
+
+            return (IPlatform)Activator.CreateInstance(platform, ApiKey);
         }
 
         /// <summary>
@@ -135,6 +143,43 @@ namespace agrix
             var platform = LoadPlatform();
             var infrastructure = platform.Load(YAML.GetRootNode());
             platform.Provision(infrastructure, dryrun);
+        }
+
+        /// <summary>
+        /// Loads all the registered platforms.
+        /// </summary>
+        /// <param name="assembly">The Assembly to search within.</param>
+        /// <returns>The collection of registered platforms with their associated
+        /// keys.</returns>
+        private Dictionary<string, Type> GetAvailablePlatforms(Assembly assembly)
+        {
+            var platforms = new Dictionary<string, Type>();
+
+            foreach (var type in assembly.GetTypes())
+            {
+                if (!typeof(IPlatform).IsAssignableFrom(type)) continue;
+
+                var attributes = type.GetCustomAttributes(typeof(PlatformAttribute));
+                if (attributes.Count() == 0)
+                    continue;
+
+                var platformAttribute = (PlatformAttribute)attributes.First();
+
+                if (string.IsNullOrWhiteSpace(platformAttribute.Tag))
+                    throw new InvalidOperationException(string.Format(
+                        "PlatformAttribute tag cannot be empty for {0}", type));
+
+                if (platforms.ContainsKey(platformAttribute.Tag))
+                    throw new InvalidOperationException(string.Format(
+                        "{0} is already in use by {1}. Cannot be used by {2}.",
+                        platformAttribute.Tag,
+                        platforms[platformAttribute.Tag].GetType(),
+                        type));
+
+                platforms[platformAttribute.Tag] = type;
+            }
+
+            return platforms;
         }
     }
 }
