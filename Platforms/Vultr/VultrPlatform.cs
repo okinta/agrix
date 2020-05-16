@@ -1,5 +1,5 @@
 ﻿using agrix.Configuration;
-using agrix.Platforms.Vultr.Provisioning;
+using agrix.Platforms.Vultr.Provisioners;
 using Server = agrix.Configuration.Server;
 using Vultr.API;
 

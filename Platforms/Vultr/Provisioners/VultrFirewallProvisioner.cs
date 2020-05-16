@@ -6,7 +6,7 @@ using agrix.Extensions;
 using Vultr.API;
 using Vultr.API.Models;
 
-namespace agrix.Platforms.Vultr.Provisioning
+namespace agrix.Platforms.Vultr.Provisioners
 {
     /// <summary>
     /// Provisions Vultr firewalls.

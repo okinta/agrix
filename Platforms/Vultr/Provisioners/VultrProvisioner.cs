@@ -1,7 +1,7 @@
 ﻿using System;
 using Vultr.API;
 
-namespace agrix.Platforms.Vultr.Provisioning
+namespace agrix.Platforms.Vultr.Provisioners
 {
     /// <summary>
     /// Base class for provisioning Vultr infrastructure.

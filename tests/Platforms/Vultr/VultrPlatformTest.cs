@@ -3,7 +3,7 @@ using OperatingSystem = agrix.Configuration.OperatingSystem;
 using tests.Properties;
 using tests.TestHelpers;
 using Xunit;
-using agrix.Platforms.Vultr.Provisioning;
+using agrix.Platforms.Vultr.Provisioners;
 
 namespace tests.Platforms.Vultr
 {

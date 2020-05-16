@@ -6,7 +6,7 @@ using System;
 using Vultr.API.Models;
 using Vultr.API;
 
-namespace agrix.Platforms.Vultr.Provisioning
+namespace agrix.Platforms.Vultr.Provisioners
 {
     /// <summary>
     /// Provisions Vultr servers.
