@@ -286,6 +286,20 @@ namespace tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {
+        ///    &quot;balance&quot;: &quot;-5519.11&quot;,
+        ///    &quot;pending_charges&quot;: &quot;57.03&quot;,
+        ///    &quot;last_payment_date&quot;: &quot;2014-07-18 15:31:01&quot;,
+        ///    &quot;last_payment_amount&quot;: &quot;-1.00&quot;
+        ///}.
+        /// </summary>
+        internal static string VultrAccountInfo {
+            get {
+                return ResourceManager.GetString("VultrAccountInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {&quot;1&quot;:{&quot;APPID&quot;:&quot;1&quot;,&quot;name&quot;:&quot;LEMP&quot;,&quot;short_name&quot;:&quot;lemp&quot;,&quot;deploy_name&quot;:&quot;LEMP on CentOS 6 x64&quot;,&quot;surcharge&quot;:0},&quot;39&quot;:{&quot;APPID&quot;:&quot;39&quot;,&quot;name&quot;:&quot;LEMP&quot;,&quot;short_name&quot;:&quot;lemp&quot;,&quot;deploy_name&quot;:&quot;LEMP on CentOS 7 x64&quot;,&quot;surcharge&quot;:0},&quot;40&quot;:{&quot;APPID&quot;:&quot;40&quot;,&quot;name&quot;:&quot;LEMP&quot;,&quot;short_name&quot;:&quot;lemp&quot;,&quot;deploy_name&quot;:&quot;LEMP on Ubuntu 18.04 x64&quot;,&quot;surcharge&quot;:0},&quot;2&quot;:{&quot;APPID&quot;:&quot;2&quot;,&quot;name&quot;:&quot;WordPress&quot;,&quot;short_name&quot;:&quot;wordpress&quot;,&quot;deploy_name&quot;:&quot;WordPress on Ubuntu 18.04 x64&quot;,&quot;surcharge&quot;:0},&quot;3&quot;:{&quot;APPID&quot;:&quot;3&quot;,&quot;name&quot;:&quot;Minecraft&quot;,&quot;short_name&quot;:&quot;minecraft&quot;,&quot;deploy_nam [rest of string was truncated]&qu....
         /// </summary>
         internal static string VultrAppList {

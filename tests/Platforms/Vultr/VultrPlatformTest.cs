@@ -1,15 +1,35 @@
 ﻿using agrix.Configuration;
+using agrix.Platforms.Vultr.Provisioners;
+using agrix.Platforms.Vultr;
 using OperatingSystem = agrix.Configuration.OperatingSystem;
+using System.Net.Http;
 using tests.Properties;
 using tests.TestHelpers;
 using Xunit;
-using agrix.Platforms.Vultr.Provisioners;
 
 namespace tests.Platforms.Vultr
 {
     public class VultrPlatformTest
     {
-        private Plan Plan => new Plan(1, 1024, "SSD");
+        [Fact]
+        public void TestTestConnection()
+        {
+            using var requests = new MockVultrRequests(
+                new CustomMockHttpHandler(
+                    "/account/info", Resources.VultrAccountInfo));
+            new VultrPlatform("abc123", requests.Url).TestConnection();
+        }
+
+        [Fact]
+        public void TestTestConnectionFail()
+        {
+            using var requests = new MockVultrRequests(
+                new CustomMockHttpHandler("/", ""));
+            Assert.Throws<HttpRequestException>(() =>
+                new VultrPlatform("abc123", requests.Url).TestConnection());
+        }
+
+        private static Plan Plan => new Plan(1, 1024, "SSD");
 
         private const string Region = "New Jersey";
 
