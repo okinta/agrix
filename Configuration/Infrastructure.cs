@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System;
 
 namespace agrix.Configuration
@@ -11,10 +12,7 @@ namespace agrix.Configuration
         /// <summary>
         /// Gets the list of Type instances that exist within this configuration.
         /// </summary>
-        public IReadOnlyList<Type> Types
-        {
-            get { return types; }
-        }
+        public IReadOnlyList<Type> Types { get { return types; } }
 
         private readonly List<Type> types = new List<Type>();
         private Dictionary<Type, IList<object>> Items { get; } =
@@ -27,7 +25,7 @@ namespace agrix.Configuration
         /// <param name="items">The list of items to add.</param>
         public void AddItems<T>(IEnumerable<T> items)
         {
-            if (!types.Contains(typeof(T)))
+            if (!types.Contains(typeof(T)) && items.Count() > 0)
                 types.Add(typeof(T));
 
             if (!Items.TryGetValue(typeof(T), out var existingItems))
