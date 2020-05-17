@@ -4,7 +4,7 @@ using Xunit;
 
 namespace tests.Platforms.Vultr
 {
-    public class ServerExtensionsTest
+    public class VultrServerExtensionsTest
     {
         [Fact]
         public void TestIsEquivalent()
