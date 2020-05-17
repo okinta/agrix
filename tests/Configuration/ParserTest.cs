@@ -2,15 +2,9 @@
 using agrix.Extensions;
 using tests.Properties;
 using Xunit;
-using YamlDotNet.RepresentationModel;
 
 namespace tests.Configuration
 {
-    internal struct TestParser
-    {
-        public int Klout { get; set; }
-    }
-
     public class ParserTest : BaseTest
     {
         [Fact]
@@ -18,7 +12,7 @@ namespace tests.Configuration
         {
             var parser = new Parser();
             var node = LoadYaml("klouts:").GetNode("klouts");
-            Assert.Empty(parser.Load("klouts", node, Parse));
+            Assert.Empty(parser.Load("klouts", node, new KloutParser().Parse));
         }
 
         [Fact]
@@ -27,17 +21,11 @@ namespace tests.Configuration
             var parser = new Parser();
             var node = LoadYaml(Resources.KloutsConfig).GetNode("klouts");
 
-            var klouts = parser.Load("klouts", node, Parse);
+            var klouts = parser.Load("klouts", node, new KloutParser().Parse);
             Assert.Equal(3, klouts.Count);
-            Assert.Equal(1, klouts[0].Klout);
-            Assert.Equal(99, klouts[1].Klout);
-            Assert.Equal(78, klouts[2].Klout);
-        }
-
-        private TestParser Parse(YamlNode node)
-        {
-            var item = (YamlMappingNode)node;
-            return new TestParser() { Klout = int.Parse(item.GetKey("klout")) };
+            Assert.Equal(1, klouts[0].Score);
+            Assert.Equal(99, klouts[1].Score);
+            Assert.Equal(78, klouts[2].Score);
         }
     }
 }
