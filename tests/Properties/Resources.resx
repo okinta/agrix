@@ -267,6 +267,14 @@ servers:
       type: SSD
     region: Atlanta</value>
   </data>
+  <data name="VultrAppList" xml:space="preserve">
+    <value>{"1":{"APPID":"1","name":"LEMP","short_name":"lemp","deploy_name":"LEMP on CentOS 6 x64","surcharge":0},"39":{"APPID":"39","name":"LEMP","short_name":"lemp","deploy_name":"LEMP on CentOS 7 x64","surcharge":0},"40":{"APPID":"40","name":"LEMP","short_name":"lemp","deploy_name":"LEMP on Ubuntu 18.04 x64","surcharge":0},"2":{"APPID":"2","name":"WordPress","short_name":"wordpress","deploy_name":"WordPress on Ubuntu 18.04 x64","surcharge":0},"3":{"APPID":"3","name":"Minecraft","short_name":"minecraft","deploy_name":"Minecraft on Ubuntu 18.04 x64","surcharge":0},"4":{"APPID":"4","name":"Webmin","short_name":"webmin","deploy_name":"Webmin on CentOS 6 x64","surcharge":0},"43":{"APPID":"43","name":"Webmin","short_name":"webmin","deploy_name":"Webmin on CentOS 7 x64","surcharge":0},"44":{"APPID":"44","name":"Webmin","short_name":"webmin","deploy_name":"Webmin on Ubuntu 18.04 x64","surcharge":0},"5":{"APPID":"5","name":"ownCloud","short_name":"owncloud","deploy_name":"ownCloud on Ubuntu 18.04 x64","surcharge":0},"6":{"APPID":"6","name":"OpenVPN","short_name":"openvpn","deploy_name":"OpenVPN on Ubuntu 18.04 x64","surcharge":0},"38":{"APPID":"38","name":"cPanel","short_name":"cpanel","deploy_name":"cPanel on CentOS 7 x64","surcharge":0},"15":{"APPID":"15","name":"Drupal","short_name":"drupal","deploy_name":"Drupal on Ubuntu 18.04 x64","surcharge":0},"17":{"APPID":"17","name":"Docker","short_name":"docker","deploy_name":"Docker on CentOS 7 x64","surcharge":0},"37":{"APPID":"37","name":"Docker","short_name":"docker","deploy_name":"Docker on Ubuntu 18.04 x64","surcharge":0},"19":{"APPID":"19","name":"LAMP","short_name":"lamp","deploy_name":"LAMP on CentOS 6 x64","surcharge":0},"41":{"APPID":"41","name":"LAMP","short_name":"lamp","deploy_name":"LAMP on CentOS 7 x64","surcharge":0},"42":{"APPID":"42","name":"LAMP","short_name":"lamp","deploy_name":"LAMP on Ubuntu 18.04 x64","surcharge":0},"21":{"APPID":"21","name":"Joomla","short_name":"joomla","deploy_name":"Joomla on Ubuntu 18.04 x64","surcharge":0},"23":{"APPID":"23","name":"Mediawiki","short_name":"mediawiki","deploy_name":"Mediawiki on Ubuntu 18.04 x64","surcharge":0},"25":{"APPID":"25","name":"PrestaShop","short_name":"prestashop","deploy_name":"PrestaShop on Ubuntu 18.04 x64","surcharge":0},"27":{"APPID":"27","name":"Nextcloud","short_name":"nextcloud","deploy_name":"Nextcloud on Ubuntu 18.04 x64","surcharge":0},"29":{"APPID":"29","name":"GitLab","short_name":"gitlab","deploy_name":"GitLab on Ubuntu 18.04 x64","surcharge":0},"31":{"APPID":"31","name":"Plesk (Web Admin SE)","short_name":"plesk_webadmin","deploy_name":"Plesk (Web Admin SE) on Ubuntu 18.04 x64","surcharge":0},"35":{"APPID":"35","name":"Plesk (Web Pro)","short_name":"plesk_webpro","deploy_name":"Plesk (Web Pro) on Ubuntu 18.04 x64","surcharge":0},"36":{"APPID":"36","name":"Plesk (Web Host)","short_name":"plesk_webhost","deploy_name":"Plesk (Web Host) on Ubuntu 18.04 x64","surcharge":0},"33":{"APPID":"33","name":"Magento","short_name":"magento","deploy_name":"Magento on Ubuntu 18.04 x64","surcharge":0},"45":{"APPID":"45","name":"OpenLiteSpeed","short_name":"openlitespeed","deploy_name":"OpenLiteSpeed on CentOS 7 x64","surcharge":0},"46":{"APPID":"46","name":"OpenLiteSpeed","short_name":"openlitespeed","deploy_name":"OpenLiteSpeed on Ubuntu 18.04 x64","surcharge":0},"47":{"APPID":"47","name":"Jitsi","short_name":"jitsi","deploy_name":"Jitsi on Ubuntu 18.04 x64","surcharge":0},"49":{"APPID":"49","name":"CentOS Web Panel","short_name":"centos-webpanel","deploy_name":"CentOS Web Panel on CentOS 7 x64","surcharge":0},"50":{"APPID":"50","name":"Pritunl","short_name":"pritunl","deploy_name":"Pritunl on Ubuntu 18.04 x64","surcharge":0}}</value>
+    <comment>Example output from `curl https://api.vultr.com/v1/app/list`</comment>
+  </data>
+  <data name="VultrISOList" xml:space="preserve">
+    <value>{"732320":{"ISOID":732320,"date_created":"2020-04-21 22:49:24","filename":"server2019.iso","size":5992767488,"md5sum":"59d7a18371f6fe6165767c487d92408a","sha512sum":"c221879bedf3d768da6915f2ae5c7d050b0477c91ca81bed64992a196c6500b81f22136f5fac2f512c5b768ee0674ab1cbbf8618067349093d5ed4afbe1f0c1c","status":"complete"},"743054":{"ISOID":743054,"date_created":"2020-05-12 00:55:59","filename":"installcoreos.iso","size":555927552,"md5sum":"0f9c994e039bc0a3250b43068716751e","sha512sum":"37a97aeeaf71f899e2b99f3771b655a3af93884eeaf7f3f8042891f78fe8e586c18334c86977119c79dfa59c83da6baa3cee94453ab205b536a244a2b97f31b6","status":"complete"}}</value>
+    <comment>Example output for list of ISOs</comment>
+  </data>
   <data name="VultrOSList" xml:space="preserve">
     <value>{"127":{"OSID":127,"name":"CentOS 6 x64","arch":"x64","family":"centos","windows":false},"147":{"OSID":147,"name":"CentOS 6 i386","arch":"i386","family":"centos","windows":false},"167":{"OSID":167,"name":"CentOS 7 x64","arch":"x64","family":"centos","windows":false},"381":{"OSID":381,"name":"CentOS 7 SELinux x64","arch":"x64","family":"centos","windows":false},"362":{"OSID":362,"name":"CentOS 8 x64","arch":"x64","family":"centos","windows":false},"215":{"OSID":215,"name":"Ubuntu 16.04 x64","arch":"x64","family":"ubuntu","windows":false},"216":{"OSID":216,"name":"Ubuntu 16.04 i386","arch":"i386","family":"ubuntu","windows":false},"270":{"OSID":270,"name":"Ubuntu 18.04 x64","arch":"x64","family":"ubuntu","windows":false},"365":{"OSID":365,"name":"Ubuntu 19.10 x64","arch":"x64","family":"ubuntu","windows":false},"387":{"OSID":387,"name":"Ubuntu 20.04 x64","arch":"x64","family":"ubuntu","windows":false},"194":{"OSID":194,"name":"Debian 8 i386 (jessie)","arch":"i386","family":"debian","windows":false},"244":{"OSID":244,"name":"Debian 9 x64 (stretch)","arch":"x64","family":"debian","windows":false},"352":{"OSID":352,"name":"Debian 10 x64 (buster)","arch":"x64","family":"debian","windows":false},"230":{"OSID":230,"name":"FreeBSD 11 x64","arch":"x64","family":"freebsd","windows":false},"327":{"OSID":327,"name":"FreeBSD 12 x64","arch":"x64","family":"freebsd","windows":false},"341":{"OSID":341,"name":"OpenBSD 6.5 x64","arch":"x64","family":"openbsd","windows":false},"366":{"OSID":366,"name":"OpenBSD 6.6 x64","arch":"x64","family":"openbsd","windows":false},"179":{"OSID":179,"name":"CoreOS Stable","arch":"x64","family":"coreos","windows":false},"342":{"OSID":342,"name":"Fedora 30 x64","arch":"x64","family":"fedora","windows":false},"367":{"OSID":367,"name":"Fedora 31 x64","arch":"x64","family":"fedora","windows":false},"389":{"OSID":389,"name":"Fedora 32 x64","arch":"x64","family":"fedora","windows":false},"124":{"OSID":124,"name":"Windows 2012 R2 x64","arch":"x64","family":"windows","windows":true},"240":{"OSID":240,"name":"Windows 2016 x64","arch":"x64","family":"windows","windows":true},"159":{"OSID":159,"name":"Custom","arch":"x64","family":"iso","windows":false},"164":{"OSID":164,"name":"Snapshot","arch":"x64","family":"snapshot","windows":false},"180":{"OSID":180,"name":"Backup","arch":"x64","family":"backup","windows":false},"186":{"OSID":186,"name":"Application","arch":"x64","family":"application","windows":false}}</value>
     <comment>Example output from `curl https://api.vultr.com/v1/os/list`</comment>
@@ -323,6 +331,29 @@ servers:
     }
 }</value>
     <comment>Example output from https://www.vultr.com/api/#server_server_list</comment>
+  </data>
+  <data name="VultrSnapshotList" xml:space="preserve">
+    <value>{
+    "5359435d28b9a": {
+        "SNAPSHOTID": "5359435d28b9a",
+        "date_created": "2014-04-18 12:40:40",
+        "description": "Test snapshot",
+        "size": "42949672960",
+        "status": "complete",
+        "OSID": "127",
+        "APPID": "0"
+    },
+    "5359435dc1df3": {
+        "SNAPSHOTID": "5359435dc1df3",
+        "date_created": "2014-04-22 16:11:46",
+        "description": "",
+        "size": "10000000",
+        "status": "complete",
+        "OSID": "127",
+        "APPID": "0"
+    }
+}</value>
+    <comment>Example output from https://www.vultr.com/api/#snapshot_snapshot_list</comment>
   </data>
   <data name="VultrStartupScripts" xml:space="preserve">
     <value>{

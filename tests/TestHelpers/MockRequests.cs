@@ -8,8 +8,8 @@ namespace tests.TestHelpers
     /// </summary>
     internal class MockRequests : IDisposable
     {
-        private const int TestPort = 8873;
-        private const string TestUrl = "http://localhost:8873/";
+        private const int TestPortRangeStart = 8100;
+        private const int TestPortRangeEnd = 8200;
 
         /// <summary>
         /// Gets the mocked URL that requests should be sent to.
@@ -27,11 +27,11 @@ namespace tests.TestHelpers
         /// null.</exception>
         public MockRequests(params CustomMockHttpHandler[] handlers)
         {
-            Handlers = handlers ??
-                       throw new ArgumentNullException(
-                           nameof(handlers), @"handlers must not be null");
-            MockServer = new MockServer(TestPort, handlers.GetMockHttpHandlers());
-            Url = TestUrl;
+            var port = new Random().Next(TestPortRangeStart, TestPortRangeEnd);
+            Url = $"http://localhost:{port}/";
+            Handlers = handlers ?? throw new ArgumentNullException(
+                nameof(handlers), @"handlers must not be null");
+            MockServer = new MockServer(port, handlers.GetMockHttpHandlers());
         }
 
         /// <summary>

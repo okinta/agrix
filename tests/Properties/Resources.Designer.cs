@@ -286,6 +286,24 @@ namespace tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {&quot;1&quot;:{&quot;APPID&quot;:&quot;1&quot;,&quot;name&quot;:&quot;LEMP&quot;,&quot;short_name&quot;:&quot;lemp&quot;,&quot;deploy_name&quot;:&quot;LEMP on CentOS 6 x64&quot;,&quot;surcharge&quot;:0},&quot;39&quot;:{&quot;APPID&quot;:&quot;39&quot;,&quot;name&quot;:&quot;LEMP&quot;,&quot;short_name&quot;:&quot;lemp&quot;,&quot;deploy_name&quot;:&quot;LEMP on CentOS 7 x64&quot;,&quot;surcharge&quot;:0},&quot;40&quot;:{&quot;APPID&quot;:&quot;40&quot;,&quot;name&quot;:&quot;LEMP&quot;,&quot;short_name&quot;:&quot;lemp&quot;,&quot;deploy_name&quot;:&quot;LEMP on Ubuntu 18.04 x64&quot;,&quot;surcharge&quot;:0},&quot;2&quot;:{&quot;APPID&quot;:&quot;2&quot;,&quot;name&quot;:&quot;WordPress&quot;,&quot;short_name&quot;:&quot;wordpress&quot;,&quot;deploy_name&quot;:&quot;WordPress on Ubuntu 18.04 x64&quot;,&quot;surcharge&quot;:0},&quot;3&quot;:{&quot;APPID&quot;:&quot;3&quot;,&quot;name&quot;:&quot;Minecraft&quot;,&quot;short_name&quot;:&quot;minecraft&quot;,&quot;deploy_nam [rest of string was truncated]&qu....
+        /// </summary>
+        internal static string VultrAppList {
+            get {
+                return ResourceManager.GetString("VultrAppList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {&quot;732320&quot;:{&quot;ISOID&quot;:732320,&quot;date_created&quot;:&quot;2020-04-21 22:49:24&quot;,&quot;filename&quot;:&quot;server2019.iso&quot;,&quot;size&quot;:5992767488,&quot;md5sum&quot;:&quot;59d7a18371f6fe6165767c487d92408a&quot;,&quot;sha512sum&quot;:&quot;c221879bedf3d768da6915f2ae5c7d050b0477c91ca81bed64992a196c6500b81f22136f5fac2f512c5b768ee0674ab1cbbf8618067349093d5ed4afbe1f0c1c&quot;,&quot;status&quot;:&quot;complete&quot;},&quot;743054&quot;:{&quot;ISOID&quot;:743054,&quot;date_created&quot;:&quot;2020-05-12 00:55:59&quot;,&quot;filename&quot;:&quot;installcoreos.iso&quot;,&quot;size&quot;:555927552,&quot;md5sum&quot;:&quot;0f9c994e039bc0a3250b43068716751e&quot;,&quot;sha512sum&quot;:&quot;37a97aeeaf71f899e2b99f3771b6 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string VultrISOList {
+            get {
+                return ResourceManager.GetString("VultrISOList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {&quot;127&quot;:{&quot;OSID&quot;:127,&quot;name&quot;:&quot;CentOS 6 x64&quot;,&quot;arch&quot;:&quot;x64&quot;,&quot;family&quot;:&quot;centos&quot;,&quot;windows&quot;:false},&quot;147&quot;:{&quot;OSID&quot;:147,&quot;name&quot;:&quot;CentOS 6 i386&quot;,&quot;arch&quot;:&quot;i386&quot;,&quot;family&quot;:&quot;centos&quot;,&quot;windows&quot;:false},&quot;167&quot;:{&quot;OSID&quot;:167,&quot;name&quot;:&quot;CentOS 7 x64&quot;,&quot;arch&quot;:&quot;x64&quot;,&quot;family&quot;:&quot;centos&quot;,&quot;windows&quot;:false},&quot;381&quot;:{&quot;OSID&quot;:381,&quot;name&quot;:&quot;CentOS 7 SELinux x64&quot;,&quot;arch&quot;:&quot;x64&quot;,&quot;family&quot;:&quot;centos&quot;,&quot;windows&quot;:false},&quot;362&quot;:{&quot;OSID&quot;:362,&quot;name&quot;:&quot;CentOS 8 x64&quot;,&quot;arch&quot;:&quot;x64&quot;,&quot;family&quot;:&quot;centos&quot;,&quot;windows&quot;:false},&quot;215&quot;:{&quot;OSID&quot;:215,&quot;name&quot;:&quot;Ubuntu 16.04 x64&quot;,&quot;arch&quot;:&quot;x64&quot;,&qu....
         /// </summary>
         internal static string VultrOSList {
@@ -334,6 +352,32 @@ namespace tests.Properties {
         internal static string VultrServerList {
             get {
                 return ResourceManager.GetString("VultrServerList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///    &quot;5359435d28b9a&quot;: {
+        ///        &quot;SNAPSHOTID&quot;: &quot;5359435d28b9a&quot;,
+        ///        &quot;date_created&quot;: &quot;2014-04-18 12:40:40&quot;,
+        ///        &quot;description&quot;: &quot;Test snapshot&quot;,
+        ///        &quot;size&quot;: &quot;42949672960&quot;,
+        ///        &quot;status&quot;: &quot;complete&quot;,
+        ///        &quot;OSID&quot;: &quot;127&quot;,
+        ///        &quot;APPID&quot;: &quot;0&quot;
+        ///    },
+        ///    &quot;5359435dc1df3&quot;: {
+        ///        &quot;SNAPSHOTID&quot;: &quot;5359435dc1df3&quot;,
+        ///        &quot;date_created&quot;: &quot;2014-04-22 16:11:46&quot;,
+        ///        &quot;description&quot;: &quot;&quot;,
+        ///        &quot;size&quot;: &quot;10000000&quot;,
+        ///        &quot;status&quot;: &quot;complete&quot;,
+        ///        &quot;OSID&quot;: &quot;127&quot;,
+        ///        &quot;APPID&quot; [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string VultrSnapshotList {
+            get {
+                return ResourceManager.GetString("VultrSnapshotList", resourceCulture);
             }
         }
         
