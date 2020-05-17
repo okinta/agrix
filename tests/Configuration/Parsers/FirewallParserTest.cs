@@ -9,14 +9,19 @@ namespace tests.Configuration.Parsers
     public class FirewallParserTest : BaseTest
     {
         [Fact]
-        public void TestLoadFirewalls()
+        public void TestParse()
         {
             var firewalls = LoadYaml(Resources.FirewallsConfig).GetSequence("firewalls");
-
             var firewall = new FirewallParser().Parse(firewalls[0]);
             Assert.Equal("ssh", firewall.Name);
             Assert.Equal(2, firewall.Rules.Count);
+        }
 
+        [Fact]
+        public void TestParse2()
+        {
+            var firewalls = LoadYaml(Resources.FirewallsConfig).GetSequence("firewalls");
+            var firewall = new FirewallParser().Parse(firewalls[0]);
             var rule = firewall.Rules[0];
             Assert.Equal(IPType.V4, rule.IPType);
             Assert.Equal(Protocol.TCP, rule.Protocol);
@@ -32,12 +37,17 @@ namespace tests.Configuration.Parsers
             Assert.Equal("0.0.0.0", rule.Subnet);
             Assert.Equal(0, rule.SubnetSize);
             Assert.Equal("3389", rule.Ports);
+        }
 
-            firewall = new FirewallParser().Parse(firewalls[1]);
+        [Fact]
+        public void TestParse3()
+        {
+            var firewalls = LoadYaml(Resources.FirewallsConfig).GetSequence("firewalls");
+            var firewall = new FirewallParser().Parse(firewalls[1]);
             Assert.Equal("myapp", firewall.Name);
             Assert.Equal(2, firewall.Rules.Count);
 
-            rule = firewall.Rules[0];
+            var rule = firewall.Rules[0];
             Assert.Equal(IPType.V4, rule.IPType);
             Assert.Equal(Protocol.UDP, rule.Protocol);
             Assert.Equal("", rule.Source);

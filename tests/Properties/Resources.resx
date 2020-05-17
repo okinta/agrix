@@ -121,6 +121,32 @@
   <data name="agrix" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\data\agrix.yaml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="FirewallRulesConfig" xml:space="preserve">
+    <value>rules:
+  - protocol: tcp
+    source: 0.0.0.0/0
+    port: 22
+
+  - protocol: tcp
+    source: 0.0.0.0/0
+    port: 3389
+
+  - protocol: udp
+    source: 172.0.24.1/20
+    ports: 8000 - 8100
+
+  - protocol: tcp
+    source: cloudflare
+    port: 80
+
+  - protocol: icmp
+    source: 2002:4559:1FE2::4559:1FE2/20
+    ports: 9100:9105
+
+  - protocol: tcp
+    source: localhost
+    ports: 80</value>
+  </data>
   <data name="FirewallsConfig" xml:space="preserve">
     <value>firewalls:
   - name: ssh

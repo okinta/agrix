@@ -71,6 +71,38 @@ namespace tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to rules:
+        ///  - protocol: tcp
+        ///    source: 0.0.0.0/0
+        ///    port: 22
+        ///
+        ///  - protocol: tcp
+        ///    source: 0.0.0.0/0
+        ///    port: 3389
+        ///
+        ///  - protocol: udp
+        ///    source: 172.0.24.1/20
+        ///    ports: 8000 - 8100
+        ///
+        ///  - protocol: tcp
+        ///    source: cloudflare
+        ///    port: 80
+        ///
+        ///  - protocol: icmp
+        ///    source: 2002:4559:1FE2::4559:1FE2/20
+        ///    ports: 9100:9105
+        ///
+        ///  - protocol: tcp
+        ///    source: localhost
+        ///    ports: 80.
+        /// </summary>
+        internal static string FirewallRulesConfig {
+            get {
+                return ResourceManager.GetString("FirewallRulesConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to firewalls:
         ///  - name: ssh
         ///    rules:

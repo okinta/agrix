@@ -10,16 +10,20 @@ namespace tests.Configuration.Parsers
     public class ScriptParserTest : BaseTest
     {
         [Fact]
-        public void TestLoadScripts()
+        public void TestParse()
         {
             var scripts = LoadYaml(Resources.ScriptsConfig).GetSequence("scripts");
-
             var script = new ScriptParser().Parse(scripts[0]);
             Assert.Equal("test", script.Name);
             Assert.Equal(ScriptType.Boot, script.Type);
             Assert.Equal("this is a test script", script.Content);
+        }
 
-            script = new ScriptParser().Parse(scripts[1]);
+        [Fact]
+        public void TestParse2()
+        {
+            var scripts = LoadYaml(Resources.ScriptsConfig).GetSequence("scripts");
+            var script = new ScriptParser().Parse(scripts[1]);
             Assert.Equal("bash-script", script.Name);
             Assert.Equal(ScriptType.Boot, script.Type);
             Assert.Equal(string.Join('\n',
@@ -28,7 +32,7 @@ namespace tests.Configuration.Parsers
         }
 
         [Fact]
-        public void TestLoadInvalidTypeScript()
+        public void TestParseInvalidTypeScript()
         {
             var scripts = LoadYaml(Resources.InvalidScriptTypeConfig)
                 .GetSequence("scripts");
