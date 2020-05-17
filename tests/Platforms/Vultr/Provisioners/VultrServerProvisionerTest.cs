@@ -3,7 +3,7 @@ using agrix.Platforms.Vultr.Provisioners;
 using Vultr.API;
 using Xunit;
 
-namespace tests.Platforms.Vultr.Provisioning
+namespace tests.Platforms.Vultr.Provisioners
 {
     public class VultrServerProvisionerTest
     {
