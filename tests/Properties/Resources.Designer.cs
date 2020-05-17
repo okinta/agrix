@@ -174,6 +174,18 @@ namespace tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to klouts:
+        ///  - klout: 1
+        ///  - klout: 99
+        ///  - klout: 78.
+        /// </summary>
+        internal static string KloutsConfig {
+            get {
+                return ResourceManager.GetString("KloutsConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to scripts:
         ///  - name: test
         ///    type: boot

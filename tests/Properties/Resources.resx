@@ -194,6 +194,13 @@ servers:
         - 1
         - 2</value>
   </data>
+  <data name="KloutsConfig" xml:space="preserve">
+    <value>klouts:
+  - klout: 1
+  - klout: 99
+  - klout: 78</value>
+    <comment>Config for testing Parser class</comment>
+  </data>
   <data name="ScriptsConfig" xml:space="preserve">
     <value>scripts:
   - name: test
