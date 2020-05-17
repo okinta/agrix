@@ -3,57 +3,16 @@ using agrix.Configuration;
 using agrix.Extensions;
 using agrix.Platforms.Vultr;
 using agrix;
-using System.IO;
 using System.Text;
 using System;
 using tests.Properties;
 using Xunit;
-using YamlDotNet.RepresentationModel;
 
 namespace tests.Configuration
 {
     // TODO: Rename
-    public class InfrastructureConfigurationTest
+    public class InfrastructureConfigurationTest : BaseTest
     {
-        private const string ApiKey = "abc123";
-
-        [Fact]
-        public void TestLoadServers()
-        {
-            var servers = new Parser().Load(
-                "servers",
-                LoadYaml().GetSequence("servers"),
-                new ServerParser().Parse);
-            Assert.Equal(3, servers.Count);
-        }
-
-        [Fact]
-        public void TestLoadUserData()
-        {
-            var node = LoadYaml(Resources.UserDataConfig).GetSequence("servers");
-
-            var servers = new Parser().Load(
-                "servers",
-                node,
-                new ServerParser().Parse);
-            Assert.Equal(1, servers.Count);
-            Assert.Equal("test data", servers[0].UserData);
-        }
-
-        [Fact]
-        public void TestLoadJsonUserData()
-        {
-            var data = Resources.JSONUserDataConfig;
-            var node = LoadYaml(data).GetSequence("servers");
-
-            var servers = new Parser().Load(
-                "servers",
-                node,
-                new ServerParser().Parse);
-            Assert.Equal(1, servers.Count);
-            Assert.Equal("{\"my-array\": [\"1\", \"2\"]}", servers[0].UserData);
-        }
-
         [Fact]
         public void TestLoadScripts()
         {
@@ -146,22 +105,6 @@ namespace tests.Configuration
             var agrix = new Agrix(Encoding.Default.GetString(Resources.agrix), ApiKey);
             var platform = agrix.LoadPlatform();
             Assert.Equal(typeof(VultrPlatform), platform.GetType());
-        }
-
-        private YamlMappingNode LoadYaml()
-        {
-            var input = new StringReader(Encoding.Default.GetString(Resources.agrix));
-            var yaml = new YamlStream();
-            yaml.Load(input);
-            return yaml.GetRootNode();
-        }
-
-        private YamlMappingNode LoadYaml(string content)
-        {
-            var input = new StringReader(content);
-            var yaml = new YamlStream();
-            yaml.Load(input);
-            return yaml.GetRootNode();
         }
     }
 }
