@@ -14,39 +14,6 @@ namespace tests.Configuration
     public class InfrastructureConfigurationTest : BaseTest
     {
         [Fact]
-        public void TestLoadScripts()
-        {
-            var node = LoadYaml(Resources.ScriptsConfig).GetSequence("scripts");
-
-            var scripts = new Parser().Load(
-                "scripts",
-                node,
-                new ScriptParser().Parse);
-
-            Assert.Equal(2, scripts.Count);
-            Assert.Equal("test", scripts[0].Name);
-            Assert.Equal(ScriptType.Boot, scripts[0].Type);
-            Assert.Equal("this is a test script", scripts[0].Content);
-            Assert.Equal("bash-script", scripts[1].Name);
-            Assert.Equal(ScriptType.Boot, scripts[1].Type);
-            Assert.Equal(string.Join('\n',
-                "#!/usr/bin/env bash",
-                "echo hello"), scripts[1].Content);
-        }
-
-        [Fact]
-        public void TestLoadInvalidTypeScript()
-        {
-            var node = LoadYaml(Resources.InvalidScriptTypeConfig).GetSequence("scripts");
-
-            Assert.Throws<ArgumentException>(() =>
-                new Parser().Load(
-                    "scripts",
-                    node,
-                    new ScriptParser().Parse));
-        }
-
-        [Fact]
         public void TestLoadFirewalls()
         {
             var node = LoadYaml(Resources.FirewallsConfig).GetSequence("firewalls");
