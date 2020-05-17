@@ -1,4 +1,5 @@
 ﻿using MockHttpServer;
+using System.Net;
 using System;
 
 namespace tests.TestHelpers
@@ -27,11 +28,22 @@ namespace tests.TestHelpers
         /// null.</exception>
         public MockRequests(params CustomMockHttpHandler[] handlers)
         {
-            var port = new Random().Next(TestPortRangeStart, TestPortRangeEnd);
-            Url = $"http://localhost:{port}/";
             Handlers = handlers ?? throw new ArgumentNullException(
                 nameof(handlers), @"handlers must not be null");
-            MockServer = new MockServer(port, handlers.GetMockHttpHandlers());
+
+            var port = new Random().Next(TestPortRangeStart, TestPortRangeEnd);
+            try
+            {
+                MockServer = new MockServer(port, handlers.GetMockHttpHandlers());
+            }
+            catch (HttpListenerException)
+            {
+                // Try another port
+                port = new Random().Next(TestPortRangeStart, TestPortRangeEnd);
+                MockServer = new MockServer(port, handlers.GetMockHttpHandlers());
+            }
+
+            Url = $"http://localhost:{port}/";
         }
 
         /// <summary>
