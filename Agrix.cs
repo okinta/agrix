@@ -15,7 +15,7 @@ namespace agrix
     /// </summary>
     internal class Agrix
     {
-        private YamlStream yaml;
+        private YamlStream _yaml;
 
         /// <summary>
         /// The YAML configuration to process, as a string.
@@ -25,17 +25,15 @@ namespace agrix
         /// <summary>
         /// The YAML configuration to process, as a YamlStream.
         /// </summary>
-        private YamlStream YAML
+        private YamlStream Yaml
         {
             get
             {
-                if (yaml is null)
-                {
-                    yaml = new YamlStream();
-                    yaml.Load(new StringReader(Configuration));
-                }
+                if (!(_yaml is null)) return _yaml;
+                _yaml = new YamlStream();
+                _yaml.Load(new StringReader(Configuration));
 
-                return yaml;
+                return _yaml;
             }
         }
 
@@ -57,10 +55,11 @@ namespace agrix
         {
             if (string.IsNullOrEmpty(configuration))
                 throw new ArgumentNullException(
-                    "configuration", "Configuration must not be empty");
+                    nameof(configuration), "Configuration must not be empty");
 
             if (string.IsNullOrEmpty(apiKey))
-                throw new ArgumentNullException("apiKey", "API key must not be empty");
+                throw new ArgumentNullException(
+                    nameof(apiKey), "API key must not be empty");
 
             ApiKey = apiKey;
             Configuration = configuration;
@@ -72,22 +71,25 @@ namespace agrix
         /// </summary>
         /// <returns>The platform configuration loaded from the given YAML.</returns>
         /// <exception cref="KeyNotFoundException">If the platform key is not present
-        /// inside <paramref name="config"/>.</exception>
+        /// inside the configuration..</exception>
         /// <exception cref="ArgumentException">If the platform is not
         /// supported.</exception>
         public IPlatform LoadPlatform()
         {
-            var root = YAML.GetRootNode();
+            var root = Yaml.GetRootNode();
             var platformName = root.GetKey("platform", required: true);
             var availablePlatforms = GetAvailablePlatforms(Assembly);
 
-            if (!availablePlatforms.TryGetValue(platformName, out var platform))
-                throw new ArgumentException(string.Format(
-                    "Unknown platform {0} (line {1}). Available platforms are: {2}",
-                    platformName, root.GetNode("platform").Start.Line,
-                    string.Join(", ", availablePlatforms.Keys)), "config");
+            if (availablePlatforms.TryGetValue(platformName, out var platform))
+                return (IPlatform) Activator.CreateInstance(platform, ApiKey);
 
-            return (IPlatform)Activator.CreateInstance(platform, ApiKey);
+            var line = root.GetNode("platform").Start.Line;
+            var availablePlatformsText = string.Join(
+                ", ", availablePlatforms.Keys);
+            throw new ArgumentException(
+                $"Unknown platform {platformName} (line {line}). Available "
+                + $"platforms are: {availablePlatformsText}");
+
         }
 
         /// <summary>
@@ -122,12 +124,12 @@ namespace agrix
 
             try
             {
-                platform.Load(YAML.GetRootNode());
+                platform.Load(Yaml.GetRootNode());
             }
             catch (KnownKeyNotFoundException<string> e)
             {
                 throw new AgrixValidationException(
-                    string.Format("scripts validation error: {0}", e.Message), e);
+                    $"scripts validation error: {e.Message}", e);
             }
         }
 
@@ -142,7 +144,7 @@ namespace agrix
             Validate();
 
             var platform = LoadPlatform();
-            var infrastructure = platform.Load(YAML.GetRootNode());
+            var infrastructure = platform.Load(Yaml.GetRootNode());
             platform.Provision(infrastructure, dryrun);
         }
 
@@ -152,7 +154,7 @@ namespace agrix
         /// <param name="assembly">The Assembly to search within.</param>
         /// <returns>The collection of registered platforms with their associated
         /// keys.</returns>
-        private Dictionary<string, Type> GetAvailablePlatforms(Assembly assembly)
+        private static Dictionary<string, Type> GetAvailablePlatforms(Assembly assembly)
         {
             var platforms = new Dictionary<string, Type>();
 
@@ -160,22 +162,26 @@ namespace agrix
             {
                 if (!typeof(IPlatform).IsAssignableFrom(type)) continue;
 
-                var attributes = type.GetCustomAttributes(typeof(PlatformAttribute));
-                if (attributes.Count() == 0)
+                var attributes = type.GetCustomAttributes(
+                    typeof(PlatformAttribute));
+                var enumerable = attributes as Attribute[]
+                    ?? attributes.ToArray();
+                if (!enumerable.Any())
                     continue;
 
-                var platformAttribute = (PlatformAttribute)attributes.First();
+                var platformAttribute = (PlatformAttribute)enumerable[0];
 
                 if (string.IsNullOrWhiteSpace(platformAttribute.Tag))
-                    throw new InvalidOperationException(string.Format(
-                        "PlatformAttribute tag cannot be empty for {0}", type));
+                    throw new InvalidOperationException(
+                        $"PlatformAttribute tag cannot be empty for {type}");
 
                 if (platforms.ContainsKey(platformAttribute.Tag))
-                    throw new InvalidOperationException(string.Format(
-                        "{0} is already in use by {1}. Cannot be used by {2}.",
-                        platformAttribute.Tag,
-                        platforms[platformAttribute.Tag].GetType(),
-                        type));
+                {
+                    var inUseBy = platforms[platformAttribute.Tag];
+                    throw new InvalidOperationException(
+                        $"{platformAttribute.Tag} is already in use by "
+                        + $"{inUseBy}. Cannot be used by {type}.");
+                }
 
                 platforms[platformAttribute.Tag] = type;
             }

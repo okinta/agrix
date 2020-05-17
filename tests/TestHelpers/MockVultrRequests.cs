@@ -1,4 +1,4 @@
-﻿using agrix.Platforms.Vultr;
+﻿using System;
 using Vultr.API;
 
 namespace tests.TestHelpers
@@ -23,7 +23,7 @@ namespace tests.TestHelpers
         public MockVultrRequests(params CustomMockHttpHandler[] handlers) :
             base(handlers)
         {
-            Client = new VultrClient("abc123", URL);
+            Client = new VultrClient("abc123", Url);
         }
     }
 }

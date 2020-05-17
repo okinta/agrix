@@ -7,25 +7,29 @@ namespace tests.Program
 {
     public class ProgramTest
     {
-        private readonly Assembly TestAssembly = Assembly.GetExecutingAssembly();
+        private readonly Assembly _testAssembly = Assembly.GetExecutingAssembly();
 
         [Fact]
         public void TestBadArguments()
         {
-            Assert.Equal(2, AProgram.Main(TestAssembly, ReadLine, "bad", "arguments"));
+            Assert.Equal(
+                2,
+                AProgram.Main(_testAssembly, ReadLine, "bad", "arguments"));
         }
 
         [Fact]
         public void TestHelp()
         {
-            Assert.Equal(0, AProgram.Main(TestAssembly, ReadLine, "help"));
+            Assert.Equal(
+                0,
+                AProgram.Main(_testAssembly, ReadLine, "help"));
         }
 
         [Fact]
         public void TestValidate()
         {
             var input = new LineInputter(Resources.TestPlatformConfig);
-            Assert.Equal(0, AProgram.Main(TestAssembly, input.ReadLine,
+            Assert.Equal(0, AProgram.Main(_testAssembly, input.ReadLine,
                 "validate", "--apikey", "abc"));
         }
 
@@ -33,7 +37,7 @@ namespace tests.Program
         public void TestValidateInvalid()
         {
             var input = new LineInputter("what is this nonsense");
-            Assert.Equal(1, AProgram.Main(TestAssembly, input.ReadLine,
+            Assert.Equal(1, AProgram.Main(_testAssembly, input.ReadLine,
                 "validate", "--apikey", "abc"));
         }
 
@@ -41,14 +45,14 @@ namespace tests.Program
         public void TestProvision()
         {
             var input = new LineInputter(Resources.TestPlatformConfig);
-            Assert.Equal(0, AProgram.Main(TestAssembly, input.ReadLine,
+            Assert.Equal(0, AProgram.Main(_testAssembly, input.ReadLine,
                 "provision", "--apikey", "abc"));
 
             var platform = TestPlatform.LastInstance;
             Assert.Equal(1, platform.Provisions.Count);
 
             var server = platform.Provisions[0].Item1;
-            Assert.Equal("Fedora 32 x64", server.OS.Name);
+            Assert.Equal("Fedora 32 x64", server.Os.Name);
             Assert.False(platform.Provisions[0].Item2);
         }
 
@@ -56,17 +60,17 @@ namespace tests.Program
         public void TestProvisionDryrun()
         {
             var input = new LineInputter(Resources.TestPlatformConfig);
-            Assert.Equal(0, AProgram.Main(TestAssembly, input.ReadLine,
+            Assert.Equal(0, AProgram.Main(_testAssembly, input.ReadLine,
                 "provision", "--apikey", "abc", "--dryrun"));
 
             var platform = TestPlatform.LastInstance;
             Assert.Equal(1, platform.Provisions.Count);
 
             var server = platform.Provisions[0].Item1;
-            Assert.Equal("Fedora 32 x64", server.OS.Name);
+            Assert.Equal("Fedora 32 x64", server.Os.Name);
             Assert.True(platform.Provisions[0].Item2);
         }
 
-        private string ReadLine() { return null; }
+        private static string ReadLine() { return null; }
     }
 }

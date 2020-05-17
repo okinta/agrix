@@ -7,7 +7,7 @@ namespace agrix.Configuration
     /// <summary>
     /// Represents a firewall configuration.
     /// </summary>
-    internal struct Firewall
+    internal readonly struct Firewall
     {
         /// <summary>
         /// Gets the name of the firewall.
@@ -29,13 +29,16 @@ namespace agrix.Configuration
         public Firewall(string name, IEnumerable<FirewallRule> rules)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException("name", "Firewall name cannot be empty");
+                throw new ArgumentNullException(
+                    nameof(name), "Firewall name cannot be empty");
 
-            if (rules == null || rules.Count() == 0)
-                throw new ArgumentNullException("rules", "Firewall rules cannot be empty");
+            var firewallRules = rules as FirewallRule[] ?? rules.ToArray();
+            if (rules == null || !firewallRules.Any())
+                throw new ArgumentNullException(
+                    nameof(rules), "Firewall rules cannot be empty");
 
             Name = name;
-            Rules = new List<FirewallRule>(rules);
+            Rules = new List<FirewallRule>(firewallRules);
         }
     }
 }

@@ -27,12 +27,12 @@ namespace tests.TestHelpers
         /// <summary>
         /// Gets the number of times the MockHttpHandler was called.
         /// </summary>
-        public int Called { get; private set; } = 0;
+        public int Called { get; private set; }
 
         /// <summary>
         /// Gets the URL of the MockHttpHandler.
         /// </summary>
-        public string URL { get; }
+        public string Url { get; }
 
         /// <summary>
         /// Gets the HTTP method of the MockHttpHandler.
@@ -76,7 +76,7 @@ namespace tests.TestHelpers
         /// <param name="httpMethod">The HTTP method to mock.</param>
         public CustomMockHttpHandler(string url, string response, HttpMethods httpMethod)
         {
-            URL = url;
+            Url = url;
             HttpMethod = httpMethod.ToString();
             HandlerFunction = (req, rsp, prm) => response;
 
@@ -105,7 +105,7 @@ namespace tests.TestHelpers
         public CustomMockHttpHandler(string url, Handler handlerFunction,
             HttpMethods httpMethod)
         {
-            URL = url;
+            Url = url;
             HttpMethod = httpMethod.ToString();
             HandlerFunction = handlerFunction;
 
@@ -124,7 +124,7 @@ namespace tests.TestHelpers
         /// received.</param>
         public CustomMockHttpHandler(string url, string expectedContent, string response)
         {
-            URL = url;
+            Url = url;
             HttpMethod = HttpMethods.POST.ToString();
             ExpectedResponse = expectedContent;
             ValidatedRequestResponse = response;

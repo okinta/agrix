@@ -15,7 +15,7 @@ namespace agrix.Platforms
     /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
     /// provision commands will not be sent to the platform and instead messaging
     /// will be outputted describing what would be done.</param>
-    internal delegate void Provisioner<T>(T item, bool dryrun = false);
+    internal delegate void Provisioner<in T>(T item, bool dryrun = false);
 
     /// <summary>
     /// Describes an interface for communicating with a platform. Intended as a base
@@ -54,7 +54,7 @@ namespace agrix.Platforms
         /// <summary>
         /// Instantiates a new instance.
         /// </summary>
-        public Platform()
+        protected Platform()
         {
             AddNullParser("platform");
             AddParser("servers", ParseServer);
@@ -65,7 +65,7 @@ namespace agrix.Platforms
         /// <summary>
         /// Loads infrastructure configuration from the given YAML.
         /// </summary>
-        /// <param name="yaml">The YAML to load configuration from.</param>
+        /// <param name="node">The YAML to load configuration from.</param>
         /// <returns>The infrastructure configuration loaded from the given YAML.</returns>
         public virtual Infrastructure Load(YamlMappingNode node)
         {
@@ -74,9 +74,8 @@ namespace agrix.Platforms
             foreach (var item in node.Children)
             {
                 if (!KnownParserNodes.TryGetValue(item.Key.GetTag(), out var action))
-                    throw new ArgumentException(string.Format(
-                        "Unknown tag {0} (line {1})",
-                        item.Key.GetTag(), item.Key.Start.Line));
+                    throw new ArgumentException(
+                    $"Unknown tag {item.Key.GetTag()} (line {item.Key.Start.Line})");
 
                 action(infrastructure, item.Value);
             }
@@ -87,7 +86,8 @@ namespace agrix.Platforms
         /// <summary>
         /// Provisions infrastructure referencing the given configuration.
         /// </summary>
-        /// <param name="server">The Infrastructure configuration to provision.</param>
+        /// <param name="infrastructure">The Infrastructure configuration to
+        /// provision.</param>
         /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
         /// provision commands will not be sent to the platform and instead messaging
         /// will be outputted describing what would be done.</param>
@@ -98,8 +98,7 @@ namespace agrix.Platforms
                 foreach (var item in infrastructure.GetItems(type))
                 {
                     if (!KnownProvisioners.TryGetValue(type, out var action))
-                        throw new ArgumentException(string.Format(
-                            "Unknown item type {0}", type));
+                        throw new ArgumentException($"Unknown item type {type}");
 
                     action(item, dryrun);
                 }
@@ -141,7 +140,8 @@ namespace agrix.Platforms
         /// <param name="provisioner">The provisioner to add.</param>
         protected void AddProvisioner<T>(Provisioner<T> provisioner)
         {
-            KnownProvisioners[typeof(T)] = (item, dryrun) => provisioner((T)item, dryrun);
+            KnownProvisioners[typeof(T)] = (item, dryrun) =>
+                provisioner((T)item, dryrun);
         }
     }
 }

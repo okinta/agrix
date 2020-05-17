@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System;
 using YamlDotNet.RepresentationModel;
 
 namespace agrix.Configuration
@@ -9,7 +10,7 @@ namespace agrix.Configuration
     /// <typeparam name="T">The type of instance to create.</typeparam>
     /// <param name="node">The YAML configuration to parse.</param>
     /// <returns>The instance parsed from the given YAML.</returns>
-    internal delegate T Parse<T>(YamlNode node);
+    internal delegate T Parse<out T>(YamlNode node);
 
     /// <summary>
     /// Describes methods to load configuration from YAML.

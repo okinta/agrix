@@ -20,11 +20,12 @@ namespace agrix.Extensions
         public static YamlMappingNode GetRootNode(this YamlStream yamlConfig)
         {
             if (yamlConfig is null)
-                throw new ArgumentNullException("yamlConfig", "must not be null");
+                throw new ArgumentNullException(
+                    nameof(yamlConfig), "must not be null");
 
             if (yamlConfig.Documents.Count == 0)
                 throw new ArgumentException(
-                    "config", "YAML config must have a document root");
+                    "YAML config must have a document root", nameof(yamlConfig));
 
             return (YamlMappingNode)yamlConfig.Documents[0].RootNode;
         }
@@ -46,7 +47,7 @@ namespace agrix.Extensions
         /// <param name="node">The node to retrieve the child from.</param>
         /// <param name="name">The name of the child node to retrieve.</param>
         /// <returns>The child node.</returns>
-        /// <exception cref="KnownKeyNotFoundException{string}">If the child node doesn't
+        /// <exception cref="KnownKeyNotFoundException{T}">If the child node doesn't
         /// exist.</exception>
         public static YamlNode GetNode(this YamlMappingNode node, string name)
         {
@@ -56,8 +57,8 @@ namespace agrix.Extensions
             }
             catch (KeyNotFoundException)
             {
-                throw new KnownKeyNotFoundException<string>(name,
-                    string.Format("{0} not found (line {1})", name, node.Start.Line));
+                throw new KnownKeyNotFoundException<string>(
+                    name, $"{name} not found (line {node.Start.Line})");
             }
         }
 
@@ -71,7 +72,7 @@ namespace agrix.Extensions
         /// <param name="required">Whether or not the key is required. Defaults to
         /// false.</param>
         /// <returns>The key retrieved from the node.</returns>
-        /// <exception cref="KnownKeyNotFoundException{string}">If
+        /// <exception cref="KnownKeyNotFoundException{T}">If
         /// <paramref name="required"/> is true and the key is not present.</exception>
         /// <exception cref="InvalidCastException">If the value is not a
         /// string.</exception>
@@ -86,13 +87,12 @@ namespace agrix.Extensions
             catch (KnownKeyNotFoundException<string>)
             {
                 if (required) throw;
-                else return defaultValue;
+                return defaultValue;
             }
 
             if (childNode.NodeType != YamlNodeType.Scalar)
                 throw new InvalidCastException(
-                    string.Format("{0} is not a string (line {1})",
-                        name, childNode.Start.Line));
+                    $"{name} is not a string (line {childNode.Start.Line})");
 
             return (string)childNode;
         }
@@ -103,7 +103,7 @@ namespace agrix.Extensions
         /// <param name="node">The node to retrieve the key from.</param>
         /// <param name="name">The name of the key to retrieve.</param>
         /// <returns>The key retrieved from the node.</returns>
-        /// <exception cref="KnownKeyNotFoundException{string}">If the key is not
+        /// <exception cref="KnownKeyNotFoundException{T}">If the key is not
         /// found.</exception>
         /// <exception cref="InvalidCastException">If the value is not an
         /// integer.</exception>
@@ -113,13 +113,11 @@ namespace agrix.Extensions
 
             if (childNode.NodeType != YamlNodeType.Scalar)
                 throw new InvalidCastException(
-                    string.Format("{0} is not an integer (line {1})",
-                        name, childNode.Start.Line));
+                    $"{name} is not an integer (line {childNode.Start.Line})");
 
             if (!int.TryParse((string)childNode, out int result))
                 throw new InvalidCastException(
-                    string.Format("{0} is not an integer (line {1}",
-                        name, childNode.Start.Line));
+                    $"{name} is not an integer (line {childNode.Start.Line}");
 
             return result;
         }
@@ -149,13 +147,11 @@ namespace agrix.Extensions
 
             if (childNode.NodeType != YamlNodeType.Scalar)
                 throw new InvalidCastException(
-                    string.Format("{0} is not an integer (line {1})",
-                        name, childNode.Start.Line));
+                    $"{name} is not an integer (line {childNode.Start.Line})");
 
             if (!int.TryParse((string)childNode, out int result))
                 throw new InvalidCastException(
-                    string.Format("{0} is not an integer (line {1}",
-                        name, childNode.Start.Line));
+                    $"{name} is not an integer (line {childNode.Start.Line}");
 
             return result;
         }
@@ -186,10 +182,9 @@ namespace agrix.Extensions
 
             if (childNode.NodeType != YamlNodeType.Scalar)
                 throw new InvalidCastException(
-                    string.Format("{0} is not a boolean (line {1})",
-                        name, childNode.Start.Line));
+                    $"{name} is not a boolean (line {childNode.Start.Line})");
 
-            var value = (string)childNode;
+            var value = (string)childNode ?? "";
             switch (value.ToLower())
             {
                 case "on":
@@ -206,8 +201,7 @@ namespace agrix.Extensions
 
                 default:
                     throw new InvalidCastException(
-                        string.Format("{0} is not a boolean (line {1}",
-                            value, childNode.Start.Line));
+                        $"{value} is not a boolean (line {childNode.Start.Line}");
             }
         }
 
@@ -221,9 +215,9 @@ namespace agrix.Extensions
         /// <param name="required">Whether or not the key is required. Defaults to
         /// false.</param>
         /// <returns>The key retrieved from the node.</returns>
-        /// <exception cref="KnownKeyNotFoundException{string}">If
+        /// <exception cref="KnownKeyNotFoundException{T}">If
         /// <paramref name="required"/> is true and the key is not present.</exception>
-        public static string GetJSON(this YamlMappingNode node,
+        public static string GetJson(this YamlMappingNode node,
             string name, string defaultValue = "", bool required = false)
         {
             YamlNode jsonNode;
@@ -234,11 +228,11 @@ namespace agrix.Extensions
             catch (KnownKeyNotFoundException<string>)
             {
                 if (required) throw;
-                else return defaultValue;
+                return defaultValue;
             }
 
             return jsonNode.NodeType == YamlNodeType.Scalar ?
-                (string)jsonNode : jsonNode.ToJSON();
+                (string)jsonNode : jsonNode.ToJson();
         }
 
         /// <summary>
@@ -246,7 +240,7 @@ namespace agrix.Extensions
         /// </summary>
         /// <param name="node">The YamlNode instance to convert.</param>
         /// <returns>The converted JSON string.</returns>
-        public static string ToJSON(this YamlNode node)
+        public static string ToJson(this YamlNode node)
         {
             var stream = new YamlStream { new YamlDocument(node) };
             using var writer = new StringWriter();
@@ -258,7 +252,7 @@ namespace agrix.Extensions
             var serializer = new SerializerBuilder()
                 .JsonCompatible()
                 .Build();
-            return serializer.Serialize(yamlObject).Trim();
+            return serializer.Serialize(yamlObject ?? "").Trim();
         }
 
         /// <summary>
@@ -267,7 +261,7 @@ namespace agrix.Extensions
         /// <param name="node">The node to retrieve from.</param>
         /// <param name="name">The name of the key to retrieve.</param>
         /// <returns>The child node retrieved.</returns>
-        /// <exception cref="KnownKeyNotFoundException{string}">If the key is not
+        /// <exception cref="KnownKeyNotFoundException{T}">If the key is not
         /// found.</exception>
         /// <exception cref="InvalidCastException">If the node is not a mapping
         /// node.</exception>
@@ -277,8 +271,7 @@ namespace agrix.Extensions
 
             if (childNode.NodeType != YamlNodeType.Mapping)
                 throw new InvalidCastException(
-                    string.Format("{0} is not a mapping node (line {1})",
-                        name, childNode.Start.Line));
+                    $"{name} is not a mapping node (line {childNode.Start.Line})");
 
             return (YamlMappingNode)childNode;
         }
@@ -294,7 +287,7 @@ namespace agrix.Extensions
         /// <returns>The YamlSequenceNode child node. Or null if
         /// <paramref name="required"/> is false and the child node doesn't
         /// exist.</returns>
-        /// <exception cref="KnownKeyNotFoundException{string}">If
+        /// <exception cref="KnownKeyNotFoundException{T}">If
         /// <paramref name="required"/> is true and the child node doesn't
         /// exist.</exception>
         /// <exception cref="InvalidCastException">If the child node is not a sequence
@@ -310,7 +303,7 @@ namespace agrix.Extensions
             catch (KnownKeyNotFoundException<string>)
             {
                 if (required) throw;
-                else return null;
+                return null;
             }
 
             // If the node isn't required, is present but empty, return null.
@@ -321,8 +314,7 @@ namespace agrix.Extensions
 
             if (childNode.NodeType != YamlNodeType.Sequence)
                 throw new InvalidCastException(
-                    string.Format("{0} is not a sequence node (line {1})",
-                        name, childNode.Start.Line));
+                    $"{name} is not a sequence node (line {childNode.Start.Line})");
 
             return (YamlSequenceNode)childNode;
         }
@@ -352,9 +344,9 @@ namespace agrix.Extensions
 
             if (childNode.NodeType != YamlNodeType.Sequence)
                 throw new InvalidCastException(
-                    string.Format("{0} is not a sequence node (line {1})",
-                        name, childNode.Start.Line));
+                    $"{name} is not a sequence node (line {childNode.Start.Line})");
 
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (string value in (YamlSequenceNode)childNode)
                 list.Add(value);
 

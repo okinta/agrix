@@ -22,7 +22,7 @@ namespace agrix.Platforms.Vultr.Provisioners
         /// <summary>
         /// Provisions a new Vultr firewall.
         /// </summary>
-        /// <param name="server">The configuration to reference to provision the
+        /// <param name="firewall">The configuration to reference to provision the
         /// firewall.</param>
         /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
         /// provision commands will not be sent to the platform and instead messaging
@@ -34,29 +34,29 @@ namespace agrix.Platforms.Vultr.Provisioners
 
             var existingFirewalls = Client.Firewall.GetFirewallGroups();
 
-            bool predicate(KeyValuePair<string, FirewallGroup> existingFirewall) =>
+            bool Predicate(KeyValuePair<string, FirewallGroup> existingFirewall) =>
                 existingFirewall.Value.description == firewall.Name;
             if (existingFirewalls.FirewallGroups != null
-                && existingFirewalls.FirewallGroups.Exists(predicate))
+                && existingFirewalls.FirewallGroups.Exists(Predicate))
             {
-                var existingFirewall = existingFirewalls.FirewallGroups.Single(predicate);
+                var existingFirewall = existingFirewalls.FirewallGroups.Single(Predicate);
                 Console.WriteLine("Firewall {0} with ID {1} already exists",
                     firewall.Name, existingFirewall.Key);
             }
             else
             {
-                string firewallGroupID = "";
+                var firewallGroupId = "";
 
                 if (!dryrun)
                 {
                     var result = Client.Firewall.CreateFirewallGroup(firewall.Name);
-                    firewallGroupID = result.FirewallGroup.FIREWALLGROUPID;
-                    Console.WriteLine("Created firewall with ID {0}", firewallGroupID);
+                    firewallGroupId = result.FirewallGroup.FIREWALLGROUPID;
+                    Console.WriteLine("Created firewall with ID {0}", firewallGroupId);
                 }
 
                 foreach (var rule in firewall.Rules)
                 {
-                    var ipType = rule.IPType.ToString().ToLower();
+                    var ipType = rule.IpType.ToString().ToLower();
                     var protocol = rule.Protocol.ToString().ToLower();
 
                     Console.WriteLine("Creating firewall rule for {0}", firewall.Name);
@@ -69,8 +69,8 @@ namespace agrix.Platforms.Vultr.Provisioners
 
                     if (!dryrun)
                     {
-                        var result = Client.Firewall.CreateFirewallRule(
-                            firewallGroupID,
+                        Client.Firewall.CreateFirewallRule(
+                            firewallGroupId,
                             ip_type: ipType,
                             protocol: protocol,
                             subnet: rule.Subnet,

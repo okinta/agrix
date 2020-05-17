@@ -1,6 +1,6 @@
 ﻿using agrix.Extensions;
-using System.Collections.Generic;
 using System;
+using System.Linq;
 using YamlDotNet.RepresentationModel;
 
 namespace agrix.Configuration.Parsers
@@ -25,17 +25,13 @@ namespace agrix.Configuration.Parsers
         {
             if (node.NodeType != YamlNodeType.Mapping)
                 throw new InvalidCastException(
-                    string.Format("script item must be a mapping type (line {0}",
-                        node.Start.Line));
+                    $"script item must be a mapping type (line {node.Start.Line}");
 
             var firewallItem = (YamlMappingNode)node;
             var name = firewallItem.GetKey("name");
 
-            var rules = new List<FirewallRule>();
-
-            foreach (var childNode in firewallItem.GetSequence("rules", required: true))
-                rules.Add(ParseRule(childNode));
-
+            var rules = firewallItem.GetSequence("rules")
+                .Select(childNode => ParseRule(childNode)).ToList();
             return new Firewall(name, rules);
         }
     }

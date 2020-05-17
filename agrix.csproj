@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="Vultr.API" Version="2.0.0-preview-9" />
+    <PackageReference Include="Vultr.API" Version="2.0.0-preview-10" />
     <PackageReference Include="YamlDotNet" Version="8.1.1" />
   </ItemGroup>
 

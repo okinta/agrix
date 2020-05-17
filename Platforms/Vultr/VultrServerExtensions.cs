@@ -20,10 +20,12 @@ namespace agrix.Platforms.Vultr
         public static bool IsEquivalent(this Server server, Server other)
         {
             if (server is null)
-                throw new ArgumentNullException("server", "server must not be null");
+                throw new ArgumentNullException(
+                    nameof(server), "server must not be null");
 
             if (other is null)
-                throw new ArgumentNullException("other", "other must not be null");
+                throw new ArgumentNullException(
+                    nameof(other), "other must not be null");
 
             foreach (var property in server.GetType().GetProperties())
             {
@@ -35,13 +37,13 @@ namespace agrix.Platforms.Vultr
                 if (serverValue == otherValue) continue;
                 if (serverValue.Equals(otherValue)) continue;
 
-                if (serverValue.GetType() == typeof(double)
+                if (serverValue is double value
                     && otherValue?.GetType() == typeof(double)
-                    && Math.Abs((double)serverValue - (double)otherValue) < 0.1)
-                        continue;
+                    && Math.Abs(value - (double)otherValue) < 0.1)
+                    continue;
 
-                Console.WriteLine("Servers do not match. {0} is different.",
-                    property.Name);
+                Console.WriteLine(
+                    "Servers do not match. {0} is different.", property.Name);
                 return false;
             }
 

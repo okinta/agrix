@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System;
 using YamlDotNet.RepresentationModel;
 
@@ -21,13 +22,16 @@ namespace agrix.Configuration
         public virtual IList<T> Load<T>(string name, YamlNode node, Parse<T> parse)
         {
             if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException("name", "name must not be empty");
+                throw new ArgumentNullException(
+                    nameof(name), "name must not be empty");
 
             if (node is null)
-                throw new ArgumentNullException("node", "node must not be empty");
+                throw new ArgumentNullException(
+                    nameof(node), "node must not be empty");
 
             if (parse is null)
-                throw new ArgumentNullException("parse", "parse must not be empty");
+                throw new ArgumentNullException(
+                    nameof(parse), "parse must not be empty");
 
             var items = new List<T>();
 
@@ -38,12 +42,9 @@ namespace agrix.Configuration
 
             if (node.NodeType != YamlNodeType.Sequence)
                 throw new ArgumentException("node",
-                    string.Format("{0} must be a sequence (line {1})",
-                    name, node.Start.Line));
+                    $"{name} must be a sequence (line {node.Start.Line})");
 
-            foreach (var nodeItem in (YamlSequenceNode)node)
-                items.Add(parse(nodeItem));
-
+            items.AddRange(from nodeItem in (YamlSequenceNode) node select parse(nodeItem));
             return items;
         }
     }

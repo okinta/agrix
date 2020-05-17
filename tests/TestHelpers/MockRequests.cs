@@ -9,12 +9,12 @@ namespace tests.TestHelpers
     internal class MockRequests : IDisposable
     {
         private const int TestPort = 8873;
-        private const string TestURL = "http://localhost:8873/";
+        private const string TestUrl = "http://localhost:8873/";
 
         /// <summary>
         /// Gets the mocked URL that requests should be sent to.
         /// </summary>
-        public string URL { get; }
+        public string Url { get; }
 
         private CustomMockHttpHandler[] Handlers { get; }
         private MockServer MockServer { get; }
@@ -27,12 +27,11 @@ namespace tests.TestHelpers
         /// null.</exception>
         public MockRequests(params CustomMockHttpHandler[] handlers)
         {
-            if (handlers is null)
-                throw new ArgumentNullException("handlers", "handlers must not be null");
-
-            Handlers = handlers;
+            Handlers = handlers ??
+                       throw new ArgumentNullException(
+                           nameof(handlers), @"handlers must not be null");
             MockServer = new MockServer(TestPort, handlers.GetMockHttpHandlers());
-            URL = TestURL;
+            Url = TestUrl;
         }
 
         /// <summary>
@@ -40,7 +39,7 @@ namespace tests.TestHelpers
         /// </summary>
         /// <param name="index">The index to retrieve.</param>
         /// <returns>The CustomMockHttpHandler instance at the specified index.</returns>
-        public CustomMockHttpHandler this[int index] { get { return Handlers[index]; } }
+        public CustomMockHttpHandler this[int index] => Handlers[index];
 
         /// <summary>
         /// Stops the mock HTTP server.
@@ -63,13 +62,13 @@ namespace tests.TestHelpers
             {
                 if (handler.Called == 0)
                     throw new RequestNotCalledException(
-                        handler.URL, string.Format("{0} was not called", handler.URL));
+                        handler.Url, $"{handler.Url} was not called");
 
                 if (handler.Called > 1)
                     throw new RequestCalledTooOftenException(
-                        handler.URL, 1, handler.Called, string.Format(
-                            "{0} was only expected to be called once. Instead, was called {1} times",
-                            handler.URL, handler.Called));
+                        handler.Url, 1, handler.Called,
+                        $"{handler.Url} was only expected to be called once. " +
+                        $"Instead, was called {handler.Called} times");
             }
         }
     }

@@ -7,11 +7,11 @@ namespace tests.Platforms.Vultr.Provisioning
 {
     public class VultrServerProvisionerTest
     {
-        private Plan Plan { get { return new Plan(1, 1024, "SSD"); } }
+        private static Plan Plan => new Plan(1, 1024, "SSD");
 
         private const string Region = "New Jersey";
 
-        private VultrServerProvisioner Platform
+        private static VultrServerProvisioner Platform
         {
             get
             {
@@ -23,75 +23,76 @@ namespace tests.Platforms.Vultr.Provisioning
         [Theory]
         [InlineData(1, "New Jersey")]
         [InlineData(40, "Singapore")]
-        public void TestGetRegionID(int id, string name)
+        public void TestGetRegionId(int id, string name)
         {
-            Assert.Equal(id, Platform.GetRegionID(name));
+            Assert.Equal(id, Platform.GetRegionId(name));
         }
 
         [Theory]
         [InlineData(204, 4, 8192, "SSD")]
         [InlineData(404, 4, 16384, "HIGHFREQUENCY")]
-        public void TestGetPlanID(int id, int cpu, int ram, string type)
+        public void TestGetPlanId(int id, int cpu, int ram, string type)
         {
-            Assert.Equal(id, Platform.GetPlanID(new Plan(cpu, ram, type)));
+            Assert.Equal(id, Platform.GetPlanId(
+                new Plan(cpu, ram, type)));
         }
 
         [Fact]
-        public void TestGetOSApp()
+        public void TestGetOsApp()
         {
             var server = new Server(
                 new OperatingSystem(app: "LAMP on CentOS 7 x64"),
                 Plan, Region);
-            var os = Platform.GetOS(server);
-            Assert.Equal(186, os.OSID);
-            Assert.Equal(41, os.APPID);
-            Assert.Null(os.ISOID);
-            Assert.Null(os.SCRIPTID);
-            Assert.Null(os.SNAPSHOTID);
+            var os = Platform.GetOs(server);
+            Assert.Equal(186, os.OsId);
+            Assert.Equal(41, os.Appid);
+            Assert.Null(os.IsoId);
+            Assert.Null(os.ScriptId);
+            Assert.Null(os.SnapshotId);
         }
 
         [Fact]
-        public void TestGetOSScript()
+        public void TestGetOsScript()
         {
             var server = new Server(
                 new OperatingSystem(name: "Fedora 32 x64"),
                 Plan, Region, startupScript: "setup-ubuntu");
-            var os = Platform.GetOS(server);
-            Assert.Equal(389, os.OSID);
-            Assert.Null(os.APPID);
-            Assert.Null(os.ISOID);
-            Assert.Null(os.SNAPSHOTID);
-            Assert.True(os.SCRIPTID > 0);
+            var os = Platform.GetOs(server);
+            Assert.Equal(389, os.OsId);
+            Assert.Null(os.Appid);
+            Assert.Null(os.IsoId);
+            Assert.Null(os.SnapshotId);
+            Assert.True(os.ScriptId > 0);
         }
 
         [Theory]
         [InlineData(389, "Fedora 32 x64")]
         [InlineData(366, "OpenBSD 6.6 x64")]
-        public void TestGetOS(int id, string name)
+        public void TestGetOs(int id, string name)
         {
             var server = new Server(
                 new OperatingSystem(name: name),
                 Plan, Region);
-            var os = Platform.GetOS(server);
-            Assert.Equal(id, os.OSID);
-            Assert.Null(os.APPID);
-            Assert.Null(os.ISOID);
-            Assert.Null(os.SCRIPTID);
-            Assert.Null(os.SNAPSHOTID);
+            var os = Platform.GetOs(server);
+            Assert.Equal(id, os.OsId);
+            Assert.Null(os.Appid);
+            Assert.Null(os.IsoId);
+            Assert.Null(os.ScriptId);
+            Assert.Null(os.SnapshotId);
         }
 
         [Fact]
-        public void TestGetISO()
+        public void TestGetIso()
         {
             var server = new Server(
                 new OperatingSystem(iso: "installcoreos.iso"),
                 Plan, Region);
-            var os = Platform.GetOS(server);
-            Assert.Equal(159, os.OSID);
-            Assert.Null(os.APPID);
-            Assert.Null(os.SCRIPTID);
-            Assert.Null(os.SNAPSHOTID);
-            Assert.True(os.ISOID > 0);
+            var os = Platform.GetOs(server);
+            Assert.Equal(159, os.OsId);
+            Assert.Null(os.Appid);
+            Assert.Null(os.ScriptId);
+            Assert.Null(os.SnapshotId);
+            Assert.True(os.IsoId > 0);
         }
     }
 }

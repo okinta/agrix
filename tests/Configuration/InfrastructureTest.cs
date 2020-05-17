@@ -13,7 +13,7 @@ namespace tests.Configuration
         }
 
         [Fact]
-        public void TestTypesDoesntAddEmpty()
+        public void TestTypesDoesNotAddEmpty()
         {
             var infrastructure = new Infrastructure();
             infrastructure.AddItems(new List<Server>());
@@ -38,11 +38,11 @@ namespace tests.Configuration
                 ((Server)infrastructure.GetItems(typeof(Server))[0]).Region);
         }
 
-        private Infrastructure SetupExampleInfrastructure()
+        private static Infrastructure SetupExampleInfrastructure()
         {
             var infrastructure = new Infrastructure();
 
-            infrastructure.AddItems(new List<Server>()
+            infrastructure.AddItems(new List<Server>
             {
                 new Server(
                     new OperatingSystem(app: "docker"),
@@ -50,11 +50,11 @@ namespace tests.Configuration
                     "Chicago")
             });
 
-            infrastructure.AddItems(new List<Firewall>()
+            infrastructure.AddItems(new List<Firewall>
             {
-                new Firewall("test", new List<FirewallRule>()
+                new Firewall("test", new List<FirewallRule>
                 {
-                    new FirewallRule(IPType.V4, Protocol.TCP, "80", "cloudflare")
+                    new FirewallRule(IpType.V4, Protocol.TCP, "80", "cloudflare")
                 })
             });
 

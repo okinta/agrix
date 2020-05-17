@@ -10,7 +10,7 @@ namespace tests.TestHelpers
         /// <summary>
         /// Returns the URL that was not called.
         /// </summary>
-        public string URL { get; }
+        public string Url { get; }
 
         /// <summary>
         /// Instantiates a new instance.
@@ -19,7 +19,7 @@ namespace tests.TestHelpers
         /// <param name="message">The message describing the error.</param>
         public RequestNotCalledException(string url, string message) : base(message)
         {
-            URL = url;
+            Url = url;
         }
     }
 }

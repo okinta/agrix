@@ -6,7 +6,5 @@ namespace agrix.Program
     /// CLI options for validating a configuration.
     /// </summary>
     [Verb("validate", HelpText = "Validates a configuration.")]
-    internal class ValidateOptions : BaseOptions
-    {
-    }
+    internal class ValidateOptions : BaseOptions { }
 }

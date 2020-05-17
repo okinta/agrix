@@ -12,9 +12,9 @@ namespace agrix.Configuration
         /// <summary>
         /// Gets the list of Type instances that exist within this configuration.
         /// </summary>
-        public IReadOnlyList<Type> Types { get { return types; } }
+        public IReadOnlyList<Type> Types => _types;
 
-        private readonly List<Type> types = new List<Type>();
+        private readonly List<Type> _types = new List<Type>();
         private Dictionary<Type, IList<object>> Items { get; } =
             new Dictionary<Type, IList<object>>();
 
@@ -25,8 +25,9 @@ namespace agrix.Configuration
         /// <param name="items">The list of items to add.</param>
         public void AddItems<T>(IEnumerable<T> items)
         {
-            if (!types.Contains(typeof(T)) && items.Count() > 0)
-                types.Add(typeof(T));
+            var itemsArray = items as T[] ?? items.ToArray();
+            if (!_types.Contains(typeof(T)) && itemsArray.Any())
+                _types.Add(typeof(T));
 
             if (!Items.TryGetValue(typeof(T), out var existingItems))
             {
@@ -34,14 +35,14 @@ namespace agrix.Configuration
                 Items[typeof(T)] = existingItems;
             }
 
-            foreach (var item in items)
+            foreach (var item in itemsArray)
                 existingItems.Add(item);
         }
 
         /// <summary>
         /// Gets the items defined in this configuration.
         /// </summary>
-        /// <param name="type">The type of items to retrieve.</typeparam>
+        /// <param name="type">The type of items to retrieve.</param>
         /// <returns>The list of items in this configuration.</returns>
         public IReadOnlyList<object> GetItems(Type type)
         {

@@ -103,9 +103,10 @@ namespace agrix.Program
 
         private void HandleParseError(IEnumerable<Error> errors)
         {
-            if (errors.Count() == 1
-                && (errors.First().Tag == ErrorType.HelpRequestedError
-                    || errors.First().Tag == ErrorType.HelpVerbRequestedError))
+            var errorsArray = errors as Error[] ?? errors.ToArray();
+            if (errorsArray.Length == 1
+                && (errorsArray.First().Tag == ErrorType.HelpRequestedError
+                    || errorsArray.First().Tag == ErrorType.HelpVerbRequestedError))
                 return;
 
             ExitCode = ExitCode.InvalidArguments;
@@ -149,16 +150,15 @@ namespace agrix.Program
                 options.ApiKey = Environment.GetEnvironmentVariable(
                     Constants.EnvPlatformApiKey);
 
-            if (string.IsNullOrEmpty(options.ApiKey))
-            {
-                Console.Error.WriteLine(
-                    "No platform API key provided. Either set {0} command line argument or the {1} environment variable",
-                    Constants.ApiKeyArgument, Constants.EnvPlatformApiKey);
-                ExitCode = ExitCode.InvalidArguments;
-                return null;
-            }
+            if (!string.IsNullOrEmpty(options.ApiKey)) 
+                return new Agrix(input, options.ApiKey, Assembly);
 
-            return new Agrix(input, options.ApiKey, Assembly);
+            Console.Error.WriteLine(
+                "No platform API key provided. Either set {0} command line"
+                + " argument or the {1} environment variable",
+                Constants.ApiKeyArgument, Constants.EnvPlatformApiKey);
+            ExitCode = ExitCode.InvalidArguments;
+            return null;
         }
     }
 }

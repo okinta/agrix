@@ -21,7 +21,6 @@ namespace agrix.Exceptions
         /// <param name="innerException">The exception that is the cause of the current
         /// exception.</param>
         public AgrixValidationException(string message, Exception innerException) :
-            base(message, innerException)
-        { }
+            base(message, innerException) { }
     }
 }

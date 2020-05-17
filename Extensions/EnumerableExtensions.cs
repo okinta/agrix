@@ -24,7 +24,7 @@ namespace agrix.Extensions
         {
             try
             {
-                source.Single(predicate);
+                var _ = source.Single(predicate);
                 return true;
             }
             catch (InvalidOperationException)

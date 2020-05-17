@@ -9,7 +9,7 @@ namespace tests.Platforms.Vultr
 {
     public class VultrPlatformTest
     {
-        private Plan Plan { get { return new Plan(1, 1024, "SSD"); } }
+        private Plan Plan => new Plan(1, 1024, "SSD");
 
         private const string Region = "New Jersey";
 
@@ -26,7 +26,8 @@ namespace tests.Platforms.Vultr
                 Plan, Region, userData: "test");
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler("/os/list", Resources.VultrOSList),
+                new CustomMockHttpHandler(
+                    "/os/list", Resources.VultrOSList),
                 new CustomMockHttpHandler("/regions/list?availability=yes",
                     Resources.VultrRegionsList),
                 new CustomMockHttpHandler("/plans/list?type=all",
@@ -52,14 +53,15 @@ namespace tests.Platforms.Vultr
                 Plan, Region);
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler("/os/list", Resources.VultrOSList),
+                new CustomMockHttpHandler(
+                    "/os/list", Resources.VultrOSList),
                 new CustomMockHttpHandler("/regions/list?availability=yes",
                     Resources.VultrRegionsList),
                 new CustomMockHttpHandler("/plans/list?type=all",
                     Resources.VultrPlansList),
                 new CustomMockHttpHandler("/server/list")
             );
-            new VultrServerProvisioner(requests.Client).Provision(server, dryrun: true);
+            new VultrServerProvisioner(requests.Client).Provision(server, true);
             requests.AssertAllCalledOnce();
         }
 
@@ -75,13 +77,16 @@ namespace tests.Platforms.Vultr
             );
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler("/os/list", Resources.VultrOSList),
+                new CustomMockHttpHandler(
+                    "/os/list", Resources.VultrOSList),
                 new CustomMockHttpHandler("/regions/list?availability=yes",
                     Resources.VultrRegionsList),
                 new CustomMockHttpHandler("/plans/list?type=all",
                     Resources.VultrPlansList),
-                new CustomMockHttpHandler("/server/list", Resources.VultrServerList),
-                new CustomMockHttpHandler("/server/destroy", "SUBID=576965", ""),
+                new CustomMockHttpHandler(
+                    "/server/list", Resources.VultrServerList),
+                new CustomMockHttpHandler(
+                    "/server/destroy", "SUBID=576965", ""),
                 new CustomMockHttpHandler("/server/create",
                     "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&label=my+new+server&notify_activate=no",
                     "{\"SUBID\": \"1312965\"}")
@@ -103,14 +108,16 @@ namespace tests.Platforms.Vultr
             );
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler("/os/list", Resources.VultrOSList),
+                new CustomMockHttpHandler(
+                    "/os/list", Resources.VultrOSList),
                 new CustomMockHttpHandler("/regions/list?availability=yes",
                     Resources.VultrRegionsList),
                 new CustomMockHttpHandler("/plans/list?type=all",
                     Resources.VultrPlansList),
-                new CustomMockHttpHandler("/server/list", Resources.VultrServerList)
+                new CustomMockHttpHandler(
+                    "/server/list", Resources.VultrServerList)
             );
-            new VultrServerProvisioner(requests.Client).Provision(server, dryrun: true);
+            new VultrServerProvisioner(requests.Client).Provision(server, true);
             requests.AssertAllCalledOnce();
         }
 
@@ -119,20 +126,23 @@ namespace tests.Platforms.Vultr
         /// already matches what the configuration defines.
         /// </summary>
         [Fact]
-        public void TestProvisionDontUpdateUnchangedServer()
+        public void TestProvisionDoNotUpdateUnchangedServer()
         {
             var server = new Server(
                 new OperatingSystem(name: "CentOS 6 x64"),
-                new Plan(2, 4096, "SSD"), Region, label: "my new server", tag: "mytag"
+                new Plan(2, 4096, "SSD"),
+                Region, label: "my new server", tag: "mytag"
             );
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler("/os/list", Resources.VultrOSList),
+                new CustomMockHttpHandler(
+                    "/os/list", Resources.VultrOSList),
                 new CustomMockHttpHandler("/regions/list?availability=yes",
                     Resources.VultrRegionsList),
                 new CustomMockHttpHandler("/plans/list?type=all",
                     Resources.VultrPlansList),
-                new CustomMockHttpHandler("/server/list", Resources.VultrServerList)
+                new CustomMockHttpHandler(
+                    "/server/list", Resources.VultrServerList)
             );
             new VultrServerProvisioner(requests.Client).Provision(server);
             requests.AssertAllCalledOnce();
@@ -148,7 +158,8 @@ namespace tests.Platforms.Vultr
         [Fact]
         public void TestProvisionScript()
         {
-            var script = new Script("myscript", ScriptType.Boot, "this is my script");
+            var script = new Script(
+                "myscript", ScriptType.Boot, "this is my script");
 
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler("/startupscript/list"),
@@ -168,12 +179,13 @@ namespace tests.Platforms.Vultr
         [Fact]
         public void TestProvisionScriptDryrun()
         {
-            var script = new Script("myscript", ScriptType.Boot, "this is my script");
+            var script = new Script(
+                "myscript", ScriptType.Boot, "this is my script");
 
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler("/startupscript/list")
             );
-            new VultrScriptProvisioner(requests.Client).Provision(script, dryrun: true);
+            new VultrScriptProvisioner(requests.Client).Provision(script, true);
 
             requests.AssertAllCalledOnce();
         }
@@ -185,7 +197,8 @@ namespace tests.Platforms.Vultr
         [Fact]
         public void TestProvisionUpdateScriptContent()
         {
-            var script = new Script("hello-boot", ScriptType.Boot, "this is my script");
+            var script = new Script(
+                "hello-boot", ScriptType.Boot, "this is my script");
 
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler(
@@ -207,13 +220,14 @@ namespace tests.Platforms.Vultr
         [Fact]
         public void TestProvisionUpdateScriptContentDryrun()
         {
-            var script = new Script("hello-boot", ScriptType.Boot, "this is my script");
+            var script = new Script(
+                "hello-boot", ScriptType.Boot, "this is my script");
 
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler(
                     "/startupscript/list", Resources.VultrStartupScripts)
             );
-            new VultrScriptProvisioner(requests.Client).Provision(script, dryrun: true);
+            new VultrScriptProvisioner(requests.Client).Provision(script, true);
 
             requests.AssertAllCalledOnce();
         }
@@ -224,7 +238,8 @@ namespace tests.Platforms.Vultr
         [Fact]
         public void TestProvisionUpdateScriptType()
         {
-            var script = new Script("hello-boot", ScriptType.PXE, "this is my script");
+            var script = new Script(
+                "hello-boot", ScriptType.PXE, "this is my script");
 
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler(
@@ -248,13 +263,14 @@ namespace tests.Platforms.Vultr
         [Fact]
         public void TestProvisionUpdateScriptTypeDryrun()
         {
-            var script = new Script("hello-boot", ScriptType.PXE, "this is my script");
+            var script = new Script(
+                "hello-boot", ScriptType.PXE, "this is my script");
 
             using var requests = new MockVultrRequests(
                 new CustomMockHttpHandler(
                     "/startupscript/list", Resources.VultrStartupScripts)
             );
-            new VultrScriptProvisioner(requests.Client).Provision(script, dryrun: true);
+            new VultrScriptProvisioner(requests.Client).Provision(script, true);
 
             requests.AssertAllCalledOnce();
         }

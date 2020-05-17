@@ -6,7 +6,7 @@ namespace agrix.Platforms
     /// Attribute that is applied to a class to indicate that it is a platform that can
     /// parse and provision configuration.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     internal class PlatformAttribute : Attribute
     {
         /// <summary>
@@ -21,7 +21,7 @@ namespace agrix.Platforms
         public PlatformAttribute(string tag)
         {
             if (string.IsNullOrWhiteSpace(tag))
-                throw new ArgumentNullException("tag", "tag cannot be empty");
+                throw new ArgumentNullException(nameof(tag), "tag cannot be empty");
 
             Tag = tag;
         }

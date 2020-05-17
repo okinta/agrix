@@ -6,7 +6,6 @@
     internal enum HttpMethods
     {
         GET,
-        POST,
-        PUT
+        POST
     }
 }

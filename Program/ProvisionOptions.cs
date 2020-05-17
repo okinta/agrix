@@ -9,7 +9,8 @@ namespace agrix.Program
     internal class ProvisionOptions : BaseOptions
     {
         [Option('d', "dryrun", Default = false,
-            HelpText = "Set flag to not send provisioning calls to the platform API and instead just output what would happen.")]
+            HelpText = "Set flag to not send provisioning calls to the platform API "
+                + "and instead just output what would happen.")]
         public bool Dryrun { get; set; }
     }
 }

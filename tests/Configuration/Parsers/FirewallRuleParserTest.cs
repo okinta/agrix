@@ -12,7 +12,8 @@ namespace tests.Configuration.Parsers
         [Fact]
         public void TestParse()
         {
-            var rules = LoadYaml(Resources.FirewallRulesConfig).GetSequence("rules");
+            var rules = LoadYaml(Resources.FirewallRulesConfig)
+                .GetSequence("rules");
             var rule = new FirewallRuleParser().Parse(rules[0]);
             Assert.Equal(Protocol.TCP, rule.Protocol);
             Assert.Equal("0.0.0.0", rule.Subnet);
@@ -23,7 +24,8 @@ namespace tests.Configuration.Parsers
         [Fact]
         public void TestParse2()
         {
-            var rules = LoadYaml(Resources.FirewallRulesConfig).GetSequence("rules");
+            var rules = LoadYaml(Resources.FirewallRulesConfig)
+                .GetSequence("rules");
             var rule = new FirewallRuleParser().Parse(rules[1]);
             Assert.Equal(Protocol.TCP, rule.Protocol);
             Assert.Equal("0.0.0.0", rule.Subnet);
@@ -34,7 +36,8 @@ namespace tests.Configuration.Parsers
         [Fact]
         public void TestParseMultiplePorts()
         {
-            var rules = LoadYaml(Resources.FirewallRulesConfig).GetSequence("rules");
+            var rules = LoadYaml(Resources.FirewallRulesConfig)
+                .GetSequence("rules");
             var rule = new FirewallRuleParser().Parse(rules[2]);
             Assert.Equal(Protocol.UDP, rule.Protocol);
             Assert.Equal("172.0.24.1", rule.Subnet);
@@ -45,7 +48,8 @@ namespace tests.Configuration.Parsers
         [Fact]
         public void TestParseCloudflare()
         {
-            var rules = LoadYaml(Resources.FirewallRulesConfig).GetSequence("rules");
+            var rules = LoadYaml(Resources.FirewallRulesConfig)
+                .GetSequence("rules");
             var rule = new FirewallRuleParser().Parse(rules[3]);
             Assert.Equal(Protocol.TCP, rule.Protocol);
             Assert.Equal("cloudflare", rule.Source);
@@ -55,7 +59,8 @@ namespace tests.Configuration.Parsers
         [Fact]
         public void TestParseIPv6()
         {
-            var rules = LoadYaml(Resources.FirewallRulesConfig).GetSequence("rules");
+            var rules = LoadYaml(Resources.FirewallRulesConfig)
+                .GetSequence("rules");
             var rule = new FirewallRuleParser().Parse(rules[4]);
             Assert.Equal(Protocol.ICMP, rule.Protocol);
             Assert.Equal("2002:4559:1FE2::4559:1FE2", rule.Subnet);
@@ -66,7 +71,8 @@ namespace tests.Configuration.Parsers
         [Fact]
         public void TestParseInvalid()
         {
-            var rules = LoadYaml(Resources.FirewallRulesConfig).GetSequence("rules");
+            var rules = LoadYaml(Resources.FirewallRulesConfig)
+                .GetSequence("rules");
             Assert.Throws<ArgumentException>(() =>
                 new FirewallRuleParser().Parse(rules[5]));
         }

@@ -9,21 +9,21 @@ namespace tests.Platforms.Vultr
         [Fact]
         public void TestIsEquivalent()
         {
-            Assert.True(new Server()
+            Assert.True(new Server
             {
                 APPID = "123",
                 tag = "test"
-            }.IsEquivalent(new Server()
+            }.IsEquivalent(new Server
             {
                 APPID = "123",
                 tag = "test"
             }));
 
-            Assert.True(new Server()
+            Assert.True(new Server
             {
                 APPID = "123",
                 tag = "test"
-            }.IsEquivalent(new Server()
+            }.IsEquivalent(new Server
             {
                 APPID = "123",
                 tag = "test",
@@ -34,11 +34,11 @@ namespace tests.Platforms.Vultr
         [Fact]
         public void TestIsNotEquivalent()
         {
-            Assert.False(new Server()
+            Assert.False(new Server
             {
                 APPID = "123",
                 tag = "tet"
-            }.IsEquivalent(new Server()
+            }.IsEquivalent(new Server
             {
                 APPID = "123",
                 tag = "test"

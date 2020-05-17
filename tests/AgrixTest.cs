@@ -10,33 +10,38 @@ namespace tests
 {
     public class AgrixTest
     {
-        private readonly Assembly TestAssembly = Assembly.GetExecutingAssembly();
+        private readonly Assembly _testAssembly = Assembly.GetExecutingAssembly();
 
         [Fact]
         public void TestConfigurationCannotBeEmpty()
         {
-            Assert.Throws<ArgumentNullException>(() => new Agrix("", "abc"));
-            Assert.Throws<ArgumentNullException>(() => new Agrix(null, "abc"));
+            Assert.Throws<ArgumentNullException>(
+                () => new Agrix("", "abc"));
+            Assert.Throws<ArgumentNullException>(
+                () => new Agrix(null, "abc"));
         }
 
         [Fact]
         public void TestApiKeyCannotBeEmpty()
         {
-            Assert.Throws<ArgumentNullException>(() => new Agrix("config", ""));
-            Assert.Throws<ArgumentNullException>(() => new Agrix("config", null));
+            Assert.Throws<ArgumentNullException>(
+                () => new Agrix("config", ""));
+            Assert.Throws<ArgumentNullException>(
+                () => new Agrix("config", null));
         }
 
         [Fact]
         public void TestLoadPlatform()
         {
             var agrix = new Agrix("platform: vultr", "abc");
-            Assert.Equal(typeof(VultrPlatform), agrix.LoadPlatform().GetType());
+            Assert.Equal(
+                typeof(VultrPlatform), agrix.LoadPlatform().GetType());
         }
 
         [Fact]
         public void TestLoadCustomPlatform()
         {
-            var agrix = new Agrix("platform: test", "abc", TestAssembly);
+            var agrix = new Agrix("platform: test", "abc", _testAssembly);
             Assert.Equal(typeof(TestPlatform), agrix.LoadPlatform().GetType());
         }
 
@@ -72,7 +77,8 @@ namespace tests
         [Fact]
         public void TestValidate()
         {
-            var agrix = new Agrix(Resources.SimpleConfig, Settings.Default.VultrApiKey);
+            var agrix = new Agrix(
+                Resources.SimpleConfig, Settings.Default.VultrApiKey);
             agrix.Validate();
         }
 
@@ -91,14 +97,15 @@ namespace tests
         [InlineData(false)]
         public void TestProcess(bool dryrun)
         {
-            var agrix = new Agrix(Resources.TestPlatformConfig, "abc123", TestAssembly);
+            var agrix = new Agrix(
+                Resources.TestPlatformConfig, "abc123", _testAssembly);
             agrix.Process(dryrun);
 
             var platform = TestPlatform.LastInstance;
             Assert.Equal(1, platform.Provisions.Count);
 
             var server = platform.Provisions[0].Item1;
-            Assert.Equal("Fedora 32 x64", server.OS.Name);
+            Assert.Equal("Fedora 32 x64", server.Os.Name);
             Assert.Equal(dryrun, platform.Provisions[0].Item2);
         }
     }

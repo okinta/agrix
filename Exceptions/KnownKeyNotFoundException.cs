@@ -50,11 +50,11 @@ namespace agrix.Exceptions
         }
 
         /// <summary>
-        /// Converts a KeyNotFoundException to a KnownKeyNotFoundException instance.
+        /// Converts an Exception to a KnownKeyNotFoundException instance.
         /// </summary>
         /// <param name="key">The key which was not found.</param>
         /// <param name="e">The KeyNotFoundException instance to convert.</param>
-        public KnownKeyNotFoundException(T key, KeyNotFoundException e) :
+        public KnownKeyNotFoundException(T key, Exception e) :
             base(e.Message, e)
         {
             Key = key;

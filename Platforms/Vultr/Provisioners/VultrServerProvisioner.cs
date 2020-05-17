@@ -29,96 +29,94 @@ namespace agrix.Platforms.Vultr.Provisioners
         /// will be outputted describing what would be done.</param>
         public void Provision(Server server, bool dryrun = false)
         {
-            var os = GetOS(server);
-            var DCID = GetRegionID(server.Region);
-            var VPSPLANID = GetPlanID(server.Plan);
-            var OSID = os.OSID;
-            var ISOID = os.ISOID?.ToString();
-            var SCRIPTID = os.SCRIPTID;
-            var SNAPSHOTID = os.SNAPSHOTID?.ToString();
-            var enable_private_network = server.PrivateNetworking;
+            var os = GetOs(server);
+            var dcId = GetRegionId(server.Region);
+            var vpsPlanId = GetPlanId(server.Plan);
+            var osId = os.OsId;
+            var isoId = os.IsoId?.ToString();
+            var scriptId = os.ScriptId;
+            var snapshotId = os.SnapshotId?.ToString();
+            var enablePrivateNetwork = server.PrivateNetworking;
             var label = server.Label;
-            var APPID = os.APPID;
+            var appId = os.Appid;
             var userdata = server.UserData.Base64Encode();
-            var notify_activate = false;
+            const bool notifyActivate = false;
             var tag = server.Tag;
 
             Console.WriteLine("Provisioning server");
-            ConsoleX.WriteLine("DCID", DCID);
-            ConsoleX.WriteLine("VPSPLANID", VPSPLANID);
-            ConsoleX.WriteLine("OSID", OSID);
-            ConsoleX.WriteLine("ISOID", ISOID);
-            ConsoleX.WriteLine("SCRIPTID", SCRIPTID);
-            ConsoleX.WriteLine("SNAPSHOTID", SNAPSHOTID);
-            ConsoleX.WriteLine("enable_private_network", enable_private_network);
+            ConsoleX.WriteLine("DCID", dcId);
+            ConsoleX.WriteLine("VPSPLANID", vpsPlanId);
+            ConsoleX.WriteLine("OSID", osId);
+            ConsoleX.WriteLine("ISOID", isoId);
+            ConsoleX.WriteLine("SCRIPTID", scriptId);
+            ConsoleX.WriteLine("SNAPSHOTID", snapshotId);
+            ConsoleX.WriteLine("enable_private_network", enablePrivateNetwork);
             ConsoleX.WriteLine("label", label);
-            ConsoleX.WriteLine("APPID", APPID);
+            ConsoleX.WriteLine("APPID", appId);
             ConsoleX.WriteLine("userdata", userdata);
-            ConsoleX.WriteLine("notify_activate", notify_activate);
+            ConsoleX.WriteLine("notify_activate", notifyActivate);
             ConsoleX.WriteLine("tag", tag);
 
             var existingServers = Client.Server.GetServers();
-            bool predicate(KeyValuePair<
+            bool Predicate(KeyValuePair<
                 string, global::Vultr.API.Models.Server> existingServer) =>
-                    existingServer.Value.DCID == DCID.ToString()
+                    existingServer.Value.DCID == dcId.ToString()
                     && existingServer.Value.label == label;
 
             if (existingServers.Servers != null
-                && existingServers.Servers.Exists(predicate))
+                && existingServers.Servers.Exists(Predicate))
             {
-                var existingServer = existingServers.Servers.Single(predicate);
+                var (id, existingServer) = existingServers.Servers.Single(Predicate);
                 Console.WriteLine("Server with label {0} in DCID {1} already exists",
-                    label, DCID);
+                    label, dcId);
 
                 var vultrServer = new global::Vultr.API.Models.Server()
                 {
-                    OSID = OSID.ToString(),
+                    OSID = osId.ToString(),
                     tag = tag,
                     label = label,
-                    VPSPLANID = VPSPLANID.ToString(),
-                    APPID = APPID?.ToString(),
-                    DCID = DCID.ToString()
+                    VPSPLANID = vpsPlanId.ToString(),
+                    APPID = appId?.ToString(),
+                    DCID = dcId.ToString()
                 };
 
                 // TODO: Check if userdata has changed
 
-                var subid = int.Parse(existingServer.Key);
-                if (!vultrServer.IsEquivalent(existingServer.Value))
+                var subId = int.Parse(id);
+                if (!vultrServer.IsEquivalent(existingServer))
                 {
-                    Console.WriteLine("Server is different. Deleting server {0}", subid);
+                    Console.WriteLine("Server is different. Deleting server {0}", subId);
 
                     if (!dryrun)
                     {
-                        Client.Server.DestroyServer(subid);
-                        Console.WriteLine("Deleted server {0}", subid);
+                        Client.Server.DestroyServer(subId);
+                        Console.WriteLine("Deleted server {0}", subId);
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Server {0} is the same. Moving on.", subid);
+                    Console.WriteLine("Server {0} is the same. Moving on.", subId);
                     return;
                 }
             }
 
-            if (!dryrun)
-            {
-                var result = Client.Server.CreateServer(
-                    DCID: DCID,
-                    VPSPLANID: VPSPLANID,
-                    OSID: OSID,
-                    ISOID: ISOID,
-                    SCRIPTID: SCRIPTID,
-                    SNAPSHOTID: SNAPSHOTID,
-                    enable_private_network: enable_private_network,
-                    label: label,
-                    APPID: APPID,
-                    userdata: userdata,
-                    notify_activate: notify_activate,
-                    tag: tag
-                );
+            if (dryrun) return;
+            var result = Client.Server.CreateServer(
+                dcId,
+                vpsPlanId,
+                osId,
+                ISOID: isoId,
+                SCRIPTID: scriptId,
+                SNAPSHOTID: snapshotId,
+                enable_private_network: enablePrivateNetwork,
+                label: label,
+                APPID: appId,
+                userdata: userdata,
+                notify_activate: notifyActivate,
+                tag: tag
+            );
 
-                Console.WriteLine("Provisioned server with ID {0}", result.Server.SUBID);
-            }
+            Console.WriteLine("Provisioned server with ID {0}", result.Server.SUBID);
         }
 
         /// <summary>
@@ -127,19 +125,20 @@ namespace agrix.Platforms.Vultr.Provisioners
         /// <param name="name">The name of the region to retrieve the ID for.</param>
         /// <returns>The ID of the given region.</returns>
         /// <exception cref="ArgumentException">If the region cannot be found.</exception>
-        public int GetRegionID(string name)
+        public int GetRegionId(string name)
         {
             var regions = Client.Region.GetRegions();
 
             KeyValuePair<int, Region> region;
             try
             {
-                region = regions.Regions.Single(region => region.Value.name == name);
+                region = regions.Regions.Single(
+                    r => r.Value.name == name);
             }
             catch (InvalidOperationException e)
             {
                 throw new ArgumentException(
-                    string.Format("Cannot find region called {0}", name), "name", e);
+                    $"Cannot find region called {name}", nameof(name), e);
             }
 
             return region.Key;
@@ -148,25 +147,22 @@ namespace agrix.Platforms.Vultr.Provisioners
         /// <summary>
         /// Gets the ID of the given plan.
         /// </summary>
-        /// <param name="name">The name of the plan to retrieve the ID for.</param>
+        /// <param name="plan">The name of the plan to retrieve the ID for.</param>
         /// <returns>The ID of the given plan.</returns>
         /// <exception cref="ArgumentException">If the plan cannot be found.</exception>
-        public int GetPlanID(Configuration.Plan plan)
+        public int GetPlanId(Configuration.Plan plan)
         {
             var plans = Client.Plan.GetPlans();
 
-            foreach (var vultrPlan in plans.Plans)
-            {
-                if (int.Parse(vultrPlan.Value.vcpu_count) == plan.CPU
+            foreach (var vultrPlan in plans.Plans.Where(
+                vultrPlan =>
+                    int.Parse(vultrPlan.Value.vcpu_count) == plan.Cpu
                     && int.Parse(vultrPlan.Value.ram) == plan.Memory
-                    && vultrPlan.Value.plan_type == plan.Type)
-                {
-                    return vultrPlan.Key;
-                }
-            }
+                    && vultrPlan.Value.plan_type == plan.Type))
+                return vultrPlan.Key;
 
             throw new ArgumentException(
-                string.Format("Cannot find plan {0}", plan), "plan");
+                $"Cannot find plan {plan}", nameof(plan));
         }
 
         /// <summary>
@@ -177,47 +173,47 @@ namespace agrix.Platforms.Vultr.Provisioners
         /// <returns>The Operating System configuration for the Server.</returns>
         /// <exception cref="ArgumentException">If the Server Operating System is
         /// misconfigured.</exception>
-        public VultrOS GetOS(Server server)
+        public VultrOs GetOs(Server server)
         {
-            if (!string.IsNullOrEmpty(server.OS.App))
+            if (!string.IsNullOrEmpty(server.Os.App))
             {
-                if (!string.IsNullOrEmpty(server.OS.Name))
+                if (!string.IsNullOrEmpty(server.Os.Name))
                     throw new ArgumentException(
-                        "OS.Name must be empty if OS.App is set", "server");
+                        "OS.Name must be empty if OS.App is set", nameof(server));
 
-                if (!string.IsNullOrEmpty(server.OS.ISO))
+                if (!string.IsNullOrEmpty(server.Os.Iso))
                     throw new ArgumentException(
-                        "OS.ISO must be empty if OS.App is set", "server");
+                        "OS.ISO must be empty if OS.App is set", nameof(server));
 
                 if (!string.IsNullOrEmpty(server.StartupScript))
                     throw new ArgumentException(
-                        "OS.StartupScript must be empty if OS.App is set", "server");
+                        "OS.StartupScript must be empty if OS.App is set",
+                        nameof(server));
 
-                return VultrOS.CreateApp(server.OS.App, Client);
+                return VultrOs.CreateApp(server.Os.App, Client);
             }
 
-            if (!string.IsNullOrEmpty(server.OS.ISO))
+            if (!string.IsNullOrEmpty(server.Os.Iso))
             {
-                if (!string.IsNullOrEmpty(server.OS.Name))
+                if (!string.IsNullOrEmpty(server.Os.Name))
                     throw new ArgumentException(
-                        "OS.Name must be empty if OS.ISO is set", "server");
+                        "OS.Name must be empty if OS.ISO is set", nameof(server));
 
                 if (!string.IsNullOrEmpty(server.StartupScript))
                     throw new ArgumentException(
-                        "OS.StartupScript must be empty if OS.ISO is set", "server");
+                        "OS.StartupScript must be empty if OS.ISO is set",
+                        nameof(server));
 
-                return VultrOS.CreateISO(server.OS.ISO, Client);
+                return VultrOs.CreateIso(server.Os.Iso, Client);
             }
 
-            if (string.IsNullOrEmpty(server.OS.Name))
+            if (string.IsNullOrEmpty(server.Os.Name))
                 throw new ArgumentException(
-                    "OS.App, OS.ISO or OS.Name must be set", "server");
+                    "OS.App, OS.ISO or OS.Name must be set", nameof(server));
 
-            if (!string.IsNullOrEmpty(server.StartupScript))
-                return VultrOS.CreateScript(server.OS.Name, server.StartupScript, Client);
-
-            else
-                return VultrOS.CreateOS(server.OS.Name, Client);
+            return !string.IsNullOrEmpty(server.StartupScript) ?
+                VultrOs.CreateScript(server.Os.Name, server.StartupScript, Client)
+                : VultrOs.CreateOs(server.Os.Name, Client);
         }
     }
 }

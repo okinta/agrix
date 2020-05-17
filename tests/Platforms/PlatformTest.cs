@@ -10,9 +10,9 @@ namespace tests.Platforms
 {
     internal class CustomPlatform : Platform
     {
-        public IReadOnlyList<Tuple<Klout, bool>> Provisions { get { return provisions; } }
+        public IReadOnlyList<Tuple<Klout, bool>> Provisions => _provisions;
 
-        private readonly List<Tuple<Klout, bool>> provisions =
+        private readonly List<Tuple<Klout, bool>> _provisions =
             new List<Tuple<Klout, bool>>();
 
         public CustomPlatform()
@@ -26,7 +26,7 @@ namespace tests.Platforms
 
         private void Provision(Klout klout, bool dryrun = false)
         {
-            provisions.Add(new Tuple<Klout, bool>(klout, dryrun));
+            _provisions.Add(new Tuple<Klout, bool>(klout, dryrun));
         }
     }
 
@@ -43,13 +43,13 @@ namespace tests.Platforms
             Assert.Equal(3, servers.Count);
 
             var server = (Server)servers[0];
-            Assert.Equal("Ubuntu 20.04 x64", server.OS.Name);
+            Assert.Equal("Ubuntu 20.04 x64", server.Os.Name);
 
             server = (Server)servers[1];
             Assert.Equal("compute", server.Plan.Type);
 
             server = (Server)servers[2];
-            Assert.Equal("coreos.iso", server.OS.ISO);
+            Assert.Equal("coreos.iso", server.Os.Iso);
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace tests.Platforms
             var platform = new CustomPlatform();
 
             var infrastructure = platform.Load(LoadYaml(Resources.KloutsConfig));
-            platform.Provision(infrastructure, dryrun: true);
+            platform.Provision(infrastructure, true);
 
             Assert.Equal(3, platform.Provisions.Count);
             Assert.Equal(78, platform.Provisions[2].Item1.Score);

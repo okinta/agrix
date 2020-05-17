@@ -27,13 +27,14 @@ namespace tests.Configuration.Parsers
         [Fact]
         public void TestParseUserData()
         {
-            var servers = LoadYaml(Resources.UserDataConfig).GetSequence("servers");
+            var servers = LoadYaml(Resources.UserDataConfig)
+                .GetSequence("servers");
             var server = new ServerParser().Parse(servers[0]);
             Assert.Equal("test data", server.UserData);
         }
 
         [Fact]
-        public void TestParseJSONUserData()
+        public void TestParseJsonUserData()
         {
             var data = Resources.JSONUserDataConfig;
             var servers = LoadYaml(data).GetSequence("servers");

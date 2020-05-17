@@ -5,12 +5,12 @@ namespace agrix.Configuration
     /// <summary>
     /// Represents a plan configuration.
     /// </summary>
-    internal struct Plan
+    internal readonly struct Plan
     {
         /// <summary>
         /// The number of CPUs for the plan.
         /// </summary>
-        public int CPU { get; }
+        public int Cpu { get; }
 
         /// <summary>
         /// The amount of memory (MB) for the plan.
@@ -37,22 +37,17 @@ namespace agrix.Configuration
         public Plan(int cpu, int memory, string type)
         {
             if (cpu <= 0)
-            {
-                throw new ArgumentOutOfRangeException("cpu", cpu, "must be larger than 0");
-            }
+                throw new ArgumentOutOfRangeException(
+                    nameof(cpu), cpu, "must be larger than 0");
 
             if (memory <= 0)
-            {
                 throw new ArgumentOutOfRangeException(
-                    "memory", memory, "must be larger than 0");
-            }
+                    nameof(memory), memory, "must be larger than 0");
 
             if (string.IsNullOrEmpty(type))
-            {
-                throw new ArgumentNullException("type", "must not be empty");
-            }
+                throw new ArgumentNullException(nameof(type), "must not be empty");
 
-            CPU = cpu;
+            Cpu = cpu;
             Memory = memory;
             Type = type;
         }
@@ -63,9 +58,7 @@ namespace agrix.Configuration
         /// <returns>The string representation of this Plan.</returns>
         public override string ToString()
         {
-            return string.Format(
-                "Plan: {0} CPU(s), {1}mb memory, {2}",
-                CPU, Memory, Type);
+            return $"Plan: {Cpu} CPU(s), {Memory}mb memory, {Type}";
         }
     }
 }

@@ -9,7 +9,7 @@ namespace agrix.Platforms.Vultr.Provisioners
     internal abstract class VultrProvisioner
     {
         /// <summary>
-        /// Gets the VultrClient instance to use to commuicate with Vultr API.
+        /// Gets the VultrClient instance to use to communicate with Vultr API.
         /// </summary>
         protected VultrClient Client { get; }
 
@@ -17,12 +17,10 @@ namespace agrix.Platforms.Vultr.Provisioners
         /// Instantiates a new instance.
         /// </summary>
         /// <param name="client">The VultrClient to use to provision servers.</param>
-        public VultrProvisioner(VultrClient client)
+        protected VultrProvisioner(VultrClient client)
         {
-            if (client is null)
-                throw new ArgumentNullException("client", "client must not be null");
-
-            Client = client;
+            Client = client ?? throw new ArgumentNullException(
+                nameof(client), "client must not be null");
         }
     }
 }

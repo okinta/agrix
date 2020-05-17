@@ -10,7 +10,7 @@ namespace tests.TestHelpers
         /// <summary>
         /// Returns the URL that was not called.
         /// </summary>
-        public string URL { get; }
+        public string Url { get; }
 
         /// <summary>
         /// Returns the number of calls that was expected.
@@ -33,7 +33,7 @@ namespace tests.TestHelpers
             string url, int expectedCalls, int actualCalls, string message) :
             base(message)
         {
-            URL = url;
+            Url = url;
             ExpectedCalls = expectedCalls;
             ActualCalls = actualCalls;
         }

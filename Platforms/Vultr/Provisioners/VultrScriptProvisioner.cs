@@ -23,7 +23,7 @@ namespace agrix.Platforms.Vultr.Provisioners
         /// <summary>
         /// Provisions a new Vultr startup script.
         /// </summary>
-        /// <param name="server">The configuration to reference to provision the
+        /// <param name="script">The configuration to reference to provision the
         /// script.</param>
         /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
         /// provision commands will not be sent to the platform and instead messaging
@@ -35,7 +35,7 @@ namespace agrix.Platforms.Vultr.Provisioners
                 ScriptType.Boot => global::Vultr.API.Models.ScriptType.boot,
                 ScriptType.PXE => global::Vultr.API.Models.ScriptType.pxe,
                 _ => throw new ArgumentException(
-                    string.Format("Unknown script type {0}", script.Type), "script"),
+                    $"Unknown script type {script.Type}", nameof(script)),
             };
 
             Console.WriteLine("Creating script");
@@ -45,62 +45,54 @@ namespace agrix.Platforms.Vultr.Provisioners
 
             var existingScripts = Client.StartupScript.GetStartupScripts();
 
-            bool predicate(KeyValuePair<string, StartupScript> existingScript) =>
+            bool Predicate(KeyValuePair<string, StartupScript> existingScript) =>
                 existingScript.Value.name == script.Name;
             if (existingScripts.StartupScripts != null
-                && existingScripts.StartupScripts.Exists(predicate))
+                && existingScripts.StartupScripts.Exists(Predicate))
             {
-                var existingScript = existingScripts.StartupScripts.Single(predicate);
+                var (id, existingScript) =
+                    existingScripts.StartupScripts.Single(Predicate);
                 Console.WriteLine("Script {0} with ID {1} already exists",
-                    script.Name, existingScript.Key);
+                    script.Name, id);
 
-                if (existingScript.Value.type != script.Type.ToString().ToLower())
+                if (existingScript.type != script.Type.ToString().ToLower())
                 {
                     Console.WriteLine("Script {0} type is different", script.Name);
                     Console.WriteLine("Deleting script {0}", script.Name);
 
                     if (!dryrun)
                     {
-                        Client.StartupScript.DeleteStartupScript(existingScript.Key);
+                        Client.StartupScript.DeleteStartupScript(id);
                         Console.WriteLine("Deleted script {0}", script.Name);
                     }
 
                     Console.WriteLine("Creating new script called {0}", script.Name);
-                    if (!dryrun)
-                    {
-                        if (!dryrun)
-                        {
-                            var result = Client.StartupScript.CreateStartupScript(
-                                script.Name, script.Content, type);
-                            Console.WriteLine("Created script with ID {0}",
-                                result.StartupScript.SCRIPTID);
-                        }
-                    }
+                    if (dryrun) return;
+                    var result = Client.StartupScript.CreateStartupScript(
+                        script.Name, script.Content, type);
+                    Console.WriteLine("Created script with ID {0}",
+                        result.StartupScript.SCRIPTID);
                 }
-                else if (existingScript.Value.script != script.Content)
+                else if (existingScript.script != script.Content)
                 {
                     Console.WriteLine("Script {0} content is different", script.Name);
                     Console.WriteLine("Updating script {0} content", script.Name);
 
-                    if (!dryrun)
-                    {
-                        Client.StartupScript.UpdateStartupScript(
-                            existingScript.Key, script: script.Content);
-                        Console.WriteLine("Updated script {0} content", script.Name);
-                    }
+                    if (dryrun) return;
+                    Client.StartupScript.UpdateStartupScript(
+                        id, script: script.Content);
+                    Console.WriteLine("Updated script {0} content", script.Name);
                 }
                 else
                     Console.WriteLine("Script {0} is the same. Moving on.", script.Name);
             }
             else
             {
-                if (!dryrun)
-                {
-                    var result = Client.StartupScript.CreateStartupScript(
-                        script.Name, script.Content, type);
-                    Console.WriteLine(
-                        "Created script with ID {0}", result.StartupScript.SCRIPTID);
-                }
+                if (dryrun) return;
+                var result = Client.StartupScript.CreateStartupScript(
+                    script.Name, script.Content, type);
+                Console.WriteLine(
+                    "Created script with ID {0}", result.StartupScript.SCRIPTID);
             }
         }
     }

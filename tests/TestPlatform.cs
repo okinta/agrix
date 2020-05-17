@@ -14,16 +14,17 @@ namespace tests
         /// <summary>
         /// Gets the last TestPlatform instance that was instantiated.
         /// </summary>
-        public static TestPlatform LastInstance { get; private set; } = null;
+        public static TestPlatform LastInstance { get; private set; }
 
         /// <summary>
         /// Gets the list of server provision calls.
         /// </summary>
-        public IReadOnlyList<Tuple<Server, bool>> Provisions { get { return provisions; } }
+        public IReadOnlyList<Tuple<Server, bool>> Provisions => _provisions;
 
-        private readonly List<Tuple<Server, bool>> provisions =
+        private readonly List<Tuple<Server, bool>> _provisions =
             new List<Tuple<Server, bool>>();
 
+        // ReSharper disable once UnusedParameter.Local
         public TestPlatform(string _)
         {
             AddProvisioner<Server>(ProvisionServer);
@@ -36,7 +37,7 @@ namespace tests
 
         private void ProvisionServer(Server server, bool dryrun = false)
         {
-            provisions.Add(new Tuple<Server, bool>(server, dryrun));
+            _provisions.Add(new Tuple<Server, bool>(server, dryrun));
         }
     }
 }

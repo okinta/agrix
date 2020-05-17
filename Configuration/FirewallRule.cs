@@ -5,10 +5,10 @@ namespace agrix.Configuration
     /// <summary>
     /// Represents a type of IP.
     /// </summary>
-    internal enum IPType
+    internal enum IpType
     {
         V4,
-        v6
+        V6
     }
 
     /// <summary>
@@ -25,12 +25,12 @@ namespace agrix.Configuration
     /// <summary>
     /// Represents a firewall rule configuration.
     /// </summary>
-    internal struct FirewallRule
+    internal readonly struct FirewallRule
     {
         /// <summary>
         /// Gets the type of IP this firewall rule is for.
         /// </summary>
-        public IPType IPType { get; }
+        public IpType IpType { get; }
 
         /// <summary>
         /// Gets the protocol this firewall rule is for.
@@ -69,17 +69,17 @@ namespace agrix.Configuration
         /// <exception cref="ArgumentNullException">If any arguments are null or
         /// empty.</exception>
         public FirewallRule(
-            IPType ipType, Protocol protocol, string ports, string source)
+            IpType ipType, Protocol protocol, string ports, string source)
         {
             if (string.IsNullOrWhiteSpace(ports))
                 throw new ArgumentNullException(
-                    "ports", "Firewall rule ports must not be empty");
+                    nameof(ports), "Firewall rule ports must not be empty");
 
             if (string.IsNullOrWhiteSpace(source))
                 throw new ArgumentNullException(
-                    "source", "Firewall rule source must not be empty");
+                    nameof(source), "Firewall rule source must not be empty");
 
-            IPType = ipType;
+            IpType = ipType;
             Ports = ports;
             Protocol = protocol;
             Source = source;
@@ -100,17 +100,17 @@ namespace agrix.Configuration
         /// <exception cref="ArgumentNullException">If any arguments are null or
         /// empty.</exception>
         public FirewallRule(
-            IPType ipType, Protocol protocol, string ports, string subnet, int subnetSize)
+            IpType ipType, Protocol protocol, string ports, string subnet, int subnetSize)
         {
             if (string.IsNullOrWhiteSpace(ports))
                 throw new ArgumentNullException(
-                    "ports", "Firewall rule ports must not be empty");
+                    nameof(ports), "Firewall rule ports must not be empty");
 
             if (string.IsNullOrWhiteSpace(subnet))
                 throw new ArgumentNullException(
-                    "source", "Firewall rule source must not be empty");
+                    nameof(subnet), "Firewall rule source must not be empty");
 
-            IPType = ipType;
+            IpType = ipType;
             Ports = ports;
             Protocol = protocol;
             Source = "";

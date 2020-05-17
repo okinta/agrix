@@ -18,8 +18,7 @@ namespace agrix.Configuration.Parsers
         {
             if (node.NodeType != YamlNodeType.Mapping)
                 throw new InvalidCastException(
-                    string.Format("script item must be a mapping type (line {0}",
-                        node.Start.Line));
+                    $"script item must be a mapping type (line {node.Start.Line}");
 
             var scriptItem = (YamlMappingNode)node;
             var typeName = scriptItem.GetKey("type", required: true);
@@ -27,15 +26,15 @@ namespace agrix.Configuration.Parsers
             {
                 "boot" => ScriptType.Boot,
                 "pxe" => ScriptType.PXE,
-                _ => throw new ArgumentException(string.Format(
-                    "{0} is not a known type (line {1})",
-                    typeName, scriptItem.GetNode("type").Start.Line)),
+                _ => throw new ArgumentException(
+                    $"{typeName} is not a known type (line " +
+                    $"{scriptItem.GetNode("type").Start.Line})")
             };
 
             return new Script(
-                name: scriptItem.GetKey("name", required: true),
-                type: type,
-                content: scriptItem.GetKey("content", required: true)
+                scriptItem.GetKey("name", required: true),
+                type,
+                scriptItem.GetKey("content", required: true)
             );
         }
     }

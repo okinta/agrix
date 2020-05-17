@@ -18,7 +18,8 @@ namespace tests
         {
             if (!string.IsNullOrEmpty(content))
                 Lines = new Queue<string>(
-                    content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None));
+                    content.Split(
+                        new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None));
 
             else
                 Lines = new Queue<string>();

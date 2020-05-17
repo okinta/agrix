@@ -1,5 +1,6 @@
 ﻿using MockHttpServer;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace tests.TestHelpers
 {
@@ -17,11 +18,7 @@ namespace tests.TestHelpers
         public static IEnumerable<MockHttpHandler> GetMockHttpHandlers(
             this IEnumerable<CustomMockHttpHandler> handlers)
         {
-            var newHandlers = new List<MockHttpHandler>();
-            foreach (var handler in handlers)
-                newHandlers.Add(handler.MockHttpHandler);
-
-            return newHandlers;
+            return handlers.Select(handler => handler.MockHttpHandler).ToList();
         }
     }
 }

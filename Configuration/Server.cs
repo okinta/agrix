@@ -5,7 +5,7 @@ namespace agrix.Configuration
     /// <summary>
     /// Represents a server configuration.
     /// </summary>
-    internal struct Server
+    internal readonly struct Server
     {
         /// <summary>
         /// Whether or not private networking is enabled.
@@ -15,7 +15,7 @@ namespace agrix.Configuration
         /// <summary>
         /// The operating system to run on the server.
         /// </summary>
-        public OperatingSystem OS { get; }
+        public OperatingSystem Os { get; }
 
         /// <summary>
         /// The plan for the server.
@@ -55,7 +55,7 @@ namespace agrix.Configuration
         /// <summary>
         /// SSH keys assigned to the server.
         /// </summary>
-        public string[] SSHKeys { get; }
+        public string[] SshKeys { get; }
 
         /// <summary>
         /// Creates a new server configuration.
@@ -80,17 +80,16 @@ namespace agrix.Configuration
             string[] sshKeys = null)
         {
             if (string.IsNullOrEmpty(region))
-            {
-                throw new ArgumentNullException("region", "must not be empty");
-            }
+                throw new ArgumentNullException(
+                    nameof(region), "must not be empty");
 
             Firewall = firewall;
             Label = label;
-            OS = os;
+            Os = os;
             Plan = plan;
             PrivateNetworking = privateNetworking;
             Region = region;
-            SSHKeys = sshKeys is null ? new string[0] : sshKeys;
+            SshKeys = sshKeys ?? new string[0];
             StartupScript = startupScript;
             Tag = tag;
             UserData = userData;

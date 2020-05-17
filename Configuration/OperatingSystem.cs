@@ -5,7 +5,7 @@ namespace agrix.Configuration
     /// <summary>
     /// Represents an operating system configuration.
     /// </summary>
-    internal struct OperatingSystem
+    internal readonly struct OperatingSystem
     {
         /// <summary>
         /// The application name.
@@ -16,7 +16,7 @@ namespace agrix.Configuration
         /// The operating system's ISO name.
         /// </summary>
 
-        public string ISO { get; }
+        public string Iso { get; }
 
         /// <summary>
         /// The name of the operating system.
@@ -37,12 +37,10 @@ namespace agrix.Configuration
             if (string.IsNullOrEmpty(app)
                 && string.IsNullOrEmpty(iso)
                 && string.IsNullOrEmpty(name))
-            {
                 throw new ArgumentException("Either app, iso or name must be set");
-            }
 
             App = app;
-            ISO = iso;
+            Iso = iso;
             Name = name;
         }
     }

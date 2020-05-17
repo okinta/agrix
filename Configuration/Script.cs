@@ -14,7 +14,7 @@ namespace agrix.Configuration
     /// <summary>
     /// Represents a stored script.
     /// </summary>
-    internal struct Script
+    internal readonly struct Script
     {
         /// <summary>
         /// The name of the script.
@@ -43,11 +43,11 @@ namespace agrix.Configuration
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentNullException(
-                    "name", "Script name must not be empty");
+                    nameof(name), "Script name must not be empty");
 
             if (string.IsNullOrEmpty(content))
                 throw new ArgumentNullException(
-                    "name", "Script content must not be empty");
+                    nameof(name), "Script content must not be empty");
 
             Name = name;
             Type = type;

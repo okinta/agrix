@@ -10,26 +10,26 @@ namespace agrix.Platforms.Vultr
     /// <summary>
     /// Represents a Vultr Operating System configuration.
     /// </summary>
-    internal struct VultrOS
+    internal readonly struct VultrOs
     {
-        public int OSID { get; }
-        public int? APPID { get; }
-        public int? ISOID { get; }
-        public int? SCRIPTID { get; }
-        public int? SNAPSHOTID { get; }
+        public int OsId { get; }
+        public int? Appid { get; }
+        public int? IsoId { get; }
+        public int? ScriptId { get; }
+        public int? SnapshotId { get; }
 
-        private const int AppOSID = 186;
-        private const int ISOOSID = 159;
-        private const int SnapshotOSID = 164;
+        private const int AppOsId = 186;
+        private const int IsoOsId = 159;
+        private const int SnapshotOsId = 164;
 
-        private VultrOS(int osid, int? appid = null, int? isoid = null,
-            int? scriptid = null, int? snapshotid = null)
+        private VultrOs(int osId, int? appId = null, int? isoId = null,
+            int? scriptId = null, int? snapshotId = null)
         {
-            OSID = osid;
-            APPID = appid;
-            ISOID = isoid;
-            SCRIPTID = scriptid;
-            SNAPSHOTID = snapshotid;
+            OsId = osId;
+            Appid = appId;
+            IsoId = isoId;
+            ScriptId = scriptId;
+            SnapshotId = snapshotId;
         }
 
         /// <summary>
@@ -39,22 +39,22 @@ namespace agrix.Platforms.Vultr
         /// <param name="client">The VultrClient instance to communicate with
         /// Vultr.</param>
         /// <returns>The configured OS instance.</returns>
-        public static VultrOS CreateApp(string name, VultrClient client)
+        public static VultrOs CreateApp(string name, VultrClient client)
         {
             var apps = client.Application.GetApplications();
 
             KeyValuePair<string, Application> app;
             try
             {
-                app = apps.Applications.Single(app => app.Value.deploy_name == name);
+                app = apps.Applications.Single(a => a.Value.deploy_name == name);
             }
             catch (InvalidOperationException e)
             {
                 throw new ArgumentException(
-                    string.Format("Cannot find app called {0}", name), "name", e);
+                    $"Cannot find app called {name}", nameof(name), e);
             }
 
-            return new VultrOS(AppOSID, appid: int.Parse(app.Key));
+            return new VultrOs(AppOsId, appId: int.Parse(app.Key));
         }
 
         /// <summary>
@@ -64,22 +64,23 @@ namespace agrix.Platforms.Vultr
         /// <param name="client">The VultrClient instance to communicate with
         /// Vultr.</param>
         /// <returns>The configured OS instance.</returns>
-        public static VultrOS CreateISO(string name, VultrClient client)
+        public static VultrOs CreateIso(string name, VultrClient client)
         {
-            var isos = client.ISOImage.GetISOImages();
+            var images = client.ISOImage.GetISOImages();
 
             KeyValuePair<string, ISOImage> iso;
             try
             {
-                iso = isos.ISOImages.Single(iso => iso.Value.filename == name);
+                iso = images.ISOImages.Single(
+                    i => i.Value.filename == name);
             }
             catch (InvalidOperationException e)
             {
                 throw new ArgumentException(
-                    string.Format("Cannot find ISO called {0}", name), "name", e);
+                    $"Cannot find ISO called {name}", nameof(name), e);
             }
 
-            return new VultrOS(ISOOSID, isoid: int.Parse(iso.Key));
+            return new VultrOs(IsoOsId, isoId: int.Parse(iso.Key));
         }
 
         /// <summary>
@@ -89,9 +90,9 @@ namespace agrix.Platforms.Vultr
         /// <param name="client">The VultrClient instance to communicate with
         /// Vultr.</param>
         /// <returns>The configured OS instance.</returns>
-        public static VultrOS CreateOS(string name, VultrClient client)
+        public static VultrOs CreateOs(string name, VultrClient client)
         {
-            return new VultrOS(FindOperatingSystem(name, client));
+            return new VultrOs(FindOperatingSystem(name, client));
         }
 
         /// <summary>
@@ -102,7 +103,8 @@ namespace agrix.Platforms.Vultr
         /// <param name="client">The VultrClient instance to communicate with
         /// Vultr.</param>
         /// <returns>The configured OS instance.</returns>
-        public static VultrOS CreateScript(string name, string scriptName, VultrClient client)
+        public static VultrOs CreateScript(
+            string name, string scriptName, VultrClient client)
         {
             var scripts = client.StartupScript.GetStartupScripts();
 
@@ -115,12 +117,12 @@ namespace agrix.Platforms.Vultr
             catch (InvalidOperationException e)
             {
                 throw new ArgumentException(
-                    string.Format("Cannot find script called {0}", scriptName),
-                    "scriptName", e);
+                    $"Cannot find script called {scriptName}",
+                    nameof(scriptName), e);
             }
 
-            return new VultrOS(
-                FindOperatingSystem(name, client), scriptid: int.Parse(script.Key));
+            return new VultrOs(
+                FindOperatingSystem(name, client), scriptId: int.Parse(script.Key));
         }
 
         /// <summary>
@@ -130,17 +132,17 @@ namespace agrix.Platforms.Vultr
         /// <param name="client">The VultrClient instance to communicate with
         /// Vultr.</param>
         /// <returns>The configured OS instance.</returns>
-        public static VultrOS CreateSnapshot(int id, VultrClient client)
+        public static VultrOs CreateSnapshot(int id, VultrClient client)
         {
             var snapshots = client.Snapshot.GetSnapshots();
 
             if (!snapshots.Snapshots.ContainsKey(id.ToString()))
             {
                 throw new ArgumentException(
-                    string.Format("Cannot find snapshot with ID {0}", id), "id");
+                    $"Cannot find snapshot with ID {id}", nameof(id));
             }
 
-            return new VultrOS(SnapshotOSID, snapshotid: id);
+            return new VultrOs(SnapshotOsId, snapshotId: id);
         }
 
         private static int FindOperatingSystem(string name, VultrClient client)
@@ -151,13 +153,13 @@ namespace agrix.Platforms.Vultr
             try
             {
                 system = systems.OperatingSystems.Single(
-                    system => system.Value.name == name);
+                    s => s.Value.name == name);
             }
             catch (InvalidOperationException e)
             {
                 throw new ArgumentException(
-                    string.Format("Cannot find Operating System called {0}", name),
-                    "name", e);
+                    $"Cannot find Operating System called {name}",
+                    nameof(name), e);
             }
 
             return system.Key;

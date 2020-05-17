@@ -12,7 +12,7 @@ namespace agrix
         /// outputted in the form of "[name]: [value]".
         /// </summary>
         /// <param name="name">The name of the variable to output.</param>
-        /// <param name="value">The value of the variable to ouput.</param>
+        /// <param name="value">The value of the variable to output.</param>
         public static void WriteLine(string name, object value)
         {
             if (value != null)
@@ -24,7 +24,7 @@ namespace agrix
         /// outputted in the form of "[name]: [value]".
         /// </summary>
         /// <param name="name">The name of the variable to output.</param>
-        /// <param name="value">The value of the variable to ouput.</param>
+        /// <param name="value">The value of the variable to output.</param>
         public static void WriteLine(string name, string value)
         {
             if (!string.IsNullOrEmpty(value))
@@ -36,14 +36,12 @@ namespace agrix
         /// outputted in the form of "[name]: [value]".
         /// </summary>
         /// <param name="name">The name of the variable to output.</param>
-        /// <param name="value">The value of the variable to ouput.</param>
+        /// <param name="value">The value of the variable to output.</param>
         public static void WriteLine(string name, bool? value)
         {
-            if (value != null)
-            {
-                var outputValue = value == true ? "yes" : "no";
-                Console.WriteLine("{0}: {1}", name, outputValue);
-            }
+            if (value == null) return;
+            var outputValue = value == true ? "yes" : "no";
+            Console.WriteLine("{0}: {1}", name, outputValue);
         }
     }
 }
