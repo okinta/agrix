@@ -121,10 +121,64 @@
   <data name="agrix" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\data\agrix.yaml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="FirewallsConfig" xml:space="preserve">
+    <value>firewalls:
+  - name: ssh
+    rules:
+      - protocol: tcp
+        source: 0.0.0.0/0
+        port: 22
+
+      - protocol: tcp
+        source: 0.0.0.0/0
+        port: 3389
+
+  - name: myapp
+    rules:
+      - protocol: udp
+        source: 172.0.24.1/20
+        ports: 8000 - 8100
+
+      - protocol: tcp
+        source: cloudflare
+        port: 80</value>
+  </data>
+  <data name="InvalidScriptTypeConfig" xml:space="preserve">
+    <value>scripts:
+  - name: test
+    type: tony
+    content: this is a test script</value>
+  </data>
   <data name="InvalidServerConfig" xml:space="preserve">
     <value>platform: vultr
 servers:
   - label: test</value>
+  </data>
+  <data name="JSONUserDataConfig" xml:space="preserve">
+    <value>servers:
+  - os:
+      iso: alpine.iso
+    plan:
+      cpu: 2
+      memory: 4096
+      type: SSD
+    region: Chicago
+    userdata:
+      my-array:
+        - 1
+        - 2</value>
+  </data>
+  <data name="ScriptsConfig" xml:space="preserve">
+    <value>scripts:
+  - name: test
+    type: boot
+    content: this is a test script
+
+  - name: bash-script
+    type: boot
+    content: |
+      #!/usr/bin/env bash
+      echo hello</value>
   </data>
   <data name="SimpleConfig" xml:space="preserve">
     <value>platform: vultr
@@ -142,6 +196,17 @@ servers:
       type: SSD
     region: Atlanta</value>
     <comment>Configuration for the "test" platform</comment>
+  </data>
+  <data name="UserDataConfig" xml:space="preserve">
+    <value>servers:
+  - os:
+      iso: alpine.iso
+    plan:
+      cpu: 2
+      memory: 4096
+      type: SSD
+    region: Chicago
+    userdata: test data</value>
   </data>
   <data name="ValidAlpineConfig" xml:space="preserve">
     <value>platform: vultr

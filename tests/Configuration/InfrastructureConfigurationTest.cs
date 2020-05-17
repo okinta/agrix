@@ -30,16 +30,7 @@ namespace tests.Configuration
         [Fact]
         public void TestLoadUserData()
         {
-            var node = LoadYaml(
-@"servers:
-  - os:
-      iso: alpine.iso
-    plan:
-      cpu: 2
-      memory: 4096
-      type: SSD
-    region: Chicago
-    userdata: test data").GetSequence("servers");
+            var node = LoadYaml(Resources.UserDataConfig).GetSequence("servers");
 
             var servers = new Parser().Load(
                 "servers",
@@ -52,19 +43,8 @@ namespace tests.Configuration
         [Fact]
         public void TestLoadJsonUserData()
         {
-            var node = LoadYaml(
-@"servers:
-  - os:
-      iso: alpine.iso
-    plan:
-      cpu: 2
-      memory: 4096
-      type: SSD
-    region: Chicago
-    userdata:
-      my-array:
-        - 1
-        - 2").GetSequence("servers");
+            var data = Resources.JSONUserDataConfig;
+            var node = LoadYaml(data).GetSequence("servers");
 
             var servers = new Parser().Load(
                 "servers",
@@ -77,17 +57,7 @@ namespace tests.Configuration
         [Fact]
         public void TestLoadScripts()
         {
-            var node = LoadYaml(
-@"scripts:
-  - name: test
-    type: boot
-    content: this is a test script
-
-  - name: bash-script
-    type: boot
-    content: |
-      #!/usr/bin/env bash
-      echo hello").GetSequence("scripts");
+            var node = LoadYaml(Resources.ScriptsConfig).GetSequence("scripts");
 
             var scripts = new Parser().Load(
                 "scripts",
@@ -108,11 +78,7 @@ namespace tests.Configuration
         [Fact]
         public void TestLoadInvalidTypeScript()
         {
-            var node = LoadYaml(
-@"scripts:
-  - name: test
-    type: tony
-    content: this is a test script").GetSequence("scripts");
+            var node = LoadYaml(Resources.InvalidScriptTypeConfig).GetSequence("scripts");
 
             Assert.Throws<ArgumentException>(() =>
                 new Parser().Load(
@@ -124,27 +90,7 @@ namespace tests.Configuration
         [Fact]
         public void TestLoadFirewalls()
         {
-            var node = LoadYaml(
-@"firewalls:
-  - name: ssh
-    rules:
-      - protocol: tcp
-        source: 0.0.0.0/0
-        port: 22
-
-      - protocol: tcp
-        source: 0.0.0.0/0
-        port: 3389
-
-  - name: myapp
-    rules:
-      - protocol: udp
-        source: 172.0.24.1/20
-        ports: 8000 - 8100
-
-      - protocol: tcp
-        source: cloudflare
-        port: 80").GetSequence("firewalls");
+            var node = LoadYaml(Resources.FirewallsConfig).GetSequence("firewalls");
 
             var firewalls = new Parser().Load(
                 "firewalls",

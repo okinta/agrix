@@ -71,6 +71,46 @@ namespace tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to firewalls:
+        ///  - name: ssh
+        ///    rules:
+        ///      - protocol: tcp
+        ///        source: 0.0.0.0/0
+        ///        port: 22
+        ///
+        ///      - protocol: tcp
+        ///        source: 0.0.0.0/0
+        ///        port: 3389
+        ///
+        ///  - name: myapp
+        ///    rules:
+        ///      - protocol: udp
+        ///        source: 172.0.24.1/20
+        ///        ports: 8000 - 8100
+        ///
+        ///      - protocol: tcp
+        ///        source: cloudflare
+        ///        port: 80.
+        /// </summary>
+        internal static string FirewallsConfig {
+            get {
+                return ResourceManager.GetString("FirewallsConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to scripts:
+        ///  - name: test
+        ///    type: tony
+        ///    content: this is a test script.
+        /// </summary>
+        internal static string InvalidScriptTypeConfig {
+            get {
+                return ResourceManager.GetString("InvalidScriptTypeConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to platform: vultr
         ///servers:
         ///  - label: test.
@@ -78,6 +118,44 @@ namespace tests.Properties {
         internal static string InvalidServerConfig {
             get {
                 return ResourceManager.GetString("InvalidServerConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to servers:
+        ///  - os:
+        ///      iso: alpine.iso
+        ///    plan:
+        ///      cpu: 2
+        ///      memory: 4096
+        ///      type: SSD
+        ///    region: Chicago
+        ///    userdata:
+        ///      my-array:
+        ///        - 1
+        ///        - 2.
+        /// </summary>
+        internal static string JSONUserDataConfig {
+            get {
+                return ResourceManager.GetString("JSONUserDataConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to scripts:
+        ///  - name: test
+        ///    type: boot
+        ///    content: this is a test script
+        ///
+        ///  - name: bash-script
+        ///    type: boot
+        ///    content: |
+        ///      #!/usr/bin/env bash
+        ///      echo hello.
+        /// </summary>
+        internal static string ScriptsConfig {
+            get {
+                return ResourceManager.GetString("ScriptsConfig", resourceCulture);
             }
         }
         
@@ -105,6 +183,23 @@ namespace tests.Properties {
         internal static string TestPlatformConfig {
             get {
                 return ResourceManager.GetString("TestPlatformConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to servers:
+        ///  - os:
+        ///      iso: alpine.iso
+        ///    plan:
+        ///      cpu: 2
+        ///      memory: 4096
+        ///      type: SSD
+        ///    region: Chicago
+        ///    userdata: test data.
+        /// </summary>
+        internal static string UserDataConfig {
+            get {
+                return ResourceManager.GetString("UserDataConfig", resourceCulture);
             }
         }
         
