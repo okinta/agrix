@@ -79,8 +79,7 @@ namespace agrix
             var availablePlatforms = GetAvailablePlatforms(Assembly);
 
             if (availablePlatforms.TryGetValue(platformName, out var platform))
-                return (IPlatform) Activator.CreateInstance(
-                    platform, ApiKey, ApiUrl);
+                return platform(ApiKey, ApiUrl);
 
             var line = root.GetNode("platform").Start.Line;
             var availablePlatformsText = string.Join(
@@ -153,9 +152,10 @@ namespace agrix
         /// <param name="assembly">The Assembly to search within.</param>
         /// <returns>The collection of registered platforms with their associated
         /// keys.</returns>
-        private static Dictionary<string, Type> GetAvailablePlatforms(Assembly assembly)
+        private static Dictionary<string, CreatePlatform> GetAvailablePlatforms(
+            Assembly assembly)
         {
-            var platforms = new Dictionary<string, Type>();
+            var platforms = new Dictionary<string, CreatePlatform>();
 
             foreach (var type in assembly.GetTypes())
             {
@@ -182,7 +182,9 @@ namespace agrix
                         + $"{inUseBy}. Cannot be used by {type}.");
                 }
 
-                platforms[platformAttribute.Tag] = type;
+                platforms[platformAttribute.Tag] =
+                    (CreatePlatform)Delegate.CreateDelegate(
+                        typeof(CreatePlatform), type, platformAttribute.Create);
             }
 
             return platforms;

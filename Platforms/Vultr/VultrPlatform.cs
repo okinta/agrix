@@ -9,7 +9,7 @@ namespace agrix.Platforms.Vultr
     /// <summary>
     /// Describes methods to communicate with the Vultr platform.
     /// </summary>
-    [Platform("vultr")]
+    [Platform("vultr", nameof(CreateVultrPlatform))]
     internal class VultrPlatform : Platform
     {
         private VultrClient Client { get; }
@@ -22,14 +22,32 @@ namespace agrix.Platforms.Vultr
         /// Vultr API endpoint (e.g. for testing).</param>
         /// <exception cref="ArgumentNullException">If <param name="apiKey"> is null or
         /// empty.</param></exception>
-        public VultrPlatform(string apiKey, string apiUrl) : base(apiKey, apiUrl)
+        public VultrPlatform(string apiKey, string apiUrl)
         {
+            if (string.IsNullOrWhiteSpace(apiKey))
+                throw new ArgumentNullException(
+                    nameof(apiKey), "apiKey cannot be provided");
+
             Client = string.IsNullOrEmpty(apiUrl) ?
                 new VultrClient(apiKey) : new VultrClient(apiKey, apiUrl);
 
             AddProvisioner<Firewall>(new VultrFirewallProvisioner(Client).Provision);
             AddProvisioner<Script>(new VultrScriptProvisioner(Client).Provision);
             AddProvisioner<Server>(new VultrServerProvisioner(Client).Provision);
+        }
+
+        /// <summary>
+        /// Instantiates an IPlatform instance to configure and provision Vultr services.
+        /// </summary>
+        /// <param name="apiKey">The API key to use for communicating with Vultr.</param>
+        /// <param name="apiUrl">The API URL for Vultr. Set this to override the
+        /// Vultr API endpoint (e.g. for testing).</param>
+        /// <returns>The instantiated IPlatform instance.</returns>
+        /// <exception cref="ArgumentNullException">If <param name="apiKey"> is null or
+        /// empty.</param></exception>
+        public static IPlatform CreateVultrPlatform(string apiKey, string apiUrl)
+        {
+            return new VultrPlatform(apiKey, apiUrl);
         }
 
         /// <summary>

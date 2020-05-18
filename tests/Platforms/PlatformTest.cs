@@ -15,11 +15,7 @@ namespace tests.Platforms
         private readonly List<Tuple<Klout, bool>> _provisions =
             new List<Tuple<Klout, bool>>();
 
-        public CustomPlatform() : this("abc", null)
-        {
-        }
-
-        public CustomPlatform(string apiKey, string apiUrl) : base(apiKey, apiUrl)
+        public CustomPlatform()
         {
             AddNullParser("empty");
             AddParser("klouts", new KloutParser().Parse);

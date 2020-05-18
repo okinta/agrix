@@ -8,7 +8,7 @@ namespace tests
     /// <summary>
     /// A non-functional platform used for testing purposes.
     /// </summary>
-    [Platform("test")]
+    [Platform("test", nameof(CreateTestPlatform))]
     internal class TestPlatform : Platform
     {
         /// <summary>
@@ -24,10 +24,15 @@ namespace tests
         private readonly List<Tuple<Server, bool>> _provisions =
             new List<Tuple<Server, bool>>();
 
-        public TestPlatform(string apiKey, string apiUrl) : base(apiKey, apiUrl)
+        public TestPlatform()
         {
             AddProvisioner<Server>(ProvisionServer);
             LastInstance = this;
+        }
+
+        public static IPlatform CreateTestPlatform(string apiKey, string apiUrl)
+        {
+            return new TestPlatform();
         }
 
         public override void TestConnection()
