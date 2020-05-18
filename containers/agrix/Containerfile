@@ -1,7 +1,10 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:5.0-alpine
 
+COPY agrix.csproj /app/agrix.csproj
+RUN dotnet restore /app/agrix.csproj
+
 COPY . /app
-RUN dotnet build -c Release /app/agrix.csproj
+RUN dotnet build -c Release /app/agrix.csproj --no-restore
 
 FROM mcr.microsoft.com/dotnet/core/runtime:5.0-alpine
 
