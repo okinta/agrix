@@ -1,15 +1,17 @@
+image: buildah/buildah
+variables:
+  STORAGE_DRIVER: vfs
+
 stages:
   - test
 
 run-tests:
-  image: buildah/buildah
   stage: test
   script:
     - podman build -t agrix-tests -f containers/tests/Containerfile .
     - podman run agrix-tests
 
 test-build-image:
-  image: buildah/buildah
   stage: test
   script:
     - podman build -t okinta/agrix -f containers/agrix/Containerfile .
