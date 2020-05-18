@@ -38,32 +38,30 @@ namespace agrix
         }
 
         private string ApiKey { get; }
-
+        private string ApiUrl { get; }
         private Assembly Assembly { get; }
 
         /// <summary>
         /// Instantiates a new instance.
         /// </summary>
         /// <param name="configuration">The YAML configuration to process.</param>
-        /// <param name="apiKey">The platform API key to use for communicating with
-        /// the platform.</param>
-        /// <param name="assembly">The optional Assembly to search within for
-        /// platforms. Defaults to this assembly.</param>
+        /// <param name="settings">The settings to use to configure the instance.</param>
         /// <exception cref="ArgumentNullException">If any arguments are null or
         /// empty.</exception>
-        public Agrix(string configuration, string apiKey, Assembly assembly = null)
+        public Agrix(string configuration, AgrixSettings settings)
         {
             if (string.IsNullOrEmpty(configuration))
                 throw new ArgumentNullException(
                     nameof(configuration), "Configuration must not be empty");
 
-            if (string.IsNullOrEmpty(apiKey))
+            if (settings is null)
                 throw new ArgumentNullException(
-                    nameof(apiKey), "API key must not be empty");
+                    nameof(settings), "Settings must not be empty");
 
-            ApiKey = apiKey;
+            ApiKey = settings.ApiKey;
+            ApiUrl = settings.ApiUrl;
+            Assembly = settings.Assembly;
             Configuration = configuration;
-            Assembly = assembly ?? Assembly.GetAssembly(typeof(IPlatform));
         }
 
         /// <summary>
@@ -81,7 +79,8 @@ namespace agrix
             var availablePlatforms = GetAvailablePlatforms(Assembly);
 
             if (availablePlatforms.TryGetValue(platformName, out var platform))
-                return (IPlatform) Activator.CreateInstance(platform, ApiKey);
+                return (IPlatform) Activator.CreateInstance(
+                    platform, ApiKey, ApiUrl);
 
             var line = root.GetNode("platform").Start.Line;
             var availablePlatformsText = string.Join(

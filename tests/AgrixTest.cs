@@ -4,36 +4,50 @@ using agrix;
 using System.Reflection;
 using System;
 using tests.Properties;
+using tests.TestHelpers;
 using Xunit;
 
 namespace tests
 {
     public class AgrixTest
     {
-        private readonly Assembly _testAssembly = Assembly.GetExecutingAssembly();
+        private static readonly Assembly TestAssembly = Assembly.GetExecutingAssembly();
 
-        [Fact]
-        public void TestConfigurationCannotBeEmpty()
+        private AgrixSettings BasicSettings { get; } = new AgrixSettings("abc");
+
+        private AgrixSettings TestSettings { get; } =
+            new AgrixSettings("abc", assembly: TestAssembly);
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void TestConfigurationCannotBeEmpty(string configuration)
         {
             Assert.Throws<ArgumentNullException>(
-                () => new Agrix("", "abc"));
-            Assert.Throws<ArgumentNullException>(
-                () => new Agrix(null, "abc"));
+                () => new Agrix(configuration, BasicSettings));
         }
 
         [Fact]
-        public void TestApiKeyCannotBeEmpty()
+        public void TestSettingsCannotBeEmpty()
         {
             Assert.Throws<ArgumentNullException>(
-                () => new Agrix("config", ""));
-            Assert.Throws<ArgumentNullException>(
                 () => new Agrix("config", null));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void TestApiKeyCannotBeEmpty(string apiKey)
+        {
+            Assert.Throws<ArgumentNullException>(
+                () => new Agrix("config", new AgrixSettings(apiKey)));
         }
 
         [Fact]
         public void TestLoadPlatform()
         {
-            var agrix = new Agrix("platform: vultr", "abc");
+            var agrix = new Agrix(
+                "platform: vultr", BasicSettings);
             Assert.Equal(
                 typeof(VultrPlatform), agrix.LoadPlatform().GetType());
         }
@@ -41,44 +55,45 @@ namespace tests
         [Fact]
         public void TestLoadCustomPlatform()
         {
-            var agrix = new Agrix("platform: test", "abc", _testAssembly);
+            var agrix = new Agrix("platform: test", TestSettings);
             Assert.Equal(typeof(TestPlatform), agrix.LoadPlatform().GetType());
         }
 
         [Fact]
         public void TestValidatePlatformIsRequired()
         {
-            var agrix = new Agrix("servers:", "abc");
+            var agrix = new Agrix("servers:", BasicSettings);
             Assert.Throws<AgrixValidationException>(() => agrix.Validate());
         }
 
         [Fact]
         public void TestValidateUnsupportedPlatform()
         {
-            var agrix = new Agrix("platform:", "abc");
+            var agrix = new Agrix("platform:", BasicSettings);
             Assert.Throws<AgrixValidationException>(() => agrix.Validate());
         }
 
         [Fact]
         public void TestValidateInvalidKey()
         {
-            var agrix = new Agrix(Resources.SimpleConfig, "abc");
+            var agrix = new Agrix(Resources.SimpleConfig, BasicSettings);
             Assert.Throws<AgrixValidationException>(() => agrix.Validate());
         }
 
         [Fact]
         public void TestValidateInvalidServer()
         {
-            var agrix = new Agrix(
-                Resources.InvalidServerConfig, Settings.Default.VultrApiKey);
+            var agrix = new Agrix(Resources.InvalidServerConfig, BasicSettings);
             Assert.Throws<AgrixValidationException>(() => agrix.Validate());
         }
 
         [Fact]
         public void TestValidate()
         {
+            using var requests = new MockVultrRequests(
+                new CustomMockHttpHandler("/account/info"));
             var agrix = new Agrix(
-                Resources.SimpleConfig, Settings.Default.VultrApiKey);
+                Resources.SimpleConfig, new AgrixSettings("abc", requests.Url));
             agrix.Validate();
         }
 
@@ -87,8 +102,10 @@ namespace tests
         [InlineData("ValidAlpineConfig")]
         public void TestValidateServer(string configName)
         {
+            using var requests = new MockVultrRequests(
+                new CustomMockHttpHandler("/account/info"));
             var config = Resources.ResourceManager.GetString(configName);
-            var agrix = new Agrix(config, Settings.Default.VultrApiKey);
+            var agrix = new Agrix(config, new AgrixSettings("abc", requests.Url));
             agrix.Validate();
         }
 
@@ -97,8 +114,10 @@ namespace tests
         [InlineData(false)]
         public void TestProcess(bool dryrun)
         {
-            var agrix = new Agrix(
-                Resources.TestPlatformConfig, "abc123", _testAssembly);
+            using var requests = new MockVultrRequests(
+                new CustomMockHttpHandler("/account/info"));
+            var agrix = new Agrix(Resources.TestPlatformConfig,
+                new AgrixSettings("abc", requests.Url, TestAssembly));
             agrix.Process(dryrun);
 
             var platform = TestPlatform.LastInstance;

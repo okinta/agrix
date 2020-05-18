@@ -46,6 +46,16 @@ namespace agrix.Platforms
         /// </summary>
         protected IParser Parser { get; set; } = new Parser();
 
+        /// <summary>
+        /// Gets the API key to use for communicating with the platform.
+        /// </summary>
+        protected string ApiKey { get; }
+
+        /// <summary>
+        /// Gets the API URL to use for communicating with the platform.
+        /// </summary>
+        protected string ApiUrl { get; }
+
         private Dictionary<string, Action<Infrastructure, YamlNode>> KnownParserNodes
             { get; } = new Dictionary<string, Action<Infrastructure, YamlNode>>();
         private Dictionary<Type, Action<object, bool>> KnownProvisioners { get; }
@@ -54,8 +64,21 @@ namespace agrix.Platforms
         /// <summary>
         /// Instantiates a new instance.
         /// </summary>
-        protected Platform()
+        /// <param name="apiKey">The API key to use for communicating with the
+        /// platform.</param>
+        /// <param name="apiUrl">The API URL for the platform. Set this to override the
+        /// endpoint (e.g. for testing).</param>
+        /// <exception cref="ArgumentNullException">If <param name="apiKey"> is null or
+        /// empty.</param></exception>
+        protected Platform(string apiKey, string apiUrl)
         {
+            if (string.IsNullOrEmpty(apiKey))
+                throw new ArgumentNullException(
+                    nameof(apiKey), "apiKey must be provided");
+
+            ApiKey = apiKey;
+            ApiUrl = apiUrl;
+
             AddNullParser("platform");
             AddParser("servers", ParseServer);
             AddParser("scripts", ParseScript);
@@ -71,13 +94,13 @@ namespace agrix.Platforms
         {
             var infrastructure = new Infrastructure();
 
-            foreach (var item in node.Children)
+            foreach (var (tag, value) in node.Children)
             {
-                if (!KnownParserNodes.TryGetValue(item.Key.GetTag(), out var action))
+                if (!KnownParserNodes.TryGetValue(tag.GetTag(), out var action))
                     throw new ArgumentException(
-                    $"Unknown tag {item.Key.GetTag()} (line {item.Key.Start.Line})");
+                    $"Unknown tag {tag.GetTag()} (line {tag.Start.Line})");
 
-                action(infrastructure, item.Value);
+                action(infrastructure, value);
             }
 
             return infrastructure;

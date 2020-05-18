@@ -24,8 +24,7 @@ namespace tests
         private readonly List<Tuple<Server, bool>> _provisions =
             new List<Tuple<Server, bool>>();
 
-        // ReSharper disable once UnusedParameter.Local
-        public TestPlatform(string _)
+        public TestPlatform(string apiKey, string apiUrl) : base(apiKey, apiUrl)
         {
             AddProvisioner<Server>(ProvisionServer);
             LastInstance = this;

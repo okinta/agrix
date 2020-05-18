@@ -150,8 +150,9 @@ namespace agrix.Program
                 options.ApiKey = Environment.GetEnvironmentVariable(
                     Constants.EnvPlatformApiKey);
 
-            if (!string.IsNullOrEmpty(options.ApiKey)) 
-                return new Agrix(input, options.ApiKey, Assembly);
+            if (!string.IsNullOrEmpty(options.ApiKey))
+                return new Agrix(input, new AgrixSettings(
+                    options.ApiKey, assembly: Assembly));
 
             Console.Error.WriteLine(
                 "No platform API key provided. Either set {0} command line"

@@ -1,6 +1,7 @@
 ﻿using agrix.Configuration;
 using agrix.Platforms.Vultr.Provisioners;
 using Server = agrix.Configuration.Server;
+using System;
 using Vultr.API;
 
 namespace agrix.Platforms.Vultr
@@ -14,18 +15,14 @@ namespace agrix.Platforms.Vultr
         private VultrClient Client { get; }
 
         /// <summary>
-        /// Instantiates the instance.
-        /// </summary>
-        /// <param name="apiKey">The API key to use for communicating with Vultr.</param>
-        public VultrPlatform(string apiKey) : this(apiKey, null) { }
-
-        /// <summary>
         /// Instantiates the instance and overrides the Vultr API URL.
         /// </summary>
         /// <param name="apiKey">The API key to use for communicating with Vultr.</param>
         /// <param name="apiUrl">The API URL for Vultr. Set this to override the
         /// Vultr API endpoint (e.g. for testing).</param>
-        public VultrPlatform(string apiKey, string apiUrl)
+        /// <exception cref="ArgumentNullException">If <param name="apiKey"> is null or
+        /// empty.</param></exception>
+        public VultrPlatform(string apiKey, string apiUrl) : base(apiKey, apiUrl)
         {
             Client = string.IsNullOrEmpty(apiUrl) ?
                 new VultrClient(apiKey) : new VultrClient(apiKey, apiUrl);
