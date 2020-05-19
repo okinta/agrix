@@ -1,10 +1,10 @@
 ﻿using agrix.Exceptions;
 using agrix.Platforms.Vultr;
 using agrix;
+using MockHttp.Net;
 using System.Reflection;
 using System;
 using tests.Properties;
-using tests.TestHelpers;
 using Xunit;
 
 namespace tests
@@ -91,7 +91,7 @@ namespace tests
         public void TestValidate()
         {
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler("/account/info"));
+                new HttpHandler("/account/info"));
             var agrix = new Agrix(
                 Resources.SimpleConfig, new AgrixSettings("abc", requests.Url));
             agrix.Validate();
@@ -103,7 +103,7 @@ namespace tests
         public void TestValidateServer(string configName)
         {
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler("/account/info"));
+                new HttpHandler("/account/info"));
             var config = Resources.ResourceManager.GetString(configName);
             var agrix = new Agrix(config, new AgrixSettings("abc", requests.Url));
             agrix.Validate();
@@ -115,7 +115,7 @@ namespace tests
         public void TestProcess(bool dryrun)
         {
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler("/account/info"));
+                new HttpHandler("/account/info"));
             var agrix = new Agrix(Resources.TestPlatformConfig,
                 new AgrixSettings("abc", requests.Url, TestAssembly));
             agrix.Process(dryrun);

@@ -1,7 +1,7 @@
 ﻿using agrix.Platforms.Vultr;
+using MockHttp.Net;
 using System.Net.Http;
 using tests.Properties;
-using tests.TestHelpers;
 using Xunit;
 
 namespace tests.Platforms.Vultr
@@ -12,7 +12,7 @@ namespace tests.Platforms.Vultr
         public void TestTestConnection()
         {
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/account/info", Resources.VultrAccountInfo));
             new VultrPlatform("abc123", requests.Url).TestConnection();
         }
@@ -21,7 +21,7 @@ namespace tests.Platforms.Vultr
         public void TestTestConnectionFail()
         {
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler("/", ""));
+                new HttpHandler("/", ""));
             Assert.Throws<HttpRequestException>(() =>
                 new VultrPlatform("abc123", requests.Url).TestConnection());
         }

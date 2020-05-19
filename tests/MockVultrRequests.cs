@@ -1,7 +1,8 @@
-﻿using System;
+﻿using MockHttp.Net;
+using System;
 using Vultr.API;
 
-namespace tests.TestHelpers
+namespace tests
 {
     /// <summary>
     /// Describes methods to mock Vultr API requests.
@@ -20,7 +21,7 @@ namespace tests.TestHelpers
         /// <param name="handlers"></param>
         /// <exception cref="ArgumentNullException">If <paramref name="handlers"/> is
         /// null.</exception>
-        public MockVultrRequests(params CustomMockHttpHandler[] handlers) :
+        public MockVultrRequests(params HttpHandler[] handlers) :
             base(handlers)
         {
             Client = new VultrClient("abc123", Url);

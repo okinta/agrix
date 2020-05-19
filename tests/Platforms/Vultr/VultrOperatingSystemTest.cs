@@ -1,6 +1,6 @@
 ﻿using agrix.Platforms.Vultr;
+using MockHttp.Net;
 using tests.Properties;
-using tests.TestHelpers;
 using Xunit;
 
 namespace tests.Platforms.Vultr
@@ -13,7 +13,7 @@ namespace tests.Platforms.Vultr
         public void TestCreateApp(int id, string name)
         {
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/app/list", Resources.VultrAppList));
 
             var app = VultrOperatingSystem.CreateApp(name, requests.Client);
@@ -30,7 +30,7 @@ namespace tests.Platforms.Vultr
         public void TestCreateIso(string name, int id)
         {
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/iso/list", Resources.VultrISOList));
 
             var iso = VultrOperatingSystem.CreateIso(name, requests.Client);
@@ -47,7 +47,7 @@ namespace tests.Platforms.Vultr
         public void TestCreateOs(int id, string name)
         {
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/os/list", Resources.VultrOSList));
 
             var os = VultrOperatingSystem.CreateOs(name, requests.Client);
@@ -64,7 +64,7 @@ namespace tests.Platforms.Vultr
         public void TestCreateSnapshot(string id)
         {
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/snapshot/list", Resources.VultrSnapshotList));
 
             var snapshot = VultrOperatingSystem.CreateSnapshot(id, requests.Client);
@@ -80,9 +80,9 @@ namespace tests.Platforms.Vultr
         public void TestCreateScript(string name, int id)
         {
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/os/list", Resources.VultrOSList),
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/startupscript/list", Resources.VultrStartupScripts));
 
             var script = VultrOperatingSystem.CreateScript(

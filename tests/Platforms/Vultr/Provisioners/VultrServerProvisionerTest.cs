@@ -1,7 +1,7 @@
 ﻿using agrix.Configuration;
 using agrix.Platforms.Vultr.Provisioners;
+using MockHttp.Net;
 using tests.Properties;
-using tests.TestHelpers;
 using Xunit;
 
 namespace tests.Platforms.Vultr.Provisioners
@@ -23,14 +23,14 @@ namespace tests.Platforms.Vultr.Provisioners
                 Plan, Region, userData: "test");
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/os/list", Resources.VultrOSList),
-                new CustomMockHttpHandler("/regions/list?availability=yes",
+                new HttpHandler("/regions/list?availability=yes",
                     Resources.VultrRegionsList),
-                new CustomMockHttpHandler("/plans/list?type=all",
+                new HttpHandler("/plans/list?type=all",
                     Resources.VultrPlansList),
-                new CustomMockHttpHandler("/server/list"),
-                new CustomMockHttpHandler("/server/create",
+                new HttpHandler("/server/list"),
+                new HttpHandler("/server/create",
                     "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&userdata=dGVzdA%3D%3D&notify_activate=no",
                     "{\"SUBID\": \"1312965\"}")
             );
@@ -50,13 +50,13 @@ namespace tests.Platforms.Vultr.Provisioners
                 Plan, Region);
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/os/list", Resources.VultrOSList),
-                new CustomMockHttpHandler("/regions/list?availability=yes",
+                new HttpHandler("/regions/list?availability=yes",
                     Resources.VultrRegionsList),
-                new CustomMockHttpHandler("/plans/list?type=all",
+                new HttpHandler("/plans/list?type=all",
                     Resources.VultrPlansList),
-                new CustomMockHttpHandler("/server/list")
+                new HttpHandler("/server/list")
             );
             new VultrServerProvisioner(requests.Client).Provision(server, true);
             requests.AssertAllCalledOnce();
@@ -74,17 +74,17 @@ namespace tests.Platforms.Vultr.Provisioners
             );
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/os/list", Resources.VultrOSList),
-                new CustomMockHttpHandler("/regions/list?availability=yes",
+                new HttpHandler("/regions/list?availability=yes",
                     Resources.VultrRegionsList),
-                new CustomMockHttpHandler("/plans/list?type=all",
+                new HttpHandler("/plans/list?type=all",
                     Resources.VultrPlansList),
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/server/list", Resources.VultrServerList),
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/server/destroy", "SUBID=576965", ""),
-                new CustomMockHttpHandler("/server/create",
+                new HttpHandler("/server/create",
                     "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&label=my+new+server&notify_activate=no",
                     "{\"SUBID\": \"1312965\"}")
             );
@@ -105,13 +105,13 @@ namespace tests.Platforms.Vultr.Provisioners
             );
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/os/list", Resources.VultrOSList),
-                new CustomMockHttpHandler("/regions/list?availability=yes",
+                new HttpHandler("/regions/list?availability=yes",
                     Resources.VultrRegionsList),
-                new CustomMockHttpHandler("/plans/list?type=all",
+                new HttpHandler("/plans/list?type=all",
                     Resources.VultrPlansList),
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/server/list", Resources.VultrServerList)
             );
             new VultrServerProvisioner(requests.Client).Provision(server, true);
@@ -132,13 +132,13 @@ namespace tests.Platforms.Vultr.Provisioners
             );
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/os/list", Resources.VultrOSList),
-                new CustomMockHttpHandler("/regions/list?availability=yes",
+                new HttpHandler("/regions/list?availability=yes",
                     Resources.VultrRegionsList),
-                new CustomMockHttpHandler("/plans/list?type=all",
+                new HttpHandler("/plans/list?type=all",
                     Resources.VultrPlansList),
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/server/list", Resources.VultrServerList)
             );
             new VultrServerProvisioner(requests.Client).Provision(server);
@@ -151,7 +151,7 @@ namespace tests.Platforms.Vultr.Provisioners
         public void TestGetRegionId(int id, string name)
         {
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/regions/list", Resources.VultrRegionsList));
 
             var provisioner = new VultrServerProvisioner(requests.Client);
@@ -164,7 +164,7 @@ namespace tests.Platforms.Vultr.Provisioners
         public void TestGetPlanId(int id, int cpu, int ram, string type)
         {
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/plans/list", Resources.VultrPlansList));
 
             var provisioner = new VultrServerProvisioner(requests.Client);
@@ -176,7 +176,7 @@ namespace tests.Platforms.Vultr.Provisioners
         public void TestGetOsApp()
         {
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/app/list", Resources.VultrAppList));
 
             var provisioner = new VultrServerProvisioner(requests.Client);
@@ -195,9 +195,9 @@ namespace tests.Platforms.Vultr.Provisioners
         public void TestGetOsScript()
         {
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/os/list", Resources.VultrOSList),
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/startupscript/list", Resources.VultrStartupScripts));
 
             var provisioner = new VultrServerProvisioner(requests.Client);
@@ -218,7 +218,7 @@ namespace tests.Platforms.Vultr.Provisioners
         public void TestGetOs(int id, string name)
         {
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/os/list", Resources.VultrOSList));
 
             var provisioner = new VultrServerProvisioner(requests.Client);
@@ -237,7 +237,7 @@ namespace tests.Platforms.Vultr.Provisioners
         public void TestGetIso()
         {
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/iso/list", Resources.VultrISOList));
 
             var provisioner = new VultrServerProvisioner(requests.Client);

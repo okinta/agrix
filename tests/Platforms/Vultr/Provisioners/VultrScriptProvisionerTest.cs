@@ -1,7 +1,7 @@
 ﻿using agrix.Configuration;
 using agrix.Platforms.Vultr.Provisioners;
+using MockHttp.Net;
 using tests.Properties;
-using tests.TestHelpers;
 using Xunit;
 
 namespace tests.Platforms.Vultr.Provisioners
@@ -18,8 +18,8 @@ namespace tests.Platforms.Vultr.Provisioners
                 "myscript", ScriptType.Boot, "this is my script");
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler("/startupscript/list"),
-                new CustomMockHttpHandler(
+                new HttpHandler("/startupscript/list"),
+                new HttpHandler(
                     "/startupscript/create",
                     "name=myscript&script=this+is+my+script&type=boot",
                     "{\"SCRIPTID\": 5}")
@@ -39,7 +39,7 @@ namespace tests.Platforms.Vultr.Provisioners
                 "myscript", ScriptType.Boot, "this is my script");
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler("/startupscript/list")
+                new HttpHandler("/startupscript/list")
             );
             new VultrScriptProvisioner(requests.Client).Provision(script, true);
 
@@ -57,9 +57,9 @@ namespace tests.Platforms.Vultr.Provisioners
                 "hello-boot", ScriptType.Boot, "this is my script");
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/startupscript/list", Resources.VultrStartupScripts),
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/startupscript/update",
                     "SCRIPTID=3&script=this+is+my+script",
                     "")
@@ -80,7 +80,7 @@ namespace tests.Platforms.Vultr.Provisioners
                 "hello-boot", ScriptType.Boot, "this is my script");
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/startupscript/list", Resources.VultrStartupScripts)
             );
             new VultrScriptProvisioner(requests.Client).Provision(script, true);
@@ -98,11 +98,11 @@ namespace tests.Platforms.Vultr.Provisioners
                 "hello-boot", ScriptType.PXE, "this is my script");
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/startupscript/list", Resources.VultrStartupScripts),
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/startupscript/destroy", "SCRIPTID=3", ""),
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/startupscript/create",
                     "name=hello-boot&script=this+is+my+script&type=pxe",
                     "{\"SCRIPTID\": 5}")
@@ -123,7 +123,7 @@ namespace tests.Platforms.Vultr.Provisioners
                 "hello-boot", ScriptType.PXE, "this is my script");
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/startupscript/list", Resources.VultrStartupScripts)
             );
             new VultrScriptProvisioner(requests.Client).Provision(script, true);
@@ -142,7 +142,7 @@ namespace tests.Platforms.Vultr.Provisioners
                 "#!/bin/bash echo Hello World > /root/hello");
 
             using var requests = new MockVultrRequests(
-                new CustomMockHttpHandler(
+                new HttpHandler(
                     "/startupscript/list", Resources.VultrStartupScripts)
             );
             new VultrScriptProvisioner(requests.Client).Provision(script);
