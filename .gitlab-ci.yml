@@ -4,13 +4,11 @@ stages:
 run-tests:
   stage: test
   image: mcr.microsoft.com/dotnet/core/sdk:5.0-alpine
-  services:
-    - docker:dind
   variables:
     MOCK_HOST: docker
   script:
     - dotnet build tests/tests.csproj
-    - export MOCK_HOST="$(getent hosts host.docker.internal | cut -d' ' -f1)"
+    - export MOCK_HOST="$(ip -4 route show default | cut -d' ' -f3)"
     - echo "Using $MOCK_HOST"
     - dotnet test tests/tests.csproj
 
