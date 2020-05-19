@@ -22,16 +22,14 @@ jobs:
 
   test-build-test-image:
     runs-on: ubuntu-latest
-    container: okinta/podman
     steps:
       - uses: actions/checkout@v2
       - name: Build
-        run: podman --storage-driver vfs --cgroup-manager=cgroupfs build -t agrix-tests -f containers/tests/Containerfile .
+        run: docker build -t agrix-tests -f containers/tests/Containerfile .
 
   test-build-image:
     runs-on: ubuntu-latest
-    container: okinta/podman
     steps:
       - uses: actions/checkout@v2
       - name: Build
-        run: podman --storage-driver vfs --cgroup-manager=cgroupfs build -t okinta/agrix -f containers/agrix/Containerfile .
+        run: docker build -t okinta/agrix -f containers/agrix/Containerfile .
