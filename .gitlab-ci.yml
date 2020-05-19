@@ -1,6 +1,4 @@
-image: buildah/buildah
-variables:
-  STORAGE_DRIVER: vfs
+image: okinta/podman
 
 stages:
   - test
@@ -8,10 +6,10 @@ stages:
 run-tests:
   stage: test
   script:
-    - podman build -t agrix-tests -f containers/tests/Containerfile .
-    - podman run agrix-tests
+    - podman --storage-driver vfs --cgroup-manager=cgroupfs build -t agrix-tests -f containers/tests/Containerfile .
+    - podman --storage-driver vfs --cgroup-manager=cgroupfs run agrix-tests
 
 test-build-image:
   stage: test
   script:
-    - podman build -t okinta/agrix -f containers/agrix/Containerfile .
+    - podman --storage-driver vfs --cgroup-manager=cgroupfs build -t okinta/agrix -f containers/agrix/Containerfile .
