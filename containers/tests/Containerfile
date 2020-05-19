@@ -8,5 +8,4 @@ COPY tests/tests.csproj /app/tests/tests.csproj
 RUN dotnet restore /app/tests/tests.csproj
 
 COPY . /app
-RUN dotnet build -c Debug /app/agrix.csproj --no-restore
 RUN dotnet build -c Debug /app/tests/tests.csproj

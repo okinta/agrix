@@ -9,7 +9,6 @@ run-tests:
   variables:
     MOCK_HOST: docker
   script:
-    - dotnet build agrix.csproj
     - dotnet build tests/tests.csproj
     - dotnet test tests/tests.csproj
 
