@@ -4,6 +4,8 @@ stages:
 run-tests:
   stage: test
   image: mcr.microsoft.com/dotnet/core/sdk:5.0-alpine
+  services:
+    - docker:dind
   variables:
     MOCK_HOST: docker
   script:
