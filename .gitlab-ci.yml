@@ -1,4 +1,7 @@
-image: okinta/podman
+image: docker
+
+services:
+  - docker:dind
 
 stages:
   - test
@@ -6,10 +9,10 @@ stages:
 run-tests:
   stage: test
   script:
-    - podman --storage-driver vfs --cgroup-manager=cgroupfs build -t agrix-tests -f containers/tests/Containerfile .
-    - podman --storage-driver vfs --cgroup-manager=cgroupfs run agrix-tests
+    - docker build -t agrix-tests -f containers/tests/Containerfile .
+    - docker run agrix-tests
 
 test-build-image:
   stage: test
   script:
-    - podman --storage-driver vfs --cgroup-manager=cgroupfs build -t okinta/agrix -f containers/agrix/Containerfile .
+    - docker build -t okinta/agrix -f containers/agrix/Containerfile .
