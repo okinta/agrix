@@ -4,6 +4,8 @@ stages:
 run-tests:
   stage: test
   image: mcr.microsoft.com/dotnet/core/sdk:5.0-alpine
+  variables:
+    MOCK_HOST: docker
   script:
     - dotnet build agrix.csproj
     - dotnet build tests/tests.csproj

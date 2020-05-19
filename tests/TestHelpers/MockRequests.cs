@@ -43,7 +43,9 @@ namespace tests.TestHelpers
                 MockServer = new MockServer(port, handlers.GetMockHttpHandlers());
             }
 
-            Url = $"http://localhost:{port}/";
+            var host = Environment.GetEnvironmentVariable("MOCK_HOST")
+                       ?? "localhost";
+            Url = $"http://{host}:{port}/";
         }
 
         /// <summary>
