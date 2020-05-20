@@ -1,35 +1,22 @@
 name: Run tests
 
 on:
-  push:
-    branches:
-      - '*'
-
-  pull_request:
-    branches:
-      - master
+  - push
+  - pull_request
 
 jobs:
   run-tests:
     runs-on: ubuntu-latest
-    container: mcr.microsoft.com/dotnet/core/sdk:5.0-alpine
     steps:
       - uses: actions/checkout@v2
-      - name: Build
-        run: dotnet build tests/tests.csproj
-      - name: Test
-        run: dotnet test tests/tests.csproj
-
-  test-build-test-image:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build
-        run: docker build -t agrix-tests -f containers/tests/Containerfile .
+      - name: Build test image
+        run: buildah bud -t agrix-tests -f containers/tests/Containerfile .
+      - name: Run tests
+        run: podman run agrix-tests
 
   test-build-image:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Build
-        run: docker build -t okinta/agrix -f containers/agrix/Containerfile .
+      - name: Build agrix image
+        run: buildah bud -t okinta/agrix -f containers/agrix/Containerfile .
