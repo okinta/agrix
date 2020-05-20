@@ -12,24 +12,20 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
-    container: mcr.microsoft.com/dotnet/core/sdk:5.0-alpine
     steps:
+      - name: Install podman
+        run: . /etc/os-release && sudo sh -c "echo 'deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list" && curl -sL https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/Release.key | sudo apt-key add - && sudo apt-get update -qq && sudo apt-get -qq -y install podman
       - uses: actions/checkout@v2
-      - name: Build
-        run: dotnet build tests/tests.csproj
-      - name: Test
-        run: dotnet test tests/tests.csproj
-
-  test-build-test-image:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build
-        run: docker build -t agrix-tests -f containers/tests/Containerfile .
+      - name: Build test image
+        run: podman build -t agrix-tests -f containers/tests/Containerfile .
+      - name: Run tests
+        run: podman run agrix-tests
 
   test-build-image:
     runs-on: ubuntu-latest
     steps:
+      - name: Install podman
+        run: . /etc/os-release && sudo sh -c "echo 'deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list" && curl -sL https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/Release.key | sudo apt-key add - && sudo apt-get update -qq && sudo apt-get -qq -y install podman
       - uses: actions/checkout@v2
-      - name: Build
-        run: docker build -t okinta/agrix -f containers/agrix/Containerfile .
+      - name: Build agrix image
+        run: podman build -t okinta/agrix -f containers/agrix/Containerfile .
