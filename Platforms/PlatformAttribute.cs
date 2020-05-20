@@ -5,11 +5,9 @@ namespace agrix.Platforms
     /// <summary>
     /// Instantiates a new IPlatform instance.
     /// </summary>
-    /// <param name="apiKey">The API key to use to communicate with the platform.</param>
-    /// <param name="apiUrl">The API URL to use for communicating with the
-    /// platform.</param>
+    /// <param name="settings">The settings to use to configure the platform.</param>
     /// <returns>The instantiated IPlatform instance.</returns>
-    internal delegate IPlatform CreatePlatform(string apiKey, string apiUrl);
+    internal delegate IPlatform CreatePlatform(PlatformSettings settings);
 
     /// <summary>
     /// Attribute that is applied to a class to indicate that it is a platform that can

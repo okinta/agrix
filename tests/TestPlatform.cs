@@ -30,7 +30,7 @@ namespace tests
             LastInstance = this;
         }
 
-        public static IPlatform CreateTestPlatform(string apiKey, string apiUrl)
+        public static IPlatform CreateTestPlatform(PlatformSettings settings)
         {
             return new TestPlatform();
         }

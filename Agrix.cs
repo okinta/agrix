@@ -77,9 +77,10 @@ namespace agrix
             var root = Yaml.GetRootNode();
             var platformName = root.GetKey("platform", required: true);
             var availablePlatforms = GetAvailablePlatforms(Assembly);
+            var platformSettings = new PlatformSettings(ApiKey, ApiUrl);
 
             if (availablePlatforms.TryGetValue(platformName, out var platform))
-                return platform(ApiKey, ApiUrl);
+                return platform(platformSettings);
 
             var line = root.GetNode("platform").Start.Line;
             var availablePlatformsText = string.Join(

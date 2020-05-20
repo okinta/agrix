@@ -39,15 +39,13 @@ namespace agrix.Platforms.Vultr
         /// <summary>
         /// Instantiates an IPlatform instance to configure and provision Vultr services.
         /// </summary>
-        /// <param name="apiKey">The API key to use for communicating with Vultr.</param>
-        /// <param name="apiUrl">The API URL for Vultr. Set this to override the
-        /// Vultr API endpoint (e.g. for testing).</param>
+        /// <param name="settings">The settings to use to configure the platform.</param>
         /// <returns>The instantiated IPlatform instance.</returns>
-        /// <exception cref="ArgumentNullException">If <param name="apiKey"> is null or
-        /// empty.</param></exception>
-        public static IPlatform CreateVultrPlatform(string apiKey, string apiUrl)
+        /// <exception cref="ArgumentNullException">If <param name="settings">.ApiKey
+        /// is null or empty.</param></exception>
+        public static IPlatform CreateVultrPlatform(PlatformSettings settings)
         {
-            return new VultrPlatform(apiKey, apiUrl);
+            return new VultrPlatform(settings.ApiKey, settings.ApiUrl);
         }
 
         /// <summary>
