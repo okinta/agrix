@@ -13,8 +13,7 @@ jobs:
   run-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Install buildah & podman
-        run: . /etc/os-release && sudo sh -c "echo 'deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list" && curl -sL https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/Release.key | sudo apt-key add - && sudo apt-get update -qq && sudo apt-get -qq -y install buildah podman
+      - uses: okinta/podman-action@v1
       - uses: actions/checkout@v2
       - name: Build test image
         run: buildah bud -t agrix-tests -f containers/tests/Containerfile .
@@ -24,8 +23,7 @@ jobs:
   test-build-image:
     runs-on: ubuntu-latest
     steps:
-      - name: Install buildah
-        run: . /etc/os-release && sudo sh -c "echo 'deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list" && curl -sL https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/Release.key | sudo apt-key add - && sudo apt-get update -qq && sudo apt-get -qq -y install buildah
+      - uses: okinta/podman-action@v1
       - uses: actions/checkout@v2
       - name: Build agrix image
         run: buildah bud -t okinta/agrix -f containers/agrix/Containerfile .
