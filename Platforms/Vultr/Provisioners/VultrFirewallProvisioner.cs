@@ -1,5 +1,6 @@
 ﻿using agrix.Configuration;
 using agrix.Extensions;
+using FirewallRule = Vultr.API.Models.FirewallRule;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -56,8 +57,10 @@ namespace agrix.Platforms.Vultr.Provisioners
                     existingRules[firewallId] = firewallRule;
 
                 foreach (var rule in firewall.Rules)
-                    CreateRule(firewall.Name, existingFirewallGroupId, rule, dryrun);
-
+                {
+                    if (!DoesRuleExist(existingRules, rule))
+                        CreateRule(firewall.Name, existingFirewallGroupId, rule, dryrun);
+                }
             }
             else
             {
@@ -101,6 +104,17 @@ namespace agrix.Platforms.Vultr.Provisioners
                     subnet_size: rule.SubnetSize,
                     port: rule.Ports,
                     source: rule.Source);
+        }
+
+        private static bool DoesRuleExist(
+            Dictionary<string, FirewallRule> vultrRules,
+            Configuration.FirewallRule rule)
+        {
+            return vultrRules.Any(f =>
+                f.Value.port == rule.Ports
+                && f.Value.protocol == rule.Protocol.ToString().ToLower()
+                && f.Value.subnet == rule.Subnet
+                && f.Value.subnet_size == rule.SubnetSize);
         }
     }
 }

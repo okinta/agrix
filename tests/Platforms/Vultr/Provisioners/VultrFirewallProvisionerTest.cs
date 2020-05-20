@@ -60,5 +60,40 @@ namespace tests.Platforms.Vultr.Provisioners
             new VultrFirewallProvisioner(requests.Client).Provision(firewall);
             requests.AssertAllCalledOnce();
         }
+
+        [Fact]
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
+        public void DoNotAddExistingRuleToFirewall()
+        {
+            var firewall = new Firewall("my http firewall", new[]
+            {
+                new FirewallRule(
+                    IpType.V4, Protocol.TCP, "8080", "192.0.0.1", 20)
+            });
+
+            using var requests = new MockVultrRequests(
+                new HttpHandler(
+                    "/firewall/group_list", Resources.VultrFirewallGroupList),
+                new HttpHandler(
+                    "/firewall/rule_list?FIREWALLGROUPID=1234abcd&direction=in&ip_type=v4",
+                    @"
+                    {
+                        ""1"": {
+                            ""rulenumber"": 1,
+                            ""action"": ""accept"",
+                            ""protocol"": ""tcp"",
+                            ""port"": ""8080"",
+                            ""subnet"": ""192.0.0.1"",
+                            ""subnet_size"": 20,
+                            ""source"": """",
+                            ""notes"": """"
+                        }
+                    }"),
+                new HttpHandler(
+                    "/firewall/rule_list?FIREWALLGROUPID=1234abcd&direction=in&ip_type=v6",
+                    "{}"));
+            new VultrFirewallProvisioner(requests.Client).Provision(firewall);
+            requests.AssertAllCalledOnce();
+        }
     }
 }
