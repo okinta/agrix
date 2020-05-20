@@ -309,6 +309,25 @@ namespace tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {
+        ///    &quot;1234abcd&quot;: {
+        ///        &quot;FIREWALLGROUPID&quot;: &quot;1234abcd&quot;,
+        ///        &quot;description&quot;: &quot;my http firewall&quot;,
+        ///        &quot;date_created&quot;: &quot;2017-02-14 17:48:40&quot;,
+        ///        &quot;date_modified&quot;: &quot;2017-02-14 17:48:40&quot;,
+        ///        &quot;instance_count&quot;: 2,
+        ///        &quot;rule_count&quot;: 2,
+        ///        &quot;max_rule_count&quot;: 50
+        ///    }
+        ///}.
+        /// </summary>
+        internal static string VultrFirewallGroupList {
+            get {
+                return ResourceManager.GetString("VultrFirewallGroupList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {&quot;732320&quot;:{&quot;ISOID&quot;:732320,&quot;date_created&quot;:&quot;2020-04-21 22:49:24&quot;,&quot;filename&quot;:&quot;server2019.iso&quot;,&quot;size&quot;:5992767488,&quot;md5sum&quot;:&quot;59d7a18371f6fe6165767c487d92408a&quot;,&quot;sha512sum&quot;:&quot;c221879bedf3d768da6915f2ae5c7d050b0477c91ca81bed64992a196c6500b81f22136f5fac2f512c5b768ee0674ab1cbbf8618067349093d5ed4afbe1f0c1c&quot;,&quot;status&quot;:&quot;complete&quot;},&quot;743054&quot;:{&quot;ISOID&quot;:743054,&quot;date_created&quot;:&quot;2020-05-12 00:55:59&quot;,&quot;filename&quot;:&quot;installcoreos.iso&quot;,&quot;size&quot;:555927552,&quot;md5sum&quot;:&quot;0f9c994e039bc0a3250b43068716751e&quot;,&quot;sha512sum&quot;:&quot;37a97aeeaf71f899e2b99f3771b6 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string VultrISOList {

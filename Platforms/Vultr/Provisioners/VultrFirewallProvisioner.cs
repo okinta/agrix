@@ -39,10 +39,25 @@ namespace agrix.Platforms.Vultr.Provisioners
             if (existingFirewalls.FirewallGroups != null
                 && existingFirewalls.FirewallGroups.Exists(Predicate))
             {
-                var existingFirewall =
+                var (existingFirewallGroupId, _) =
                     existingFirewalls.FirewallGroups.Single(Predicate);
                 Console.WriteLine("Firewall {0} with ID {1} already exists",
-                    firewall.Name, existingFirewall.Key);
+                    firewall.Name, existingFirewallGroupId);
+
+                var existingRules =
+                    Client.Firewall.GetFirewallRules(
+                        existingFirewallGroupId, "in", "v4")
+                    .FirewallRules;
+
+                foreach (var (firewallId, firewallRule) in
+                    Client.Firewall.GetFirewallRules(
+                    existingFirewallGroupId, "in", "v6")
+                    .FirewallRules)
+                    existingRules[firewallId] = firewallRule;
+
+                foreach (var rule in firewall.Rules)
+                    CreateRule(firewall.Name, existingFirewallGroupId, rule, dryrun);
+
             }
             else
             {
@@ -56,31 +71,36 @@ namespace agrix.Platforms.Vultr.Provisioners
                 }
 
                 foreach (var rule in firewall.Rules)
-                {
-                    var ipType = rule.IpType.ToString().ToLower();
-                    var protocol = rule.Protocol.ToString().ToLower();
-
-                    Console.WriteLine("Creating firewall rule for {0}", firewall.Name);
-                    ConsoleX.WriteLine("ip_type", ipType);
-                    ConsoleX.WriteLine("protocol", protocol);
-                    ConsoleX.WriteLine("subnet", rule.Subnet);
-                    ConsoleX.WriteLine("subnet_size", rule.SubnetSize);
-                    ConsoleX.WriteLine("port", rule.Ports);
-                    ConsoleX.WriteLine("source", rule.Source);
-
-                    if (!dryrun)
-                    {
-                        Client.Firewall.CreateFirewallRule(
-                            firewallGroupId,
-                            ip_type: ipType,
-                            protocol: protocol,
-                            subnet: rule.Subnet,
-                            subnet_size: rule.SubnetSize,
-                            port: rule.Ports,
-                            source: rule.Source);
-                    }
-                }
+                    CreateRule(firewall.Name, firewallGroupId, rule, dryrun);
             }
+        }
+
+        private void CreateRule(
+            string firewallName,
+            string firewallGroupId,
+            Configuration.FirewallRule rule,
+            bool dryrun)
+        {
+            var ipType = rule.IpType.ToString().ToLower();
+            var protocol = rule.Protocol.ToString().ToLower();
+
+            Console.WriteLine("Creating firewall rule for {0}", firewallName);
+            ConsoleX.WriteLine("ip_type", ipType);
+            ConsoleX.WriteLine("protocol", protocol);
+            ConsoleX.WriteLine("subnet", rule.Subnet);
+            ConsoleX.WriteLine("subnet_size", rule.SubnetSize);
+            ConsoleX.WriteLine("port", rule.Ports);
+            ConsoleX.WriteLine("source", rule.Source);
+
+            if (!dryrun)
+                Client.Firewall.CreateFirewallRule(
+                    firewallGroupId,
+                    ip_type: ipType,
+                    protocol: protocol,
+                    subnet: rule.Subnet,
+                    subnet_size: rule.SubnetSize,
+                    port: rule.Ports,
+                    source: rule.Source);
         }
     }
 }
