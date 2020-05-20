@@ -15,9 +15,6 @@ namespace tests
 
         private AgrixSettings BasicSettings { get; } = new AgrixSettings("abc");
 
-        private AgrixSettings TestSettings { get; } =
-            new AgrixSettings("abc", assembly: TestAssembly);
-
         [Theory]
         [InlineData("")]
         [InlineData(null)]
@@ -34,15 +31,6 @@ namespace tests
                 () => new Agrix("config", null));
         }
 
-        [Theory]
-        [InlineData("")]
-        [InlineData(null)]
-        public void TestApiKeyCannotBeEmpty(string apiKey)
-        {
-            Assert.Throws<ArgumentNullException>(
-                () => new Agrix("config", new AgrixSettings(apiKey)));
-        }
-
         [Fact]
         public void TestLoadPlatform()
         {
@@ -55,7 +43,8 @@ namespace tests
         [Fact]
         public void TestLoadCustomPlatform()
         {
-            var agrix = new Agrix("platform: test", TestSettings);
+            var agrix = new Agrix("platform: test",
+                new AgrixSettings("abc", "http://example.org/", TestAssembly));
             Assert.Equal(typeof(TestPlatform), agrix.LoadPlatform().GetType());
         }
 
@@ -114,18 +103,15 @@ namespace tests
         [InlineData(false)]
         public void TestProcess(bool dryrun)
         {
+            var expected = "plan.cpu=2&plan.memory=4096&plan.type=SSD&" +
+                                 "os.name=Fedora%2032%20x64&os.app=Fedora%2032%20x64&" +
+                                 $"os.iso=&dryrun={dryrun}";
             using var requests = new MockVultrRequests(
-                new HttpHandler("/account/info"));
+                new HttpHandler("provision", expected, ""));
             var agrix = new Agrix(Resources.TestPlatformConfig,
                 new AgrixSettings("abc", requests.Url, TestAssembly));
             agrix.Process(dryrun);
-
-            var platform = TestPlatform.LastInstance;
-            Assert.Equal(1, platform.Provisions.Count);
-
-            var server = platform.Provisions[0].Item1;
-            Assert.Equal("Fedora 32 x64", server.Os.Name);
-            Assert.Equal(dryrun, platform.Provisions[0].Item2);
+            requests.AssertAllCalledOnce();
         }
     }
 }

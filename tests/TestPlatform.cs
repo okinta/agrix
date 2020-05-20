@@ -1,6 +1,6 @@
 ﻿using agrix.Configuration;
 using agrix.Platforms;
-using System.Collections.Generic;
+using RestSharp;
 using System;
 
 namespace tests
@@ -11,28 +11,24 @@ namespace tests
     [Platform("test", nameof(CreateTestPlatform))]
     internal class TestPlatform : Platform
     {
-        /// <summary>
-        /// Gets the last TestPlatform instance that was instantiated.
-        /// </summary>
-        public static TestPlatform LastInstance { get; private set; }
+        private string ApiUrl { get; }
 
-        /// <summary>
-        /// Gets the list of server provision calls.
-        /// </summary>
-        public IReadOnlyList<Tuple<Server, bool>> Provisions => _provisions;
-
-        private readonly List<Tuple<Server, bool>> _provisions =
-            new List<Tuple<Server, bool>>();
-
-        public TestPlatform()
+        public TestPlatform(string apiUrl)
         {
+            if (string.IsNullOrEmpty(apiUrl))
+                apiUrl = Environment.GetEnvironmentVariable("TEST_PLATFORM_API_URL");
+
+            if (string.IsNullOrEmpty(apiUrl))
+                throw new ArgumentNullException(
+                    nameof(apiUrl), @"must not be empty");
+
+            ApiUrl = apiUrl;
             AddProvisioner<Server>(ProvisionServer);
-            LastInstance = this;
         }
 
         public static IPlatform CreateTestPlatform(PlatformSettings settings)
         {
-            return new TestPlatform();
+            return new TestPlatform(settings.ApiUrl);
         }
 
         public override void TestConnection()
@@ -41,7 +37,16 @@ namespace tests
 
         private void ProvisionServer(Server server, bool dryrun = false)
         {
-            _provisions.Add(new Tuple<Server, bool>(server, dryrun));
+            var client = new RestClient(ApiUrl);
+            var request = new RestRequest("provision");
+            request.AddParameter("plan.cpu", server.Plan.Cpu);
+            request.AddParameter("plan.memory", server.Plan.Memory);
+            request.AddParameter("plan.type", server.Plan.Type);
+            request.AddParameter("os.name", server.Os.Name);
+            request.AddParameter("os.app", server.Os.Name);
+            request.AddParameter("os.iso", server.Os.Iso);
+            request.AddParameter("dryrun", dryrun);
+            client.Post(request);
         }
     }
 }

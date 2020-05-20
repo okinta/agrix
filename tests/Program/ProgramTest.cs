@@ -1,4 +1,5 @@
 ﻿using AProgram = agrix.Program.Program;
+using MockHttp.Net;
 using System.Reflection;
 using tests.Properties;
 using Xunit;
@@ -30,7 +31,7 @@ namespace tests.Program
         {
             var input = new LineInputter(Resources.TestPlatformConfig);
             Assert.Equal(0, AProgram.Main(_testAssembly, input.ReadLine,
-                "validate", "--apikey", "abc"));
+                "validate", "--apiurl", "http://example.org/"));
         }
 
         [Fact]
@@ -44,31 +45,31 @@ namespace tests.Program
         [Fact]
         public void TestProvision()
         {
+            const string expected = "plan.cpu=2&plan.memory=4096&plan.type=SSD&" +
+                                    "os.name=Fedora%2032%20x64&os.app=Fedora%2032%20x64&" +
+                                    "os.iso=&dryrun=False";
+            using var requests = new MockVultrRequests(
+                new HttpHandler(
+                    "provision", expected, ""));
             var input = new LineInputter(Resources.TestPlatformConfig);
             Assert.Equal(0, AProgram.Main(_testAssembly, input.ReadLine,
-                "provision", "--apikey", "abc"));
-
-            var platform = TestPlatform.LastInstance;
-            Assert.Equal(1, platform.Provisions.Count);
-
-            var server = platform.Provisions[0].Item1;
-            Assert.Equal("Fedora 32 x64", server.Os.Name);
-            Assert.False(platform.Provisions[0].Item2);
+                "provision", "--apiurl", requests.Url));
+            requests.AssertAllCalledOnce();
         }
 
         [Fact]
         public void TestProvisionDryrun()
         {
+            const string expected = "plan.cpu=2&plan.memory=4096&plan.type=SSD&" +
+                                    "os.name=Fedora%2032%20x64&os.app=Fedora%2032%20x64&" +
+                                    "os.iso=&dryrun=True";
+            using var requests = new MockVultrRequests(
+                new HttpHandler(
+                    "provision", expected, ""));
             var input = new LineInputter(Resources.TestPlatformConfig);
             Assert.Equal(0, AProgram.Main(_testAssembly, input.ReadLine,
-                "provision", "--apikey", "abc", "--dryrun"));
-
-            var platform = TestPlatform.LastInstance;
-            Assert.Equal(1, platform.Provisions.Count);
-
-            var server = platform.Provisions[0].Item1;
-            Assert.Equal("Fedora 32 x64", server.Os.Name);
-            Assert.True(platform.Provisions[0].Item2);
+                "provision", "--apiurl", requests.Url, "--dryrun"));
+            requests.AssertAllCalledOnce();
         }
 
         private static string ReadLine() { return null; }

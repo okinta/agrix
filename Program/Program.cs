@@ -150,16 +150,8 @@ namespace agrix.Program
                 options.ApiKey = Environment.GetEnvironmentVariable(
                     Constants.EnvPlatformApiKey);
 
-            if (!string.IsNullOrEmpty(options.ApiKey))
-                return new Agrix(input, new AgrixSettings(
-                    options.ApiKey, assembly: Assembly));
-
-            Console.Error.WriteLine(
-                "No platform API key provided. Either set {0} command line"
-                + " argument or the {1} environment variable",
-                Constants.ApiKeyArgument, Constants.EnvPlatformApiKey);
-            ExitCode = ExitCode.InvalidArguments;
-            return null;
+            return new Agrix(input, new AgrixSettings(
+                options.ApiKey, options.ApiUrl, Assembly));
         }
     }
 }

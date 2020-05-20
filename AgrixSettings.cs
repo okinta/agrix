@@ -33,14 +33,8 @@ namespace agrix
         /// with the platform.</param>
         /// <param name="assembly">The optional Assembly to search within for
         /// platforms. Defaults to this assembly.</param>
-        /// <exception cref="ArgumentNullException">If <param name="apiKey">is null or
-        /// empty.</param></exception>
         public AgrixSettings(string apiKey, string apiUrl = null, Assembly assembly = null)
         {
-            if (string.IsNullOrEmpty(apiKey))
-                throw new ArgumentNullException(
-                    nameof(apiKey), "API key must not be empty");
-
             ApiKey = apiKey;
             ApiUrl = apiUrl;
             Assembly = assembly ?? Assembly.GetAssembly(typeof(IPlatform));
