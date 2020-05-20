@@ -1,10 +1,10 @@
-﻿using System;
+﻿using agrix.Configuration;
+using agrix.Extensions;
 using System.Collections.Generic;
 using System.Linq;
-using agrix.Configuration;
-using agrix.Extensions;
-using Vultr.API;
+using System;
 using Vultr.API.Models;
+using Vultr.API;
 
 namespace agrix.Platforms.Vultr.Provisioners
 {
@@ -39,7 +39,8 @@ namespace agrix.Platforms.Vultr.Provisioners
             if (existingFirewalls.FirewallGroups != null
                 && existingFirewalls.FirewallGroups.Exists(Predicate))
             {
-                var existingFirewall = existingFirewalls.FirewallGroups.Single(Predicate);
+                var existingFirewall =
+                    existingFirewalls.FirewallGroups.Single(Predicate);
                 Console.WriteLine("Firewall {0} with ID {1} already exists",
                     firewall.Name, existingFirewall.Key);
             }
