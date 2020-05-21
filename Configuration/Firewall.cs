@@ -26,19 +26,18 @@ namespace agrix.Configuration
         /// <param name="rules">The list of firewall rules.</param>
         /// <exception cref="ArgumentNullException">If any of the arguments are null or
         /// empty.</exception>
-        public Firewall(string name, IEnumerable<FirewallRule> rules)
+        public Firewall(string name, params FirewallRule[] rules)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(
                     nameof(name), "Firewall name cannot be empty");
 
-            var firewallRules = rules as FirewallRule[] ?? rules.ToArray();
-            if (rules == null || !firewallRules.Any())
+            if (rules == null || !rules.Any())
                 throw new ArgumentNullException(
                     nameof(rules), "Firewall rules cannot be empty");
 
             Name = name;
-            Rules = new List<FirewallRule>(firewallRules);
+            Rules = new List<FirewallRule>(rules);
         }
     }
 }

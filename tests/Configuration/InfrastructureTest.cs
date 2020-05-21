@@ -52,10 +52,8 @@ namespace tests.Configuration
 
             infrastructure.AddItems(new List<Firewall>
             {
-                new Firewall("test", new List<FirewallRule>
-                {
-                    new FirewallRule(IpType.V4, Protocol.TCP, "80", "cloudflare")
-                })
+                new Firewall("test", new FirewallRule(
+                    IpType.V4, Protocol.TCP, "80", "cloudflare"))
             });
 
             return infrastructure;

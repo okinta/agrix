@@ -13,11 +13,8 @@ namespace tests.Platforms.Vultr.Provisioners
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         public void TestProvisionFirewall()
         {
-            var firewall = new Firewall("my-firewall", new[]
-            {
-                new FirewallRule(
-                    IpType.V4, Protocol.TCP, "8080", "192.0.0.1", 20)
-            });
+            var firewall = new Firewall("my-firewall", new FirewallRule(
+                IpType.V4, Protocol.TCP, "8080", "192.0.0.1", 20));
 
             using var requests = new MockVultrRequests(
                 new HttpHandler("/firewall/group_list", "{}"),

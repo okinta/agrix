@@ -32,7 +32,7 @@ namespace agrix.Configuration.Parsers
 
             var rules = firewallItem.GetSequence("rules")
                 .Select(childNode => ParseRule(childNode)).ToList();
-            return new Firewall(name, rules);
+            return new Firewall(name, rules.ToArray());
         }
     }
 }
