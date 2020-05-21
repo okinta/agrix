@@ -33,54 +33,72 @@ namespace agrix.Platforms.Vultr.Provisioners
             Console.WriteLine("Creating firewall");
             ConsoleX.WriteLine("name", firewall.Name);
 
-            var existingFirewalls = Client.Firewall.GetFirewallGroups();
+            var firewallGroupId = GetExistingFirewall(firewall.Name);
 
-            bool Predicate(KeyValuePair<string, FirewallGroup> existingFirewall) =>
-                existingFirewall.Value.description == firewall.Name;
-            if (existingFirewalls.FirewallGroups != null
-                && existingFirewalls.FirewallGroups.Exists(Predicate))
+            if (!string.IsNullOrEmpty(firewallGroupId))
             {
-                var (existingFirewallGroupId, _) =
-                    existingFirewalls.FirewallGroups.Single(Predicate);
                 Console.WriteLine("Firewall {0} with ID {1} already exists",
-                    firewall.Name, existingFirewallGroupId);
+                    firewall.Name, firewallGroupId);
 
                 var existingRules =
-                    Client.Firewall.GetFirewallRules(
-                        existingFirewallGroupId, "in", "v4")
-                    .FirewallRules;
-
-                foreach (var (firewallId, firewallRule) in
-                    Client.Firewall.GetFirewallRules(
-                    existingFirewallGroupId, "in", "v6")
-                    .FirewallRules)
-                    existingRules[firewallId] = firewallRule;
-
-                foreach (var rule in firewall.Rules)
-                {
-                    if (!DoesRuleExist(existingRules, rule))
-                        CreateRule(firewall.Name, existingFirewallGroupId, rule, dryrun);
-                }
-
-                foreach (var (_, firewallRule) in existingRules)
-                {
-                    if (!DoesRuleExist(firewall.Rules, firewallRule))
-                        DeleteRule(
-                            firewall.Name, existingFirewallGroupId, firewallRule, dryrun);
-                }
+                    GetExistingRules(firewallGroupId);
+                CreateRules(firewall, firewallGroupId, dryrun, existingRules);
+                DeleteOldRules(firewall, firewallGroupId, existingRules, dryrun);
             }
             else
+                CreateRules(firewall, CreateNewFirewallGroup(firewall, dryrun), dryrun);
+        }
+
+        private string GetExistingFirewall(string name)
+        {
+            var existingFirewalls = Client.Firewall.GetFirewallGroups();
+            bool Predicate(KeyValuePair<string, FirewallGroup> existingFirewall) =>
+                existingFirewall.Value.description == name;
+
+            if (existingFirewalls.FirewallGroups == null ||
+                !existingFirewalls.FirewallGroups.Exists(Predicate)) return "";
+
+            var (existingFirewallGroupId, _) =
+                existingFirewalls.FirewallGroups.Single(Predicate);
+            return existingFirewallGroupId;
+        }
+
+        private Dictionary<string, FirewallRule> GetExistingRules(
+            string firewallGroupId)
+        {
+            var existingRules =
+                Client.Firewall.GetFirewallRules(
+                        firewallGroupId, "in", "v4")
+                    .FirewallRules;
+
+            foreach (var (firewallId, firewallRule) in
+                Client.Firewall.GetFirewallRules(
+                        firewallGroupId, "in", "v6")
+                    .FirewallRules)
+                existingRules[firewallId] = firewallRule;
+
+            return existingRules;
+        }
+
+        private string CreateNewFirewallGroup(Firewall firewall, bool dryrun)
+        {
+            if (dryrun) return "";
+
+            var result = Client.Firewall.CreateFirewallGroup(firewall.Name);
+            var firewallGroupId = result.FirewallGroup.FIREWALLGROUPID;
+            Console.WriteLine("Created firewall with ID {0}", firewallGroupId);
+            return firewallGroupId;
+        }
+
+        private void CreateRules(
+            Firewall firewall,
+            string firewallGroupId,
+            bool dryrun,
+            Dictionary<string, FirewallRule> existingRules = null)
+        {
+            foreach (var rule in firewall.Rules)
             {
-                var firewallGroupId = "";
-
-                if (!dryrun)
-                {
-                    var result = Client.Firewall.CreateFirewallGroup(firewall.Name);
-                    firewallGroupId = result.FirewallGroup.FIREWALLGROUPID;
-                    Console.WriteLine("Created firewall with ID {0}", firewallGroupId);
-                }
-
-                foreach (var rule in firewall.Rules)
+                if (existingRules == null || !DoesRuleExist(existingRules, rule))
                     CreateRule(firewall.Name, firewallGroupId, rule, dryrun);
             }
         }
@@ -111,6 +129,19 @@ namespace agrix.Platforms.Vultr.Provisioners
                     subnet_size: rule.SubnetSize,
                     port: rule.Ports,
                     source: rule.Source);
+        }
+
+        private void DeleteOldRules(
+            Firewall firewall,
+            string firewallGroupId,
+            Dictionary<string, FirewallRule> existingRules,
+            bool dryrun)
+        {
+            foreach (var firewallRule in
+                existingRules.Where(r =>
+                    !DoesRuleExist(firewall.Rules, r.Value)))
+                DeleteRule(
+                    firewall.Name, firewallGroupId, firewallRule.Value, dryrun);
         }
 
         private void DeleteRule(
