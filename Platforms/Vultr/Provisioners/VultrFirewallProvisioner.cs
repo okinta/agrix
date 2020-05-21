@@ -61,6 +61,13 @@ namespace agrix.Platforms.Vultr.Provisioners
                     if (!DoesRuleExist(existingRules, rule))
                         CreateRule(firewall.Name, existingFirewallGroupId, rule, dryrun);
                 }
+
+                foreach (var (_, firewallRule) in existingRules)
+                {
+                    if (!DoesRuleExist(firewall.Rules, firewallRule))
+                        DeleteRule(
+                            firewall.Name, existingFirewallGroupId, firewallRule, dryrun);
+                }
             }
             else
             {
@@ -106,6 +113,24 @@ namespace agrix.Platforms.Vultr.Provisioners
                     source: rule.Source);
         }
 
+        private void DeleteRule(
+            string firewallName,
+            string firewallGroupId,
+            FirewallRule rule,
+            bool dryrun)
+        {
+            Console.WriteLine("Deleting existing firewall rule for {0}", firewallName);
+            ConsoleX.WriteLine("port", rule.port);
+            ConsoleX.WriteLine("port", rule.rulenumber);
+            ConsoleX.WriteLine("port", rule.subnet);
+            ConsoleX.WriteLine("port", rule.subnet_size);
+            ConsoleX.WriteLine("protocol", rule.protocol);
+
+            if (!dryrun)
+                Client.Firewall.DeleteFirewallRule(
+                    firewallGroupId, rule.rulenumber);
+        }
+
         private static bool DoesRuleExist(
             Dictionary<string, FirewallRule> vultrRules,
             Configuration.FirewallRule rule)
@@ -115,6 +140,17 @@ namespace agrix.Platforms.Vultr.Provisioners
                 && f.Value.protocol == rule.Protocol.ToString().ToLower()
                 && f.Value.subnet == rule.Subnet
                 && f.Value.subnet_size == rule.SubnetSize);
+        }
+
+        private static bool DoesRuleExist(
+            IEnumerable<Configuration.FirewallRule> firewallRules,
+            FirewallRule rule)
+        {
+            return firewallRules.Any(f =>
+                f.Ports == rule.port
+                && f.Protocol.ToString().ToLower() == rule.protocol
+                && f.Subnet == rule.subnet
+                && f.SubnetSize == rule.subnet_size);
         }
     }
 }
