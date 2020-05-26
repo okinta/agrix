@@ -2,6 +2,8 @@
 using agrix.Configuration;
 using agrix.Extensions;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Collections;
 using System;
 using YamlDotNet.RepresentationModel;
 
@@ -48,8 +50,7 @@ namespace agrix.Platforms
 
         private Dictionary<string, Action<Infrastructure, YamlNode>> KnownParserNodes
             { get; } = new Dictionary<string, Action<Infrastructure, YamlNode>>();
-        private Dictionary<Type, Action<object, bool>> KnownProvisioners { get; }
-            = new Dictionary<Type, Action<object, bool>>();
+        private OrderedDictionary KnownProvisioners { get; } = new OrderedDictionary();
 
         /// <summary>
         /// Instantiates a new instance.
@@ -93,15 +94,14 @@ namespace agrix.Platforms
         /// will be outputted describing what would be done.</param>
         public virtual void Provision(Infrastructure infrastructure, bool dryrun = false)
         {
-            foreach (var type in infrastructure.Types)
+            foreach (DictionaryEntry provisioners in KnownProvisioners)
             {
-                foreach (var item in infrastructure.GetItems(type))
-                {
-                    if (!KnownProvisioners.TryGetValue(type, out var action))
-                        throw new ArgumentException($"Unknown item type {type}");
+                var type = (Type) provisioners.Key;
+                var action = (Action<object, bool>) provisioners.Value;
+                if (action is null) continue;
 
+                foreach (var item in infrastructure.GetItems(type))
                     action(item, dryrun);
-                }
             }
         }
 
@@ -140,8 +140,9 @@ namespace agrix.Platforms
         /// <param name="provisioner">The provisioner to add.</param>
         protected void AddProvisioner<T>(Provisioner<T> provisioner)
         {
-            KnownProvisioners[typeof(T)] = (item, dryrun) =>
-                provisioner((T)item, dryrun);
+            KnownProvisioners[typeof(T)] =
+                (Action<object, bool>)((item, dryrun) =>
+                    provisioner((T)item, dryrun));
         }
     }
 }
