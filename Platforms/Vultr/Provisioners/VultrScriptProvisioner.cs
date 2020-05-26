@@ -94,6 +94,8 @@ namespace agrix.Platforms.Vultr.Provisioners
                 Console.WriteLine(
                     "Created script with ID {0}", result.StartupScript.SCRIPTID);
             }
+
+            Console.WriteLine("---");
         }
     }
 }

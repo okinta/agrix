@@ -35,7 +35,7 @@ namespace agrix.Platforms.Vultr.Provisioners
             var osId = os.OsId;
             var isoId = os.IsoId?.ToString();
             var scriptId = os.ScriptId;
-            var snapshotId = os.SnapshotId?.ToString();
+            var snapshotId = os.SnapshotId;
             var enablePrivateNetwork = server.PrivateNetworking;
             var label = server.Label;
             var appId = os.Appid;
@@ -53,7 +53,7 @@ namespace agrix.Platforms.Vultr.Provisioners
             ConsoleX.WriteLine("enable_private_network", enablePrivateNetwork);
             ConsoleX.WriteLine("label", label);
             ConsoleX.WriteLine("APPID", appId);
-            ConsoleX.WriteLine("userdata", userdata);
+            ConsoleX.WriteLine("userdata", server.UserData);
             ConsoleX.WriteLine("notify_activate", notifyActivate);
             ConsoleX.WriteLine("tag", tag);
 
@@ -100,23 +100,27 @@ namespace agrix.Platforms.Vultr.Provisioners
                 }
             }
 
-            if (dryrun) return;
-            var result = Client.Server.CreateServer(
-                dcId,
-                vpsPlanId,
-                osId,
-                ISOID: isoId,
-                SCRIPTID: scriptId,
-                SNAPSHOTID: snapshotId,
-                enable_private_network: enablePrivateNetwork,
-                label: label,
-                APPID: appId,
-                userdata: userdata,
-                notify_activate: notifyActivate,
-                tag: tag
-            );
+            if (!dryrun)
+            {
+                var result = Client.Server.CreateServer(
+                    dcId,
+                    vpsPlanId,
+                    osId,
+                    ISOID: isoId,
+                    SCRIPTID: scriptId,
+                    SNAPSHOTID: snapshotId,
+                    enable_private_network: enablePrivateNetwork,
+                    label: label,
+                    APPID: appId,
+                    userdata: userdata,
+                    notify_activate: notifyActivate,
+                    tag: tag
+                );
 
-            Console.WriteLine("Provisioned server with ID {0}", result.Server.SUBID);
+                Console.WriteLine("Provisioned server with ID {0}", result.Server.SUBID);
+            }
+
+            Console.WriteLine("---");
         }
 
         /// <summary>

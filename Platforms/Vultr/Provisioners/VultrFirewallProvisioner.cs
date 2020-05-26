@@ -47,6 +47,8 @@ namespace agrix.Platforms.Vultr.Provisioners
             }
             else
                 CreateRules(firewall, CreateNewFirewallGroup(firewall, dryrun), dryrun);
+
+            Console.WriteLine("---");
         }
 
         private string GetExistingFirewall(string name)
@@ -129,6 +131,8 @@ namespace agrix.Platforms.Vultr.Provisioners
                     subnet_size: rule.SubnetSize,
                     port: rule.Ports,
                     source: rule.Source);
+
+            Console.WriteLine("--");
         }
 
         private void DeleteOldRules(
@@ -161,6 +165,8 @@ namespace agrix.Platforms.Vultr.Provisioners
             if (!dryrun)
                 Client.Firewall.DeleteFirewallRule(
                     firewallGroupId, rule.rulenumber);
+
+            Console.WriteLine("--");
         }
 
         private static bool DoesRuleExist(
