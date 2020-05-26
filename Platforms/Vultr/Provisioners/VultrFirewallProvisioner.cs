@@ -114,11 +114,11 @@ namespace agrix.Platforms.Vultr.Provisioners
 
             Console.WriteLine("Creating firewall rule for {0}", firewallName);
             ConsoleX.WriteLine("ip_type", ipType);
+            ConsoleX.WriteLine("port", rule.Ports);
             ConsoleX.WriteLine("protocol", protocol);
+            ConsoleX.WriteLine("source", rule.Source);
             ConsoleX.WriteLine("subnet", rule.Subnet);
             ConsoleX.WriteLine("subnet_size", rule.SubnetSize);
-            ConsoleX.WriteLine("port", rule.Ports);
-            ConsoleX.WriteLine("source", rule.Source);
 
             if (!dryrun)
                 Client.Firewall.CreateFirewallRule(
@@ -156,6 +156,7 @@ namespace agrix.Platforms.Vultr.Provisioners
             ConsoleX.WriteLine("port", rule.subnet);
             ConsoleX.WriteLine("port", rule.subnet_size);
             ConsoleX.WriteLine("protocol", rule.protocol);
+            ConsoleX.WriteLine("source", rule.source);
 
             if (!dryrun)
                 Client.Firewall.DeleteFirewallRule(
@@ -170,7 +171,8 @@ namespace agrix.Platforms.Vultr.Provisioners
                 f.Value.port == rule.Ports
                 && f.Value.protocol == rule.Protocol.ToString().ToLower()
                 && f.Value.subnet == rule.Subnet
-                && f.Value.subnet_size == rule.SubnetSize);
+                && f.Value.subnet_size == rule.SubnetSize
+                && f.Value.source == rule.Source);
         }
 
         private static bool DoesRuleExist(
@@ -181,7 +183,8 @@ namespace agrix.Platforms.Vultr.Provisioners
                 f.Ports == rule.port
                 && f.Protocol.ToString().ToLower() == rule.protocol
                 && f.Subnet == rule.subnet
-                && f.SubnetSize == rule.subnet_size);
+                && f.SubnetSize == rule.subnet_size
+                && f.Source == rule.source);
         }
     }
 }

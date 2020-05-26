@@ -16,7 +16,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="MockHttp.Net" Version="1.0.5" />
+    <PackageReference Include="MockHttp.Net" Version="1.0.7" />
     <PackageReference Include="RestSharp" Version="106.11.4" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">

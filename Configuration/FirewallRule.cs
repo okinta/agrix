@@ -45,7 +45,7 @@ namespace agrix.Configuration
         /// <summary>
         /// Gets the size of the subnet this firewall rule applies to.
         /// </summary>
-        public int? SubnetSize { get; }
+        public int SubnetSize { get; }
 
         /// <summary>
         /// Gets the source that's allowed through this firewall rule.
@@ -83,8 +83,8 @@ namespace agrix.Configuration
             Ports = ports;
             Protocol = protocol;
             Source = source;
-            Subnet = "";
-            SubnetSize = null;
+            Subnet = "0.0.0.0";
+            SubnetSize = 0;
         }
 
         /// <summary>

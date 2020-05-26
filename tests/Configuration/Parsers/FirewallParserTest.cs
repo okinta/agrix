@@ -62,8 +62,7 @@ namespace tests.Configuration.Parsers
             Assert.Equal(IpType.V4, rule.IpType);
             Assert.Equal(Protocol.TCP, rule.Protocol);
             Assert.Equal("cloudflare", rule.Source);
-            Assert.Equal("", rule.Subnet);
-            Assert.Null(rule.SubnetSize);
+            Assert.Equal("0.0.0.0", rule.Subnet);
             Assert.Equal("80", rule.Ports);
         }
     }
