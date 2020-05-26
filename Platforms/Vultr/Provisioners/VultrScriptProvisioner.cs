@@ -67,32 +67,38 @@ namespace agrix.Platforms.Vultr.Provisioners
                     }
 
                     Console.WriteLine("Creating new script called {0}", script.Name);
-                    if (dryrun) return;
-                    var result = Client.StartupScript.CreateStartupScript(
-                        script.Name, script.Content, type);
-                    Console.WriteLine("Created script with ID {0}",
-                        result.StartupScript.SCRIPTID);
+                    if (!dryrun)
+                    {
+                        var result = Client.StartupScript.CreateStartupScript(
+                            script.Name, script.Content, type);
+                        Console.WriteLine("Created script with ID {0}",
+                            result.StartupScript.SCRIPTID);
+                    }
                 }
                 else if (existingScript.script != script.Content)
                 {
                     Console.WriteLine("Script {0} content is different", script.Name);
                     Console.WriteLine("Updating script {0} content", script.Name);
 
-                    if (dryrun) return;
-                    Client.StartupScript.UpdateStartupScript(
-                        id, script: script.Content);
-                    Console.WriteLine("Updated script {0} content", script.Name);
+                    if (!dryrun)
+                    {
+                        Client.StartupScript.UpdateStartupScript(
+                            id, script: script.Content);
+                        Console.WriteLine("Updated script {0} content", script.Name);
+                    }
                 }
                 else
                     Console.WriteLine("Script {0} is the same. Moving on.", script.Name);
             }
             else
             {
-                if (dryrun) return;
-                var result = Client.StartupScript.CreateStartupScript(
-                    script.Name, script.Content, type);
-                Console.WriteLine(
-                    "Created script with ID {0}", result.StartupScript.SCRIPTID);
+                if (!dryrun)
+                {
+                    var result = Client.StartupScript.CreateStartupScript(
+                        script.Name, script.Content, type);
+                    Console.WriteLine(
+                        "Created script with ID {0}", result.StartupScript.SCRIPTID);
+                }
             }
 
             Console.WriteLine("---");
