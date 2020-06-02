@@ -80,6 +80,11 @@ namespace agrix.Program
                 Console.Error.WriteLine(e.Message);
                 ExitCode = ExitCode.Exception;
             }
+            catch (ArgumentException e)
+            {
+                Console.Error.WriteLine(e.Message);
+                ExitCode = ExitCode.Exception;
+            }
         }
 
         private void Validate(ValidateOptions options)

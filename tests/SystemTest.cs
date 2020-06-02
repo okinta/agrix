@@ -96,5 +96,26 @@ namespace tests
                 "--apiurl", requests.Url).Should().Be(0);
             requests.AssertAllCalledOnce();
         }
+
+        [Fact]
+        public void TestBuildIsoDryrunNoBuildScript()
+        {
+            var input = new LineInputter(Resources.BuildIsoConfig);
+            using var requests = new MockVultrRequests(
+                new HttpHandler(
+                    "account/info", Resources.VultrAccountInfo),
+                new HttpHandler(
+                    "startupscript/list",
+                    new[]
+                    {
+                        "{}", "{}"
+                    }));
+
+            AProgram.Main(null, input.ReadLine,
+                "provision", "--dryrun",
+                "--apikey", ApiKey,
+                "--apiurl", requests.Url).Should().Be(3);
+            requests.AssertAllCalledOnce();
+        }
     }
 }
