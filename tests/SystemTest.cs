@@ -1,4 +1,5 @@
 ﻿using AProgram = agrix.Program.Program;
+using FluentAssertions;
 using MockHttp.Net;
 using tests.Properties;
 using Xunit;
@@ -60,11 +61,39 @@ namespace tests
                     "server/create",
                     ExpectedBuildIsoServer,
                     BuildServerResponse));
-            Assert.Equal(0, AProgram.Main(null, input.ReadLine,
+
+            AProgram.Main(null, input.ReadLine,
                 "provision",
                 "--apikey", ApiKey,
-                "--apiurl", requests.Url));
+                "--apiurl", requests.Url).Should().Be(0);
+            requests.AssertAllCalledOnce();
+        }
 
+        [Fact]
+        public void TestBuildIsoDryrun()
+        {
+            var input = new LineInputter(Resources.BuildIsoConfig);
+            using var requests = new MockVultrRequests(
+                new HttpHandler(
+                    "account/info", Resources.VultrAccountInfo),
+                new HttpHandler(
+                    "startupscript/list",
+                    new[]
+                    {
+                        StartupScriptListWithBuildIso, StartupScriptListWithBuildIso
+                    }),
+                new HttpHandler("os/list", Resources.VultrOSList),
+                new HttpHandler(
+                    "regions/list?availability=yes",
+                    Resources.VultrRegionsList),
+                new HttpHandler(
+                    "plans/list?type=all", Resources.VultrPlansList),
+                new HttpHandler("server/list", "{}"));
+
+            AProgram.Main(null, input.ReadLine,
+                "provision", "--dryrun",
+                "--apikey", ApiKey,
+                "--apiurl", requests.Url).Should().Be(0);
             requests.AssertAllCalledOnce();
         }
     }
