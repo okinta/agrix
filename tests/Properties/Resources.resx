@@ -121,6 +121,49 @@
   <data name="agrix" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\data\agrix.yaml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="BuildIsoConfig" xml:space="preserve">
+    <value># Defines how to build the installcoreos.iso ISO used to configure
+# Fedora CoreOS
+
+platform: vultr
+
+scripts:
+
+  # Script that loads on first boot to build the ISO
+  - name: create-live-iso
+    type: boot
+    content: |
+      #!/usr/bin/env bash
+      bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/create-live-iso.script.bash)"
+
+servers:
+
+  # The server that builds the ISO. This server deletes itself after the ISO
+  # build process is complete.
+  - label: isobuilder
+    firewall: public
+    region: New Jersey
+    startup-script: create-live-iso
+    os:
+      name: Ubuntu 18.04 x64
+
+    plan:
+      cpu: 1
+      memory: 1024
+      type: SSD
+
+    # Pass sensitive information required to build the ISO via userdata
+    userdata:
+      CLOUDFLARE_EMAIL: $CLOUDFLARE_EMAIL
+      CLOUDFLARE_RECORDNAME: $CLOUDFLARE_RECORDNAME
+      CLOUDFLARE_ZONENAME: $CLOUDFLARE_ZONENAME
+      CONTAINER_REGISTRY_LOGIN: $CONTAINER_REGISTRY_LOGIN
+      CONTAINER_REGISTRY_NAME: $CONTAINER_REGISTRY_NAME
+      CONTAINER_REGISTRY_PASSWORD: $CONTAINER_REGISTRY_PASSWORD
+      LOGDNA_INGESTION_KEY: $LOGDNA_INGESTION_KEY
+      VULTR_API_KEY: $VULTR_API_KEY</value>
+    <comment>Example configuration for building a CoreOS ISO</comment>
+  </data>
   <data name="FirewallRulesConfig" xml:space="preserve">
     <value>rules:
   - protocol: tcp

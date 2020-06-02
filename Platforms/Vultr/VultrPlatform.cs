@@ -26,7 +26,7 @@ namespace agrix.Platforms.Vultr
         {
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentNullException(
-                    nameof(apiKey), "apiKey cannot be provided");
+                    nameof(apiKey), "apiKey must be provided");
 
             Client = string.IsNullOrEmpty(apiUrl) ?
                 new VultrClient(apiKey) : new VultrClient(apiKey, apiUrl);

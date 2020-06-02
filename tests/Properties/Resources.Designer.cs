@@ -71,6 +71,33 @@ namespace tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to # Defines how to build the installcoreos.iso ISO used to configure
+        ///# Fedora CoreOS
+        ///
+        ///platform: vultr
+        ///
+        ///scripts:
+        ///
+        ///  # Script that loads on first boot to build the ISO
+        ///  - name: create-live-iso
+        ///    type: boot
+        ///    content: |
+        ///      #!/usr/bin/env bash
+        ///      bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/create-live-iso.script.bash)&quot;
+        ///
+        ///servers:
+        ///
+        ///  # The server that builds the ISO. This server deletes itself after the ISO
+        ///  # build process is complete.
+        ///   [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string BuildIsoConfig {
+            get {
+                return ResourceManager.GetString("BuildIsoConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to rules:
         ///  - protocol: tcp
         ///    source: 0.0.0.0/0

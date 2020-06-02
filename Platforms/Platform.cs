@@ -4,6 +4,7 @@ using agrix.Extensions;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Collections;
+using System.Linq;
 using System;
 using YamlDotNet.RepresentationModel;
 
@@ -99,6 +100,7 @@ namespace agrix.Platforms
                 var type = (Type) provisioners.Key;
                 var action = (Action<object, bool>) provisioners.Value;
                 if (action is null) continue;
+                if (!infrastructure.Types.Contains(type)) continue;
 
                 foreach (var item in infrastructure.GetItems(type))
                     action(item, dryrun);
