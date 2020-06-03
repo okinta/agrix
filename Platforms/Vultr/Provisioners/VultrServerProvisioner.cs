@@ -30,32 +30,34 @@ namespace agrix.Platforms.Vultr.Provisioners
         public void Provision(Server server, bool dryrun = false)
         {
             var os = GetOs(server);
+            const bool notifyActivate = false;
+            var appId = os.Appid;
             var dcId = GetRegionId(server.Region);
-            var vpsPlanId = GetPlanId(server.Plan);
-            var osId = os.OsId;
+            var enablePrivateNetwork = server.PrivateNetworking;
+            var firewallId = GetFirewallId(server.Firewall);
             var isoId = os.IsoId?.ToString();
+            var label = server.Label;
+            var osId = os.OsId;
             var scriptId = os.ScriptId;
             var snapshotId = os.SnapshotId;
-            var enablePrivateNetwork = server.PrivateNetworking;
-            var label = server.Label;
-            var appId = os.Appid;
-            var userdata = server.UserData.Base64Encode();
-            const bool notifyActivate = false;
             var tag = server.Tag;
+            var userdata = server.UserData.Base64Encode();
+            var vpsPlanId = GetPlanId(server.Plan);
 
             Console.WriteLine("Provisioning server");
+            ConsoleX.WriteLine("APPID", appId);
             ConsoleX.WriteLine("DCID", dcId);
-            ConsoleX.WriteLine("VPSPLANID", vpsPlanId);
-            ConsoleX.WriteLine("OSID", osId);
+            ConsoleX.WriteLine("enable_private_network", enablePrivateNetwork);
+            ConsoleX.WriteLine("FIREWALLGROUPID", firewallId);
             ConsoleX.WriteLine("ISOID", isoId);
+            ConsoleX.WriteLine("label", label);
+            ConsoleX.WriteLine("notify_activate", notifyActivate);
+            ConsoleX.WriteLine("OSID", osId);
             ConsoleX.WriteLine("SCRIPTID", scriptId);
             ConsoleX.WriteLine("SNAPSHOTID", snapshotId);
-            ConsoleX.WriteLine("enable_private_network", enablePrivateNetwork);
-            ConsoleX.WriteLine("label", label);
-            ConsoleX.WriteLine("APPID", appId);
-            ConsoleX.WriteLine("userdata", server.UserData);
-            ConsoleX.WriteLine("notify_activate", notifyActivate);
             ConsoleX.WriteLine("tag", tag);
+            ConsoleX.WriteLine("userdata", server.UserData);
+            ConsoleX.WriteLine("VPSPLANID", vpsPlanId);
 
             var existingServers = Client.Server.GetServers();
             bool Predicate(KeyValuePair<
@@ -75,9 +77,10 @@ namespace agrix.Platforms.Vultr.Provisioners
                     OSID = osId.ToString(),
                     tag = tag,
                     label = label,
-                    VPSPLANID = vpsPlanId.ToString(),
                     APPID = appId?.ToString(),
-                    DCID = dcId.ToString()
+                    DCID = dcId.ToString(),
+                    FIREWALLGROUPID = firewallId,
+                    VPSPLANID = vpsPlanId.ToString()
                 };
 
                 // TODO: Check if userdata has changed
@@ -121,6 +124,33 @@ namespace agrix.Platforms.Vultr.Provisioners
             }
 
             Console.WriteLine("---");
+        }
+
+        /// <summary>
+        /// Gets the ID of the given firewall.
+        /// </summary>
+        /// <param name="firewall">The name of the firewall to retrieve the ID for.</param>
+        /// <returns>The ID of the given firewall.</returns>
+        /// <exception cref="ArgumentException">If the given firewall cannot be
+        /// found.</exception>
+        private string GetFirewallId(string firewall)
+        {
+            if (string.IsNullOrEmpty(firewall)) return "";
+
+            var groups = Client.Firewall.GetFirewallGroups();
+
+            try
+            {
+                return groups.FirewallGroups.Single(
+                    g =>
+                        g.Value.description == firewall).Value.FIREWALLGROUPID;
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new ArgumentException(
+                    $"Cannot find firewall group called {firewall}",
+                    nameof(firewall), e);
+            }
         }
 
         /// <summary>

@@ -337,6 +337,19 @@ servers:
 }</value>
     <comment>Example output from https://www.vultr.com/api/#firewall_group_list</comment>
   </data>
+  <data name="VultrFirewallGroupsPublic" xml:space="preserve">
+    <value>{
+    "1234abcd": {
+        "FIREWALLGROUPID": "1234abcd",
+        "description": "public",
+        "date_created": "2017-02-14 17:48:40",
+        "date_modified": "2017-02-14 17:48:40",
+        "instance_count": 2,
+        "rule_count": 2,
+        "max_rule_count": 50
+    }
+}</value>
+  </data>
   <data name="VultrISOList" xml:space="preserve">
     <value>{"732320":{"ISOID":732320,"date_created":"2020-04-21 22:49:24","filename":"server2019.iso","size":5992767488,"md5sum":"59d7a18371f6fe6165767c487d92408a","sha512sum":"c221879bedf3d768da6915f2ae5c7d050b0477c91ca81bed64992a196c6500b81f22136f5fac2f512c5b768ee0674ab1cbbf8618067349093d5ed4afbe1f0c1c","status":"complete"},"743054":{"ISOID":743054,"date_created":"2020-05-12 00:55:59","filename":"installcoreos.iso","size":555927552,"md5sum":"0f9c994e039bc0a3250b43068716751e","sha512sum":"37a97aeeaf71f899e2b99f3771b655a3af93884eeaf7f3f8042891f78fe8e586c18334c86977119c79dfa59c83da6baa3cee94453ab205b536a244a2b97f31b6","status":"complete"}}</value>
     <comment>Example output for list of ISOs</comment>
