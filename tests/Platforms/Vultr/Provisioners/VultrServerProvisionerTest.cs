@@ -31,7 +31,7 @@ namespace tests.Platforms.Vultr.Provisioners
                     Resources.VultrPlansList),
                 new HttpHandler("/server/list"),
                 new HttpHandler("/server/create",
-                    "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&userdata=dGVzdA%3D%3D&notify_activate=no",
+                    "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&userdata=dGVzdA%3D%3D&notify_activate=no&FIREWALLGROUPID=0",
                     "{\"SUBID\": \"1312965\"}")
             );
             new VultrServerProvisioner(requests.Client).Provision(server);
@@ -85,7 +85,7 @@ namespace tests.Platforms.Vultr.Provisioners
                 new HttpHandler(
                     "/server/destroy", "SUBID=576965", ""),
                 new HttpHandler("/server/create",
-                    "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&label=my+new+server&notify_activate=no",
+                    "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&label=my+new+server&notify_activate=no&FIREWALLGROUPID=0",
                     "{\"SUBID\": \"1312965\"}")
             );
             new VultrServerProvisioner(requests.Client).Provision(server);

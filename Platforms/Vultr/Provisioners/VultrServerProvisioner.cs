@@ -72,7 +72,7 @@ namespace agrix.Platforms.Vultr.Provisioners
                 Console.WriteLine("Server with label {0} in DCID {1} already exists",
                     label, dcId);
 
-                var vultrServer = new global::Vultr.API.Models.Server()
+                var vultrServer = new global::Vultr.API.Models.Server
                 {
                     OSID = osId.ToString(),
                     tag = tag,
@@ -109,15 +109,16 @@ namespace agrix.Platforms.Vultr.Provisioners
                     dcId,
                     vpsPlanId,
                     osId,
+                    APPID: appId,
+                    enable_private_network: enablePrivateNetwork,
+                    FIREWALLGROUPID: firewallId,
                     ISOID: isoId,
+                    label: label,
+                    notify_activate: notifyActivate,
                     SCRIPTID: scriptId,
                     SNAPSHOTID: snapshotId,
-                    enable_private_network: enablePrivateNetwork,
-                    label: label,
-                    APPID: appId,
-                    userdata: userdata,
-                    notify_activate: notifyActivate,
-                    tag: tag
+                    tag: tag,
+                    userdata: userdata
                 );
 
                 Console.WriteLine("Provisioned server with ID {0}", result.Server.SUBID);
@@ -135,7 +136,7 @@ namespace agrix.Platforms.Vultr.Provisioners
         /// found.</exception>
         private string GetFirewallId(string firewall)
         {
-            if (string.IsNullOrEmpty(firewall)) return "";
+            if (string.IsNullOrEmpty(firewall)) return "0";
 
             var groups = Client.Firewall.GetFirewallGroups();
 
