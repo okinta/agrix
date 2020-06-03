@@ -29,6 +29,7 @@ namespace tests.Platforms.Vultr.Provisioners
                     Resources.VultrRegionsList),
                 new HttpHandler("/plans/list?type=all",
                     Resources.VultrPlansList),
+                new HttpHandler("/sshkey/list", "{}"),
                 new HttpHandler("/server/list"),
                 new HttpHandler("/server/create",
                     "DCID=1&VPSPLANID=201&OSID=389&enable_private_network=no&userdata=dGVzdA%3D%3D&notify_activate=no&FIREWALLGROUPID=0",
@@ -56,6 +57,7 @@ namespace tests.Platforms.Vultr.Provisioners
                     Resources.VultrRegionsList),
                 new HttpHandler("/plans/list?type=all",
                     Resources.VultrPlansList),
+                new HttpHandler("/sshkey/list", "{}"),
                 new HttpHandler("/server/list")
             );
             new VultrServerProvisioner(requests.Client).Provision(server, true);
@@ -80,6 +82,7 @@ namespace tests.Platforms.Vultr.Provisioners
                     Resources.VultrRegionsList),
                 new HttpHandler("/plans/list?type=all",
                     Resources.VultrPlansList),
+                new HttpHandler("/sshkey/list", "{}"),
                 new HttpHandler(
                     "/server/list", Resources.VultrServerList),
                 new HttpHandler(
@@ -111,6 +114,7 @@ namespace tests.Platforms.Vultr.Provisioners
                     Resources.VultrRegionsList),
                 new HttpHandler("/plans/list?type=all",
                     Resources.VultrPlansList),
+                new HttpHandler("/sshkey/list", "{}"),
                 new HttpHandler(
                     "/server/list", Resources.VultrServerList)
             );
@@ -138,6 +142,7 @@ namespace tests.Platforms.Vultr.Provisioners
                     Resources.VultrRegionsList),
                 new HttpHandler("/plans/list?type=all",
                     Resources.VultrPlansList),
+                new HttpHandler("/sshkey/list", "{}"),
                 new HttpHandler(
                     "/server/list", Resources.VultrServerList)
             );

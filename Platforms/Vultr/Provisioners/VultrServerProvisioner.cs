@@ -40,6 +40,7 @@ namespace agrix.Platforms.Vultr.Provisioners
             var osId = os.OsId;
             var scriptId = os.ScriptId;
             var snapshotId = os.SnapshotId;
+            var sshKeys = GetSshKeys(server.SshKeys);
             var tag = server.Tag;
             var userdata = server.UserData.Base64Encode();
             var vpsPlanId = GetPlanId(server.Plan);
@@ -55,6 +56,7 @@ namespace agrix.Platforms.Vultr.Provisioners
             ConsoleX.WriteLine("OSID", osId);
             ConsoleX.WriteLine("SCRIPTID", scriptId);
             ConsoleX.WriteLine("SNAPSHOTID", snapshotId);
+            ConsoleX.WriteLine("SSHKEYID", sshKeys);
             ConsoleX.WriteLine("tag", tag);
             ConsoleX.WriteLine("userdata", server.UserData);
             ConsoleX.WriteLine("VPSPLANID", vpsPlanId);
@@ -117,6 +119,7 @@ namespace agrix.Platforms.Vultr.Provisioners
                     notify_activate: notifyActivate,
                     SCRIPTID: scriptId,
                     SNAPSHOTID: snapshotId,
+                    SSHKEYID: sshKeys,
                     tag: tag,
                     userdata: userdata
                 );
@@ -249,6 +252,37 @@ namespace agrix.Platforms.Vultr.Provisioners
             return !string.IsNullOrEmpty(server.StartupScript) ?
                 VultrOperatingSystem.CreateScript(server.Os.Name, server.StartupScript, Client)
                 : VultrOperatingSystem.CreateOs(server.Os.Name, Client);
+        }
+
+        /// <summary>
+        /// Gets the SSH key IDs for the given SSH key names.
+        /// </summary>
+        /// <param name="serverSshKeys">The collection of SSH key names to retrieve IDs
+        /// for.</param>
+        /// <returns>The comma-separated list of SSH key IDs.</returns>
+        private string GetSshKeys(IEnumerable<string> serverSshKeys)
+        {
+            if (serverSshKeys is null) return "";
+
+            var keys = new List<string>();
+            var availableKeys = Client.SSHKey.GetSSHKeys().SSHKeys;
+            foreach (var sshKey in serverSshKeys)
+            {
+                try
+                {
+                    keys.Add(availableKeys.Single(
+                            k
+                                => k.Value.name == sshKey)
+                        .Value.SSHKEYID);
+                }
+                catch (InvalidOperationException e)
+                {
+                    throw new ArgumentException(
+                        $"Cannot find SSH key named {sshKey}", nameof(sshKey), e);
+                }
+            }
+
+            return string.Join(',', keys);
         }
     }
 }

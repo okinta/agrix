@@ -58,6 +58,7 @@ namespace tests
                     "plans/list?type=all", Resources.VultrPlansList),
                 new HttpHandler(
                     "firewall/group_list", Resources.VultrFirewallGroupsPublic),
+                new HttpHandler("sshkey/list", "{}"),
                 new HttpHandler("server/list", "{}"),
                 new HttpHandler(
                     "server/create",
@@ -92,6 +93,7 @@ namespace tests
                     "plans/list?type=all", Resources.VultrPlansList),
                 new HttpHandler(
                     "firewall/group_list", Resources.VultrFirewallGroupsPublic),
+                new HttpHandler("sshkey/list", "{}"),
                 new HttpHandler("server/list", "{}"));
 
             AProgram.Main(null, input.ReadLine,
