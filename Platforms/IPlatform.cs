@@ -18,11 +18,22 @@ namespace agrix.Platforms
         /// <summary>
         /// Provisions infrastructure referencing the given configuration.
         /// </summary>
-        /// <param name="server">The Infrastructure configuration to provision.</param>
+        /// <param name="infrastructure">The Infrastructure configuration to
+        /// provision.</param>
         /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
         /// provision commands will not be sent to the platform and instead messaging
         /// will be outputted describing what would be done.</param>
-        public void Provision(Infrastructure server, bool dryrun = false);
+        public void Provision(Infrastructure infrastructure, bool dryrun = false);
+
+        /// <summary>
+        /// Destroys infrastructure referencing the given configuration.
+        /// </summary>
+        /// <param name="infrastructure">The Infrastructure configuration to
+        /// provision.</param>
+        /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
+        /// provision commands will not be sent to the platform and instead messaging
+        /// will be outputted describing what would be done.</param>
+        public void Destroy(Infrastructure infrastructure, bool dryrun = false);
 
         /// <summary>
         /// Tests the connection. Throws an exception if the connection is invalid.

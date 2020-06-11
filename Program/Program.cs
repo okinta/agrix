@@ -64,6 +64,7 @@ namespace agrix.Program
                 ValidateOptions
             >(args)
                 .WithParsed<ProvisionOptions>(program.Provision)
+                .WithParsed<DestroyOptions>(program.Destroy)
                 .WithParsed<ValidateOptions>(program.Validate)
                 .WithNotParsed(program.HandleParseError);
             return (int)program.ExitCode;
@@ -74,6 +75,24 @@ namespace agrix.Program
             try
             {
                 LoadAgrix(options)?.Process(options.Dryrun);
+            }
+            catch (WebException e)
+            {
+                Console.Error.WriteLine(e.Message);
+                ExitCode = ExitCode.Exception;
+            }
+            catch (ArgumentException e)
+            {
+                Console.Error.WriteLine(e.Message);
+                ExitCode = ExitCode.Exception;
+            }
+        }
+
+        private void Destroy(DestroyOptions options)
+        {
+            try
+            {
+                LoadAgrix(options)?.Destroy(options.Dryrun);
             }
             catch (WebException e)
             {

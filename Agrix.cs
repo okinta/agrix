@@ -1,4 +1,5 @@
-﻿using agrix.Exceptions;
+﻿using agrix.Configuration;
+using agrix.Exceptions;
 using agrix.Extensions;
 using agrix.Platforms;
 using System.Collections.Generic;
@@ -40,6 +41,16 @@ namespace agrix
         private string ApiKey { get; }
         private string ApiUrl { get; }
         private Assembly Assembly { get; }
+
+        /// <summary>
+        /// Provisions/destroys infrastructure.
+        /// </summary>
+        /// <param name="platform">The loaded IPlatform instance.</param>
+        /// <param name="infrastructure">The infrastructure configuration to
+        /// provision/destroy.</param>
+        /// <param name="dryrun">Whether or not this is a dryrun.</param>
+        private delegate void Provision(
+            IPlatform platform, Infrastructure infrastructure, bool dryrun);
 
         /// <summary>
         /// Instantiates a new instance.
@@ -140,11 +151,20 @@ namespace agrix
         /// will be outputted describing what would be done.</param>
         public void Process(bool dryrun)
         {
-            Validate();
+            Process(
+                (p, i, d) => p.Provision(i, d), dryrun);
+        }
 
-            var platform = LoadPlatform();
-            var infrastructure = platform.Load(Yaml.GetRootNode());
-            platform.Provision(infrastructure, dryrun);
+        /// <summary>
+        /// Destroys infrastructure defined in the configuration.
+        /// </summary>
+        /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
+        /// provision commands will not be sent to the platform and instead messaging
+        /// will be outputted describing what would be done.</param>
+        public void Destroy(bool dryrun)
+        {
+            Process(
+                (p, i, d) => p.Destroy(i, d), dryrun);
         }
 
         /// <summary>
@@ -189,6 +209,21 @@ namespace agrix
             }
 
             return platforms;
+        }
+
+        /// <summary>
+        /// Provisions/destroys infrastructure.
+        /// </summary>
+        /// <param name="provision">The delegate to call after the infrastructure
+        /// configuration has been loaded.</param>
+        /// <param name="dryrun">Whether or not this is a dryrun.</param>
+        private void Process(Provision provision, bool dryrun)
+        {
+            Validate();
+
+            var platform = LoadPlatform();
+            var infrastructure = platform.Load(Yaml.GetRootNode());
+            provision(platform, infrastructure, dryrun);
         }
     }
 }

@@ -33,6 +33,7 @@ namespace agrix.Platforms
 
         private Dictionary<string, Action<Infrastructure, YamlNode>> KnownParserNodes
             { get; } = new Dictionary<string, Action<Infrastructure, YamlNode>>();
+        private OrderedDictionary KnownDestroyers { get; } = new OrderedDictionary();
         private OrderedDictionary KnownProvisioners { get; } = new OrderedDictionary();
 
         /// <summary>
@@ -77,16 +78,20 @@ namespace agrix.Platforms
         /// will be outputted describing what would be done.</param>
         public virtual void Provision(Infrastructure infrastructure, bool dryrun = false)
         {
-            foreach (DictionaryEntry provisioners in KnownProvisioners)
-            {
-                var type = (Type) provisioners.Key;
-                var action = (Action<object, bool>) provisioners.Value;
-                if (action is null) continue;
-                if (!infrastructure.Types.Contains(type)) continue;
+            Provision(KnownProvisioners, infrastructure, dryrun);
+        }
 
-                foreach (var item in infrastructure.GetItems(type))
-                    action(item, dryrun);
-            }
+        /// <summary>
+        /// Destroys infrastructure referencing the given configuration.
+        /// </summary>
+        /// <param name="infrastructure">The Infrastructure configuration to
+        /// provision.</param>
+        /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
+        /// provision commands will not be sent to the platform and instead messaging
+        /// will be outputted describing what would be done.</param>
+        public virtual void Destroy(Infrastructure infrastructure, bool dryrun)
+        {
+            Provision(KnownDestroyers, infrastructure, dryrun);
         }
 
         /// <summary>
@@ -124,7 +129,56 @@ namespace agrix.Platforms
         /// <param name="provisioner">The provisioner to add.</param>
         protected void AddProvisioner<T>(Provisioner<T> provisioner)
         {
-            KnownProvisioners[typeof(T)] =
+            Add(KnownProvisioners, provisioner);
+        }
+
+        /// <summary>
+        /// Adds a destroyer to destroy infrastructure from a configuration.
+        /// </summary>
+        /// <typeparam name="T">The type of configuration the destroyer
+        /// destroys.</typeparam>
+        /// <param name="destroyer">The destroyer to add.</param>
+        protected void AddDestroyer<T>(Provisioner<T> destroyer)
+        {
+            Add(KnownDestroyers, destroyer);
+        }
+
+        /// <summary>
+        /// Provisions/destroys infrastructure referencing the given configuration.
+        /// </summary>
+        /// <param name="knownProvisioners">The collection of provisioners to use to
+        /// setup/teardown the infrastructure.</param>
+        /// <param name="infrastructure">The Infrastructure configuration to
+        /// provision.</param>
+        /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
+        /// provision commands will not be sent to the platform and instead messaging
+        /// will be outputted describing what would be done.</param>
+        private static void Provision(
+            IEnumerable knownProvisioners, Infrastructure infrastructure, bool dryrun)
+        {
+            foreach (DictionaryEntry provisioners in knownProvisioners)
+            {
+                var type = (Type)provisioners.Key;
+                var action = (Action<object, bool>)provisioners.Value;
+                if (action is null) continue;
+                if (!infrastructure.Types.Contains(type)) continue;
+
+                foreach (var item in infrastructure.GetItems(type))
+                    action(item, dryrun);
+            }
+        }
+
+        /// <summary>
+        /// Adds a provisioner/destroyer to the given dictionary.
+        /// </summary>
+        /// <typeparam name="T">The type of configuration the provisioner/destroyer
+        /// provisions.</typeparam>
+        /// <param name="provisioners">The dictionary to add the provisioner/destroyer
+        /// to.</param>
+        /// <param name="provisioner">The provisioner/destroyer to add.</param>
+        private static void Add<T>(IDictionary provisioners, Provisioner<T> provisioner)
+        {
+            provisioners[typeof(T)] =
                 (Action<object, bool>)((item, dryrun) =>
                     provisioner((T)item, dryrun));
         }
