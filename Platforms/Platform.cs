@@ -27,24 +27,6 @@ namespace agrix.Platforms
     internal abstract class Platform : IPlatform
     {
         /// <summary>
-        /// Delegate used to create a Firewall instance from a YAML configuration. Can
-        /// be overridden in subclasses.
-        /// </summary>
-        protected Parse<Firewall> ParseFirewall { get; set; } = new FirewallParser().Parse;
-
-        /// <summary>
-        /// Delegate used to create a Script instance from a YAML configuration. Can
-        /// be overridden in subclasses.
-        /// </summary>
-        protected Parse<Script> ParseScript { get; set; } = new ScriptParser().Parse;
-
-        /// <summary>
-        /// Delegate used to create a Server instance from a YAML configuration. Can
-        /// be overridden in subclasses.
-        /// </summary>
-        protected Parse<Server> ParseServer { get; set; } = new ServerParser().Parse;
-
-        /// <summary>
         /// The instance used to process YAML and call the relevant Parse{T} delegate.
         /// </summary>
         protected IParser Parser { get; set; } = new Parser();
@@ -59,9 +41,9 @@ namespace agrix.Platforms
         protected Platform()
         {
             AddNullParser("platform");
-            AddParser("servers", ParseServer);
-            AddParser("scripts", ParseScript);
-            AddParser("firewalls", ParseFirewall);
+            AddParser("servers", new ServerParser().Parse);
+            AddParser("scripts", new ScriptParser().Parse);
+            AddParser("firewalls", new FirewallParser().Parse);
         }
 
         /// <summary>
