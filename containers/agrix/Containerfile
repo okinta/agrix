@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:5.0-alpine
+FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine
 
 COPY agrix.csproj /app/agrix.csproj
 RUN dotnet restore /app/agrix.csproj
@@ -6,7 +6,7 @@ RUN dotnet restore /app/agrix.csproj
 COPY . /app
 RUN dotnet build -c Release /app/agrix.csproj --no-restore
 
-FROM mcr.microsoft.com/dotnet/core/runtime:5.0-alpine
+FROM mcr.microsoft.com/dotnet/runtime:5.0-alpine
 
 # Install envsubst
 RUN wget -O /usr/local/bin/envsubst https://s3.okinta.ge/envsubst-Linux-x86_64-v1.1.0 \

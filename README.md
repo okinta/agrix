@@ -1,7 +1,7 @@
 # Agrix
 
 Creates infrastructure from (YAML) configuration to help you maintain
-infrastructure as code. It takes a YAML file, and then makes the necessary API
+infrastructure as data. It takes a YAML file, and then makes the necessary API
 calls to build infrastructure matching that configuration.
 
 Agrix is designed to be simple. It takes a YAML file and spins up
@@ -25,7 +25,7 @@ Agrix takes a single YAML file as input:
 
 Alternatively, you can also pipe the file into agrix:
 
-    envsubst [file] | agrix validate
+    envsubst < [file] | agrix validate
     agrix validate < [file]
 
 When you're ready to provision the infrastructure, use the `agrix provision`
