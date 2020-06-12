@@ -1,4 +1,5 @@
 ﻿using agrix.Configuration;
+using agrix.Extensions;
 using agrix.Platforms.Vultr.Provisioners;
 using MockHttp.Net;
 using tests.Properties;
@@ -159,8 +160,7 @@ namespace tests.Platforms.Vultr.Provisioners
                 new HttpHandler(
                     "/regions/list", Resources.VultrRegionsList));
 
-            var provisioner = new VultrServerProvisioner(requests.Client);
-            Assert.Equal(id, provisioner.GetRegionId(name));
+            Assert.Equal(id, requests.Client.Region.GetRegionId(name));
         }
 
         [Theory]

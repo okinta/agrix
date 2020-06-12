@@ -3,7 +3,6 @@ using Server = agrix.Configuration.Server;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using Vultr.API.Models;
 using Vultr.API;
 
 namespace agrix.Platforms.Vultr.Provisioners
@@ -32,7 +31,7 @@ namespace agrix.Platforms.Vultr.Provisioners
             var os = GetOs(server);
             const bool notifyActivate = false;
             var appId = os.Appid;
-            var dcId = GetRegionId(server.Region);
+            var dcId = Client.Region.GetRegionId(server.Region);
             var enablePrivateNetwork = server.PrivateNetworking;
             var firewallId = GetFirewallId(server.Firewall);
             var isoId = os.IsoId?.ToString();
@@ -155,31 +154,6 @@ namespace agrix.Platforms.Vultr.Provisioners
                     $"Cannot find firewall group called {firewall}",
                     nameof(firewall), e);
             }
-        }
-
-        /// <summary>
-        /// Gets the ID of the given region.
-        /// </summary>
-        /// <param name="name">The name of the region to retrieve the ID for.</param>
-        /// <returns>The ID of the given region.</returns>
-        /// <exception cref="ArgumentException">If the region cannot be found.</exception>
-        public int GetRegionId(string name)
-        {
-            var regions = Client.Region.GetRegions();
-
-            KeyValuePair<int, Region> region;
-            try
-            {
-                region = regions.Regions.Single(
-                    r => r.Value.name == name);
-            }
-            catch (InvalidOperationException e)
-            {
-                throw new ArgumentException(
-                    $"Cannot find region called {name}", nameof(name), e);
-            }
-
-            return region.Key;
         }
 
         /// <summary>

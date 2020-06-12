@@ -4,7 +4,6 @@ using FirewallRule = Vultr.API.Models.FirewallRule;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using Vultr.API.Models;
 using Vultr.API;
 
 namespace agrix.Platforms.Vultr.Provisioners
@@ -33,7 +32,7 @@ namespace agrix.Platforms.Vultr.Provisioners
             Console.WriteLine("Creating firewall");
             ConsoleX.WriteLine("name", firewall.Name);
 
-            var firewallGroupId = GetExistingFirewall(firewall.Name);
+            var firewallGroupId = Client.Firewall.GetExistingFirewall(firewall.Name);
 
             if (!string.IsNullOrEmpty(firewallGroupId))
             {
@@ -41,7 +40,7 @@ namespace agrix.Platforms.Vultr.Provisioners
                     firewall.Name, firewallGroupId);
 
                 var existingRules =
-                    GetExistingRules(firewallGroupId);
+                    Client.Firewall.GetExistingRules(firewallGroupId);
                 CreateRules(firewall, firewallGroupId, dryrun, existingRules);
                 DeleteOldRules(firewall, firewallGroupId, existingRules, dryrun);
             }
@@ -49,37 +48,6 @@ namespace agrix.Platforms.Vultr.Provisioners
                 CreateRules(firewall, CreateNewFirewallGroup(firewall, dryrun), dryrun);
 
             Console.WriteLine("---");
-        }
-
-        private string GetExistingFirewall(string name)
-        {
-            var existingFirewalls = Client.Firewall.GetFirewallGroups();
-            bool Predicate(KeyValuePair<string, FirewallGroup> existingFirewall) =>
-                existingFirewall.Value.description == name;
-
-            if (existingFirewalls.FirewallGroups == null ||
-                !existingFirewalls.FirewallGroups.Exists(Predicate)) return "";
-
-            var (existingFirewallGroupId, _) =
-                existingFirewalls.FirewallGroups.Single(Predicate);
-            return existingFirewallGroupId;
-        }
-
-        private Dictionary<string, FirewallRule> GetExistingRules(
-            string firewallGroupId)
-        {
-            var existingRules =
-                Client.Firewall.GetFirewallRules(
-                        firewallGroupId, "in", "v4")
-                    .FirewallRules;
-
-            foreach (var (firewallId, firewallRule) in
-                Client.Firewall.GetFirewallRules(
-                        firewallGroupId, "in", "v6")
-                    .FirewallRules)
-                existingRules[firewallId] = firewallRule;
-
-            return existingRules;
         }
 
         private string CreateNewFirewallGroup(Firewall firewall, bool dryrun)
@@ -96,7 +64,7 @@ namespace agrix.Platforms.Vultr.Provisioners
             Firewall firewall,
             string firewallGroupId,
             bool dryrun,
-            Dictionary<string, FirewallRule> existingRules = null)
+            IReadOnlyDictionary<string, FirewallRule> existingRules = null)
         {
             foreach (var rule in firewall.Rules)
             {
@@ -138,39 +106,18 @@ namespace agrix.Platforms.Vultr.Provisioners
         private void DeleteOldRules(
             Firewall firewall,
             string firewallGroupId,
-            Dictionary<string, FirewallRule> existingRules,
+            IReadOnlyDictionary<string, FirewallRule> existingRules,
             bool dryrun)
         {
             foreach (var firewallRule in
                 existingRules.Where(r =>
                     !DoesRuleExist(firewall.Rules, r.Value)))
-                DeleteRule(
+                Client.Firewall.DeleteRule(
                     firewall.Name, firewallGroupId, firewallRule.Value, dryrun);
         }
 
-        private void DeleteRule(
-            string firewallName,
-            string firewallGroupId,
-            FirewallRule rule,
-            bool dryrun)
-        {
-            Console.WriteLine("Deleting existing firewall rule for {0}", firewallName);
-            ConsoleX.WriteLine("port", rule.port);
-            ConsoleX.WriteLine("port", rule.rulenumber);
-            ConsoleX.WriteLine("port", rule.subnet);
-            ConsoleX.WriteLine("port", rule.subnet_size);
-            ConsoleX.WriteLine("protocol", rule.protocol);
-            ConsoleX.WriteLine("source", rule.source);
-
-            if (!dryrun)
-                Client.Firewall.DeleteFirewallRule(
-                    firewallGroupId, rule.rulenumber);
-
-            Console.WriteLine("--");
-        }
-
         private static bool DoesRuleExist(
-            Dictionary<string, FirewallRule> vultrRules,
+            IReadOnlyDictionary<string, FirewallRule> vultrRules,
             Configuration.FirewallRule rule)
         {
             return vultrRules.Any(f =>
