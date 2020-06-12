@@ -6,7 +6,7 @@ namespace agrix.Platforms.Vultr
     /// <summary>
     /// Base class for provisioning Vultr infrastructure.
     /// </summary>
-    internal abstract class VultrProvisioner<T> : IProvisioner<T>
+    internal abstract class VultrDestroyer<T> : IDestroyer<T>
     {
         /// <summary>
         /// Gets the VultrClient instance to use to communicate with Vultr API.
@@ -16,9 +16,8 @@ namespace agrix.Platforms.Vultr
         /// <summary>
         /// Instantiates a new instance.
         /// </summary>
-        /// <param name="client">The VultrClient to use to provision
-        /// infrastructure.</param>
-        protected VultrProvisioner(VultrClient client)
+        /// <param name="client">The VultrClient to use to destroy infrastructure.</param>
+        protected VultrDestroyer(VultrClient client)
         {
             Client = client ?? throw new ArgumentNullException(
                 nameof(client), "client must not be null");
@@ -32,6 +31,6 @@ namespace agrix.Platforms.Vultr
         /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
         /// provision commands will not be sent to the platform and instead messaging
         /// will be outputted describing what would be done.</param>
-        public abstract void Provision(T infrastructure, bool dryrun = false);
+        public abstract void Destroy(T infrastructure, bool dryrun = false);
     }
 }

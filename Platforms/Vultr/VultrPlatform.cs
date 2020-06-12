@@ -1,4 +1,5 @@
 ﻿using agrix.Configuration;
+using agrix.Platforms.Vultr.Destroyers;
 using agrix.Platforms.Vultr.Provisioners;
 using Server = agrix.Configuration.Server;
 using System;
@@ -34,6 +35,10 @@ namespace agrix.Platforms.Vultr
             AddProvisioner<Firewall>(new VultrFirewallProvisioner(Client).Provision);
             AddProvisioner<Script>(new VultrScriptProvisioner(Client).Provision);
             AddProvisioner<Server>(new VultrServerProvisioner(Client).Provision);
+
+            AddDestroyer<Server>(new VultrServerDestroyer(Client).Destroy);
+            AddDestroyer<Script>(new VultrScriptDestroyer(Client).Destroy);
+            AddDestroyer<Firewall>(new VultrFirewallDestroyer(Client).Destroy);
         }
 
         /// <summary>
