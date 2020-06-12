@@ -12,7 +12,7 @@ namespace agrix.Platforms.Vultr.Provisioners
     /// <summary>
     /// Provisions Vultr startup scripts.
     /// </summary>
-    internal class VultrScriptProvisioner : VultrProvisioner
+    internal class VultrScriptProvisioner : VultrProvisioner<Script>
     {
         /// <summary>
         /// Instantiates a new instance.
@@ -28,7 +28,7 @@ namespace agrix.Platforms.Vultr.Provisioners
         /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
         /// provision commands will not be sent to the platform and instead messaging
         /// will be outputted describing what would be done.</param>
-        public void Provision(Script script, bool dryrun = false)
+        public override void Provision(Script script, bool dryrun = false)
         {
             var type = script.Type switch
             {

@@ -12,12 +12,12 @@ namespace agrix.Platforms.Vultr.Provisioners
     /// <summary>
     /// Provisions Vultr firewalls.
     /// </summary>
-    internal class VultrFirewallProvisioner : VultrProvisioner
+    internal class VultrFirewallProvisioner : VultrProvisioner<Firewall>
     {
         /// <summary>
         /// Instantiates a new instance.
         /// </summary>
-        /// <param name="client">The VultrClient to use to provision servers.</param>
+        /// <param name="client">The VultrClient to use to provision firewalls.</param>
         public VultrFirewallProvisioner(VultrClient client) : base(client) { }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace agrix.Platforms.Vultr.Provisioners
         /// <param name="dryrun">Whether or not this is a dryrun. If set to true then
         /// provision commands will not be sent to the platform and instead messaging
         /// will be outputted describing what would be done.</param>
-        public void Provision(Firewall firewall, bool dryrun = false)
+        public override void Provision(Firewall firewall, bool dryrun = false)
         {
             Console.WriteLine("Creating firewall");
             ConsoleX.WriteLine("name", firewall.Name);
