@@ -1,4 +1,8 @@
 ﻿using agrix.Configuration;
+using agrix.Extensions;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 using Vultr.API;
 
 namespace agrix.Platforms.Vultr.Destroyers
@@ -23,7 +27,38 @@ namespace agrix.Platforms.Vultr.Destroyers
         /// will be outputted describing what would be done.</param>
         public override void Destroy(Server server, bool dryrun = false)
         {
-            throw new System.NotImplementedException();
+            var dcId = Client.Region.GetRegionId(server.Region);
+            var label = server.Label;
+
+            Console.WriteLine("Destroying server");
+            ConsoleX.WriteLine("DCID", dcId);
+            ConsoleX.WriteLine("label", label);
+
+            var existingServers = Client.Server.GetServers();
+            bool Predicate(KeyValuePair<
+                string, global::Vultr.API.Models.Server> existingServer) =>
+                    existingServer.Value.DCID == dcId.ToString()
+                    && existingServer.Value.label == label;
+
+            if (existingServers.Servers != null
+                && existingServers.Servers.Exists(Predicate))
+            {
+                var (id, _) = existingServers.Servers.Single(Predicate);
+                Console.WriteLine("Server with label {0} in DCID {1} exists",
+                    label, dcId);
+
+                var subId = int.Parse(id);
+                if (!dryrun)
+                {
+                    Client.Server.DestroyServer(subId);
+                    Console.WriteLine("Deleted server {0}", subId);
+                }
+            }
+            else
+                Console.WriteLine("Server with label {0} in DCID {1} does not exist",
+                    label, dcId);
+
+            Console.WriteLine("---");
         }
     }
 }

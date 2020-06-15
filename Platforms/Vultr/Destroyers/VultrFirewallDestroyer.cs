@@ -1,4 +1,6 @@
 ﻿using agrix.Configuration;
+using agrix.Extensions;
+using System;
 using Vultr.API;
 
 namespace agrix.Platforms.Vultr.Destroyers
@@ -26,7 +28,32 @@ namespace agrix.Platforms.Vultr.Destroyers
         /// will be outputted describing what would be done.</param>
         public override void Destroy(Firewall firewall, bool dryrun = false)
         {
-            throw new System.NotImplementedException();
+            Console.WriteLine("Destroying firewall");
+            ConsoleX.WriteLine("name", firewall.Name);
+
+            var firewallGroupId = Client.Firewall.GetExistingFirewall(firewall.Name);
+
+            if (!string.IsNullOrEmpty(firewallGroupId))
+            {
+                Console.WriteLine("Firewall {0} with ID {1} exists",
+                    firewall.Name, firewallGroupId);
+
+                var existingRules =
+                    Client.Firewall.GetExistingRules(firewallGroupId);
+                foreach (var firewallRule in existingRules)
+                    Client.Firewall.DeleteRule(
+                        firewall.Name, firewallGroupId, firewallRule.Value, dryrun);
+
+                if (!dryrun)
+                {
+                    Client.Firewall.DeleteFirewallGroup(firewallGroupId);
+                    Console.WriteLine("Deleted firewall {0}", firewall.Name);
+                }
+            }
+            else
+                Console.WriteLine("Firewall {0} doesn't exist", firewall.Name);
+
+            Console.WriteLine("---");
         }
     }
 }
