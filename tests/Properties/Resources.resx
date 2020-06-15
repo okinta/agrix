@@ -270,7 +270,8 @@ servers:
       cpu: 2
       memory: 4096
       type: SSD
-    region: Atlanta</value>
+    region: Atlanta
+    label: myserver</value>
     <comment>Configuration for the "test" platform</comment>
   </data>
   <data name="UserDataConfig" xml:space="preserve">

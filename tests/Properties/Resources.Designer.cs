@@ -249,7 +249,8 @@ namespace tests.Properties {
         ///      cpu: 2
         ///      memory: 4096
         ///      type: SSD
-        ///    region: Atlanta.
+        ///    region: Atlanta
+        ///    label: myserver.
         /// </summary>
         internal static string TestPlatformConfig {
             get {

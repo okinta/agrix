@@ -113,5 +113,21 @@ namespace tests
             agrix.Process(dryrun);
             requests.AssertAllCalledOnce();
         }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void TestDestroy(bool dryrun)
+        {
+            using var requests = new MockVultrRequests(
+                new HttpHandler(
+                    "destroy",
+                    $"label=myserver&dryrun={dryrun}",
+                    ""));
+            var agrix = new Agrix(Resources.TestPlatformConfig,
+                new AgrixSettings("abc", requests.Url, TestAssembly));
+            agrix.Destroy(dryrun);
+            requests.AssertAllCalledOnce();
+        }
     }
 }

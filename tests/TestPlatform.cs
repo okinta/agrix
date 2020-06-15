@@ -24,6 +24,7 @@ namespace tests
 
             ApiUrl = apiUrl;
             AddProvisioner<Server>(ProvisionServer);
+            AddDestroyer<Server>(DestroyServer);
         }
 
         public static IPlatform CreateTestPlatform(PlatformSettings settings)
@@ -35,7 +36,7 @@ namespace tests
         {
         }
 
-        private void ProvisionServer(Server server, bool dryrun = false)
+        private void ProvisionServer(Server server, bool dryrun)
         {
             var client = new RestClient(ApiUrl);
             var request = new RestRequest("provision");
@@ -45,6 +46,15 @@ namespace tests
             request.AddParameter("os.name", server.Os.Name);
             request.AddParameter("os.app", server.Os.Name);
             request.AddParameter("os.iso", server.Os.Iso);
+            request.AddParameter("dryrun", dryrun);
+            client.Post(request);
+        }
+
+        private void DestroyServer(Server server, bool dryrun)
+        {
+            var client = new RestClient(ApiUrl);
+            var request = new RestRequest("destroy");
+            request.AddParameter("label", server.Label);
             request.AddParameter("dryrun", dryrun);
             client.Post(request);
         }
