@@ -6,11 +6,7 @@ namespace agrix.Program
     /// CLI options for provisioning infrastructure.
     /// </summary>
     [Verb("provision", HelpText = "Provisions infrastructure.")]
-    internal class ProvisionOptions : BaseOptions
+    internal class ProvisionOptions : DryrunOption
     {
-        [Option('d', "dryrun", Default = false,
-            HelpText = "Set flag to not send provisioning calls to the platform API "
-                + "and instead just output what would happen.")]
-        public bool Dryrun { get; set; }
     }
 }

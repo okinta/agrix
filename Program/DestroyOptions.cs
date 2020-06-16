@@ -6,7 +6,7 @@ namespace agrix.Program
     /// CLI options for destroying infrastructure.
     /// </summary>
     [Verb("destroy", HelpText = "Destroys infrastructure.")]
-    internal class DestroyOptions : ProvisionOptions
+    internal class DestroyOptions : DryrunOption
     {
     }
 }
