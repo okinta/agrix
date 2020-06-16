@@ -60,14 +60,15 @@ namespace agrix.Program
         {
             var program = new Program(assembly, readLine);
             Parser.Default.ParseArguments<
-                ProvisionOptions,
-                ValidateOptions
-            >(args)
+                    DestroyOptions,
+                    ProvisionOptions,
+                    ValidateOptions
+                >(args)
                 .WithParsed<ProvisionOptions>(program.Provision)
                 .WithParsed<DestroyOptions>(program.Destroy)
                 .WithParsed<ValidateOptions>(program.Validate)
                 .WithNotParsed(program.HandleParseError);
-            return (int)program.ExitCode;
+            return (int) program.ExitCode;
         }
 
         private void Provision(ProvisionOptions options)
